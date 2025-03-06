@@ -1,0 +1,17 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+<h1>Hello world</h1>
+
+<ul>
+
+{% for printings in cards %}
+    <li>{{ printings.card.name }} {{ printings.printings|first.cardId }}</li>
+    <ul>
+    {% for printing in printings.printings %}
+        <li>{{ printing.foiling.name }}</li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+
+{% endblock %}

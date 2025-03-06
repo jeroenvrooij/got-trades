@@ -29,4 +29,16 @@ class HomeController extends AbstractController
             throw $this->createNotFoundException($exception->getMessage());
         }
     }
+
+    #[Route('/printing-by-set')]
+    public function printingsBySet(): Response
+    {
+        try {
+            $cards = $this->cardFinder->findPrintingsBySet();
+
+            return $this->render('home/printings.html.twig', ['cards' => $cards]);
+        } catch (\Exception $exception) {
+            throw $this->createNotFoundException($exception->getMessage());
+        }
+    }
 }

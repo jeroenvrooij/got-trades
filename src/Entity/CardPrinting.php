@@ -41,8 +41,7 @@ class CardPrinting
         return $this->cardId;
     }
 
-    public function getSetId(): string
-    {
+    public function getSetId(): string{
         return $this->setId;
     }
 

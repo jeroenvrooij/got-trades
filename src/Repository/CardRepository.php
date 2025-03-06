@@ -17,21 +17,21 @@ class CardRepository extends ServiceEntityRepository
         parent::__construct($registry, Card::class);
     }
 
-       /**
-        * @return Card[] Returns an array of Card objects
-        */
-       public function findBySet(string $setId): array
-       {
-            $qb = $this->createQueryBuilder('c');
-           return $qb
-                ->leftJoin('c.printings', 'p', Expr\Join::WITH, $qb->expr()->eq('p.card', 'c.uniqueId'))
-                ->andWhere('p.setId = :setId')
-                ->setParameter('setId', $setId)
-                ->orderBy('c.name', 'ASC')
-                ->groupBy('c.uniqueId')
-                // ->setMaxResults(10)
-                ->getQuery()
-                ->getResult()
-            ;   
-       }
+    /**
+    * @return Card[] Returns an array of Card objects
+    */
+    public function findBySet(string $setId): array
+    {
+        $qb = $this->createQueryBuilder('c');
+        return $qb
+            ->leftJoin('c.printings', 'p', Expr\Join::WITH, $qb->expr()->eq('p.card', 'c.uniqueId'))
+            ->andWhere('p.setId = :setId')
+            ->setParameter('setId', $setId)
+            ->orderBy('c.name', 'ASC')
+            ->groupBy('c.uniqueId')
+            // ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;   
+    }
 }
