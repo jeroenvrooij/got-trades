@@ -1,17 +1,17 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
-<h1>Hello world</h1>
+<h1>{{ set.name }} ({{ cards|length }})</h1>
 
 <ul>
-
 {% for printings in cards %}
     <li>{{ printings.card.name }} ({{ printings.card.pitch }}) {{ printings.printings|first.cardId }}</li>
     <ul>
     {% for printing in printings.printings %}
-        <li>{{ printing.foiling.name }}</li>
+        <li>{% if printing.edition != "N" %}{{ editionHelper.getEditionNameById(printing.edition) }} {% endif %}{{ foilingHelper.getFoilingNameById(printing.foiling) }}</li>
     {% endfor %}
     </ul>
 {% endfor %}
+</ul>
 
 {% endblock %}

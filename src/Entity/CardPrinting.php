@@ -23,13 +23,11 @@ class CardPrinting
     #[ORM\JoinColumn(name: 'card_unique_id', referencedColumnName: 'unique_id', nullable: false)]
     private Card $card;
 
-    #[ORM\ManyToOne(targetEntity: Edition::class)]
-    #[ORM\JoinColumn(name: 'edition', referencedColumnName: 'id', nullable: false)]
-    private Edition $edition;
+    #[ORM\Column(length: 15, nullable: false)]
+    private string $edition;
 
-    #[ORM\ManyToOne(targetEntity: Foiling::class)]
-    #[ORM\JoinColumn(name: 'foiling', referencedColumnName: 'id', nullable: false)]
-    private Foiling $foiling;
+    #[ORM\Column(length: 15, nullable: false)]
+    private string $foiling;
     
     public function getUniqueId(): string
     {
@@ -57,12 +55,12 @@ class CardPrinting
         return $this;
     }
 
-    public function getEdition(): Edition
+    public function getEdition(): string
     {
         return $this->edition;
     }
 
-    public function getFoiling(): Foiling
+    public function getFoiling(): string
     {
         return $this->foiling;
     }
