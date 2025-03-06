@@ -46,14 +46,14 @@ class Card
     }
 
     /**
-     * @return Collection<int, CardPrinting>
+     * @return ArrayCollection<int, CardPrinting>
      */
-    public function getPrintings(): Collection
+    public function getPrintings(): ArrayCollection
     {
         return $this->printings;
     }
 
-    public function getPrintingsFromSet(string $setId): Collection
+    public function getPrintingsFromSet(string $setId): ArrayCollection
     {
         $criteria = Criteria::create()
             ->andWhere(Criteria::expr()->eq('setId', $setId));
