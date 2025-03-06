@@ -6,7 +6,7 @@
     <li>{{card.name}} ({{card.pitch}})</li>
     <ul>
     {% for printing in card.printings %}
-        <li>{{printing.uniqueId}}  {{printing.cardId}} {% if printing.edition.id != 'N' %}- {{ printing.edition.name }}{% endif %} ({{ printing.foiling.name }})</li>
+        <li>{{printing.cardId}} {% if printing.edition.id != 'N' %}- {{ printing.edition.name }}{% endif %} ({{ printing.foiling.name }})</li>
     {% endfor %}
     </ul>
 {% endfor %}
