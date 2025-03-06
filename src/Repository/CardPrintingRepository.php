@@ -28,7 +28,7 @@ class CardPrintingRepository extends ServiceEntityRepository
                 ->innerJoin('cp.card', 'c', Expr\Join::WITH, $qb->expr()->eq('cp.card', 'c.uniqueId'))
                 ->andWhere('cp.setId = :setId')
                 ->setParameter('setId', $setId)
-                ->orderBy('c.name', 'ASC')
+                ->orderBy('cp.cardId', 'ASC')
                 // ->setMaxResults(10)
                 ->getQuery()
                 ->getResult()

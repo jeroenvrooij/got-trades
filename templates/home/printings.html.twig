@@ -6,7 +6,7 @@
 <ul>
 
 {% for printings in cards %}
-    <li>{{ printings.card.name }} {{ printings.printings|first.cardId }}</li>
+    <li>{{ printings.card.name }} ({{ printings.card.pitch }}) {{ printings.printings|first.cardId }}</li>
     <ul>
     {% for printing in printings.printings %}
         <li>{{ printing.foiling.name }}</li>

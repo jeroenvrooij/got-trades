@@ -5,7 +5,7 @@
 
 <ul>
 {% for card in cards %}
-    <li>{{card.name}} ({{card.pitch}})</li>
+    <li>{{card.name}} ({{card.pitch}}) {{ card.printings|first.cardId }}</li>
     <ul>
     {% for printing in card.printingsFromSet('ROS') %}
         <li>{{printing.cardId}} {% if printing.edition.id != 'N' %}- {{ printing.edition.name }}{% endif %} ({{ printing.foiling.name }})</li>
