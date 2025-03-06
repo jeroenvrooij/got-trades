@@ -2,8 +2,9 @@
 // src/Controller/HomeController.php
 namespace App\Controller;
 
-use App\Entity\Card;
+use App\Entity\Set;
 use App\Service\CardFinder;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -30,11 +31,13 @@ class HomeController extends AbstractController
         }
     }
 
-    #[Route('/printing-by-set')]
-    public function printingsBySet(): Response
-    {
+    #[Route('/printing-by-set/{id}')]
+    public function printingsBySet(
+        #[MapEntity(mapping: ['id' => 'id'], message: 'Set could not be found')]
+        Set $set
+    ): Response {
         try {
-            $cards = $this->cardFinder->findPrintingsBySet();
+            $cards = $this->cardFinder->findPrintingsBySet($set);
 
             return $this->render('home/printings.html.twig', ['cards' => $cards]);
         } catch (\Exception $exception) {

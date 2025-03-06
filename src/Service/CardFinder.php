@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Card;
 use App\Entity\CardPrinting;
+use App\Entity\Set;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,9 +31,9 @@ class CardFinder
         return $cards;
     }
 
-    public function findPrintingsBySet()
+    public function findPrintingsBySet(Set $set)
     {
-        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySet('ROS');
+        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySet($set);
 
         if (!$printings) {
             throw new EntityNotFoundException('No printings found in set by criteria');

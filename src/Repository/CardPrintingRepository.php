@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\CardPrinting;
+use App\Entity\Set;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\Persistence\ManagerRegistry;
@@ -20,14 +21,14 @@ class CardPrintingRepository extends ServiceEntityRepository
     /**
     * @return CardPrinting[] Returns an array of CardPrinting objects
     */
-    public function findBySet(string $setId): array
+    public function findBySet(Set $set): array
     {
             $qb = $this->createQueryBuilder('cp');
         return $qb
                 ->select('cp, c')
                 ->innerJoin('cp.card', 'c', Expr\Join::WITH, $qb->expr()->eq('cp.card', 'c.uniqueId'))
                 ->andWhere('cp.setId = :setId')
-                ->setParameter('setId', $setId)
+                ->setParameter('setId', $set->getId())
                 ->orderBy('cp.cardId', 'ASC')
                 // ->setMaxResults(10)
                 ->getQuery()
