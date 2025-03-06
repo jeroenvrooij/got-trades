@@ -3,24 +3,30 @@
 namespace App\Controller;
 
 use App\Entity\Card;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\CardFinder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
 {
+    private CardFinder $cardFinder;
+
+    public function __construct(
+        CardFinder $cardFinder,
+    ) {
+        $this->cardFinder = $cardFinder;
+    }
+
     #[Route('/')]
-    public function helloWorld(EntityManagerInterface $entityManager): Response
+    public function helloWorld(): Response
     {
-        $cards = $entityManager->getRepository(Card::class)->findBy([], ['name' => 'ASC'], 50);
+        try {
+            $cards = $this->cardFinder->findCardsBySet();
 
-        if (!$cards) {
-            throw $this->createNotFoundException(
-                'No card found'
-            );
+            return $this->render('home/helloworld.html.twig', ['cards' => $cards]);
+        } catch (\Exception $exception) {
+            throw $this->createNotFoundException($exception->getMessage());
         }
-
-        return $this->render('home/helloworld.html.twig', ['cards' => $cards]);
     }
 }

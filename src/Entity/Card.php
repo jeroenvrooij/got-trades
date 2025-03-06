@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\CardRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CardRepository::class)]
@@ -50,5 +51,12 @@ class Card
     public function getPrintings(): Collection
     {
         return $this->printings;
+    }
+
+    public function getPrintingsFromSet(string $setId): Collection
+    {
+        $criteria = Criteria::create()
+            ->andWhere(Criteria::expr()->eq('setId', $setId));
+        return $this->getPrintings()->matching($criteria);
     }
 }

@@ -1,13 +1,17 @@
-{# templates/home/helloworld.html.twig #}
+{% extends "base.html.twig" %}
+
+{% block body %}
 <h1>Hello world</h1>
 
 <ul>
 {% for card in cards %}
     <li>{{card.name}} ({{card.pitch}})</li>
     <ul>
-    {% for printing in card.printings %}
+    {% for printing in card.printingsFromSet('ROS') %}
         <li>{{printing.cardId}} {% if printing.edition.id != 'N' %}- {{ printing.edition.name }}{% endif %} ({{ printing.foiling.name }})</li>
     {% endfor %}
     </ul>
 {% endfor %}
 </ul>
+
+{% endblock %}
