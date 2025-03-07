@@ -25,6 +25,15 @@ class FoilingHelper
         }
     }
 
+    /**
+     * As there is no FK from the card_printings to the foilings table, this helper fetches all records once
+     * so they can be used in Twig to convert the card_printings.foiling value to the foilings.name value. This
+     * prevents a query being executed for each card printing.
+     * 
+     * @param string $foilingId The id of the foiling
+     * 
+     * @return string The name of the foiling
+     */
     public function getFoilingNameById(string $foilingId)
     {
         return $this->foilings[$foilingId];

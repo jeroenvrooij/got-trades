@@ -19,7 +19,14 @@ class CardFinder
         $this->entityManager = $entityManager;    
     }
 
-    public function findPrintingsBySet(Set $set)
+    /**
+     * Finds all printings within a certain set and returns them grouped by unique cards
+     * 
+     * @param Set $set
+     * 
+     * @return ArrayCollection
+     */
+    public function findCardsBySet(Set $set)
     {
         $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySet($set);
 
@@ -29,7 +36,6 @@ class CardFinder
 
         $cards = new ArrayCollection();
         foreach ($printings as $printing) {
-
             if(!$cards->get($printing->getCard()->getUniqueId())) {
                 $collection = new ArrayCollection(['card' => $printing->getCard(), 'printings' => new ArrayCollection()]);
                 $cards->set($printing->getCard()->getUniqueId(), $collection);

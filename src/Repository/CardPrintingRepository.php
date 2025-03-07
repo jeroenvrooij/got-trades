@@ -9,7 +9,7 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Card>
+ * @extends ServiceEntityRepository<CardPrinting>
  */
 class CardPrintingRepository extends ServiceEntityRepository
 {

@@ -25,6 +25,15 @@ class RarityHelper
         }
     }
 
+    /**
+     * As there is no FK from the card_printings to the rarities table, this helper fetches all records once
+     * so they can be used in Twig to convert the card_printings.rarity value to the rarities.description value. This
+     * prevents a query being executed for each card printing.
+     * 
+     * @param string $rarityId The id of the rarity
+     * 
+     * @return string The description of the rarity
+     */
     public function getRarityDescriptionById(string $rarityId)
     {
         return $this->rarities[$rarityId];

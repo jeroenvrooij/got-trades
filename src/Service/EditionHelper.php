@@ -25,6 +25,15 @@ class EditionHelper
         }
     }
 
+    /**
+     * As there is no FK from the card_printings to the editions table, this helper fetches all records once
+     * so they can be used in Twig to convert the card_printings.edition value to the editions.name value. This
+     * prevents a query being executed for each card printing.
+     * 
+     * @param string $editionId The id of the edition
+     * 
+     * @return string The name of the edition
+     */
     public function getEditionNameById(string $editionId)
     {
         return $this->editions[$editionId];

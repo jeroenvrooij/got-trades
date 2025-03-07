@@ -2,10 +2,16 @@
 
 namespace App\Service;
 
-use Exception;
-
 class ArtVariationsHelper
 {
+    /**
+     * As there is no table containing a description/name of a certain art variation (property of CardPrinting)
+     * let's create our own logic to convert the abbreviation to a human readable description.
+     * 
+     * @param string $artVariations String containing the value of CardPrinting.artVariation. Example: {EA}
+     * 
+     * @return string A human readable description, like 'Extended Art'
+     */
     public function getHumanReadableArtVariations(string $artVariations): string
     {
         if ($artVariations === '{}') {
