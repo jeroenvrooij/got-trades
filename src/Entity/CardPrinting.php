@@ -28,6 +28,12 @@ class CardPrinting
 
     #[ORM\Column(length: 15, nullable: false)]
     private string $foiling;
+
+    #[ORM\Column(length: 15, nullable: false)]
+    private string $rarity;
+
+    #[ORM\Column(length: 15, nullable: false)]
+    private string $artVariations;
     
     public function getUniqueId(): string
     {
@@ -63,5 +69,15 @@ class CardPrinting
     public function getFoiling(): string
     {
         return $this->foiling;
+    }
+
+    public function getRarity(): string
+    {
+        return $this->rarity;
+    }
+
+    public function getArtVariations(): string
+    {
+        return $this->artVariations;
     }
 }

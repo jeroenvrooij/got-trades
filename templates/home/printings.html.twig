@@ -8,7 +8,7 @@
     <li>{{ printings.card.name }} ({{ printings.card.pitch }}) {{ printings.printings|first.cardId }}</li>
     <ul>
     {% for printing in printings.printings %}
-        <li>{% if printing.edition != "N" %}{{ editionHelper.getEditionNameById(printing.edition) }} {% endif %}{{ foilingHelper.getFoilingNameById(printing.foiling) }}</li>
+        <li>{{ rarityHelper.getRarityDescriptionById(printing.rarity) }} - {% if printing.edition != "N" %}{{ editionHelper.getEditionNameById(printing.edition) }} {% endif %} {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }} {{ foilingHelper.getFoilingNameById(printing.foiling) }}</li>
     {% endfor %}
     </ul>
 {% endfor %}
