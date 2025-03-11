@@ -49,7 +49,7 @@ class PrintingController extends AbstractController
         try {
             $cards = $this->cardFinder->findCardsBySet($set);
             
-            return $this->render('home/printings.html.twig', [
+            return $this->render('printing/printings.html.twig', [
                 'editionHelper' => $this->editionHelper,
                 'foilingHelper' => $this->foilingHelper,
                 'rarityHelper' => $this->rarityHelper,
