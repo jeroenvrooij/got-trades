@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
@@ -12,6 +13,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -35,11 +37,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
     
-    #[ORM\Column]
-    private ?string $firstName = null;
+    #[ORM\Column(nullable: false, length:15)]
+    private ?string $username = null;
 
     #[ORM\Column]
-    private ?string $lastName = null;
+    private bool $isVerified = false;
     
     public function getId(): ?Uuid
     {
@@ -116,26 +118,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function getFirstName(): ?string
+    public function getUsername(): ?string
     {
-        return $this->firstName;
+        return $this->username;
     }
 
-    public function setFirstName(string $firstName): static
+    public function setUsername(string $username): static
     {
-        $this->firstName = $firstName;
+        $this->username = $username;
 
         return $this;
     }
 
-    public function getLastName(): ?string
+    public function isVerified(): bool
     {
-        return $this->lastName;
+        return $this->isVerified;
     }
 
-    public function setLastName(string $lastName): static
+    public function setIsVerified(bool $isVerified): static
     {
-        $this->lastName = $lastName;
+        $this->isVerified = $isVerified;
 
         return $this;
     }
