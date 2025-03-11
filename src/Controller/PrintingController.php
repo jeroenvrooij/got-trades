@@ -13,6 +13,7 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class PrintingController extends AbstractController
 {
@@ -41,6 +42,7 @@ class PrintingController extends AbstractController
     }
 
     #[Route('/printing-by-set/{setId}')]
+    #[IsGranted('ROLE_USER', message: 'Viewing sets is only for logged in users')]
     public function printingsBySet(
         EntityManagerInterface $entityManager,
         #[MapEntity(mapping: ['setId' => 'id'], message: 'Set could not be found')]
