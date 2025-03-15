@@ -1,3 +1,18 @@
 body {
-    background-color: skyblue;
+    /* background-color: skyblue; */
+}
+.container.cardoverview .row {
+    height: 100px;
+    /* background-color: green; */
+    /* margin: auto; */
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.container.cardoverview .col {
+    /* background-color: aliceblue; */
+    /* height: 100px; */
+    /* margin: auto; */
+    /* border: 1px solid black; */
+    /* vertical-align: middle; */
 }

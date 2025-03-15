@@ -1,0 +1,72 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+<div class="container text-center cardoverview">
+  <div class="row row-cols-3 text-center">
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "WTR"}) }}">Welcome to Rathe</a>
+    </div>
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "ARC"}) }}">Arcane Rising</a>
+    </div>
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "CRU"}) }}">Crucible of War</a>
+    </div>
+  </div>
+  <div class="row row-cols-3">
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "MON"}) }}">Monarch</a>
+    </div>
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "ELE"}) }}">Tales of Aria</a>
+    </div>
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "EVR"}) }}">Everfest</a>
+    </div>
+  </div>
+  <div class="row row-cols-3">
+    <div class="col">
+      <a href="#">History Pack 1</a>
+      {# <a href="{{ path('app_printing_printingsbyset', {setId: "HP1"}) }}">History Pack 1</a> #}
+    </div>
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "UPR"}) }}">Uprising</a>
+    </div>
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "DYN"}) }}">Dynasty</a>
+    </div>
+  </div>
+  <div class="row row-cols-3">
+    <div class="col">
+      <a href="#">History Pack 2</a>
+      {# <a href="{{ path('app_printing_printingsbyset', {setId: "HP2"}) }}">History Pack 2</a> #}
+    </div>
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "OUT"}) }}">Outsiders</a>
+    </div>
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "DTD"}) }}">Dusk Till Dawn</a>
+    </div>
+  </div>
+  <div class="row row-cols-3">
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "EVO"}) }}">Bright Lights</a>
+    </div>
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "HVY"}) }}">Heavy Hitters</a>
+    </div>
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "MST"}) }}">Part the Mistveil</a>
+    </div>
+  </div>
+  <div class="row row-cols-3">
+    <div class="col">
+      <a href="{{ path('app_printing_printingsbyset', {setId: "ROS"}) }}">Rosetta</a>
+    </div>
+    <div class="col">
+      <a href="#">The Hunted</a>
+      {# <a href="{{ path('app_printing_printingsbyset', {setId: "HNT"}) }}">The Hunted</a> #}
+    </div>
+  </div>
+</div>
+{% endblock %} 

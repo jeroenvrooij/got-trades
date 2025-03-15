@@ -13,6 +13,19 @@
     </head>
     <body>
         {{ include('navbar.html.twig') }}
+        
+        {% block breadcrumbs %}
+            <div class="container-fluid">
+                <p>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            {% block breadcrumblist %}{% endblock breadcrumblist %}
+                        </ol>
+                    </nav>
+                </p>
+            </div>
+        {% endblock %}
+
         {% block body %}{% endblock %}
     </body>
 </html>
