@@ -1,3 +1,8 @@
+:root {
+    --color-pitch-1: #c70e09;
+    --color-pitch-2: #ffef00;
+    --color-pitch-3: #0091d8;
+}
 body {
     /* background-color: skyblue; */
 }
@@ -15,4 +20,26 @@ body {
     /* margin: auto; */
     /* border: 1px solid black; */
     /* vertical-align: middle; */
+}
+
+.pitch{
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 1px;
+}
+.pitch-1 {
+    background-color: var(--color-pitch-1);
+}
+.pitch-2 {
+    background-color: var(--color-pitch-2);
+}
+.pitch-3 {
+    background-color: var(--color-pitch-3);
+}
+
+.card-printing thead th {
+    background-color: #a7733f !important;
+    color: #ecbe6e !important;
 }

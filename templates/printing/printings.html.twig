@@ -7,16 +7,68 @@
 {% endblock %}
 
 {% block body %}
-<h1>{{ set.name }}</h1>
-<ul>
-{% for printings in cards %}
-    <li>{{ printings.card.name }} ({{ printings.card.pitch }}) {{ printings.printings|first.cardId }}</li>
-    <ul>
-    {% for printing in printings.printings %}
-        <li>{{ rarityHelper.getRarityDescriptionById(printing.rarity) }} - {% if printing.edition != "N" %}{{ editionHelper.getEditionNameById(printing.edition) }} {% endif %} {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }} {{ foilingHelper.getFoilingNameById(printing.foiling) }}</li>
-    {% endfor %}
-    </ul>
-{% endfor %}
-</ul>
+<div class="container-xxl">
+    <h1>{{ set.name }}</h1>
+    <table class="table table-hover table-sm card-printing">
+        <thead>
+            <tr>
+                <th scope="col" style="width: 120px;">Code</th>
+                <th scope="col">Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for printings in cards %}
+                <tr>
+                    <th scope="row">{{ printings.printings|first.cardId }}</th>
+                    <td>
+                        {{ printings.card.name }}
+                        {% if 1 ==  printings.card.pitch %}
+                            <div class="pitch pitch-1"></div>
+                        {% elseif 2 == printings.card.pitch %}
+                            <div class="pitch pitch-2"></div><div class="pitch pitch-2"></div>
+                        {% elseif 3 == printings.card.pitch %}
+                            <div class="pitch pitch-3"></div><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div>
+                        {% endif %}
+                    </td>
+                </tr>
+                    <tr>
+                        <td colspan="2">
+                            <table class="table mb-0 table-sm">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="width: 120px">Rarity</th>
+                                        {# <th scope="col">Edition</th> #}
+                                        <th scope="col" style="width: 200px">Foiling</th>
+                                        <th scope="col">Art</th>
+                                    </tr>
+                                </thead>
+                                {% for printing in printings.printings %}
+                                    <tr>
+                                        <td>{{ rarityHelper.getRarityDescriptionById(printing.rarity) }}</td>
+                                        {# <td>{% if printing.edition != "N" %}{{ editionHelper.getEditionNameById(printing.edition) }}{% endif %}</td> #}
+                                        <td>{{ foilingHelper.getFoilingNameById(printing.foiling) }}</td>
+                                        <td>{{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </td>
+                    </tr>
+                    {# {% for printing in printings.printings %}
+                        <li>{{ rarityHelper.getRarityDescriptionById(printing.rarity) }} - {% if printing.edition != "N" %}{{ editionHelper.getEditionNameById(printing.edition) }} {% endif %} {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }} {{ foilingHelper.getFoilingNameById(printing.foiling) }}</li>
+                    {% endfor %} #}
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}
+
+{# {% for printings in cards %}
+        <li>{{ printings.card.name }} ({{ printings.card.pitch }}) {{ printings.printings|first.cardId }}</li>
+        <ul>
+        {% for printing in printings.printings %}
+            <li>{{ rarityHelper.getRarityDescriptionById(printing.rarity) }} - {% if printing.edition != "N" %}{{ editionHelper.getEditionNameById(printing.edition) }} {% endif %} {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }} {{ foilingHelper.getFoilingNameById(printing.foiling) }}</li>
+        {% endfor %}
+        </ul>
+    {% endfor %} #}
