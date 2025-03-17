@@ -48,7 +48,7 @@ class CardPrintingRepository extends ServiceEntityRepository
                          * Remove front printings, if front and back are the same card. Eg both UPR006
                          * 
                          * Match on card id and not card unique id so that a double sided cards with two different
-                         * cards on it not filtered. Eg Storm of Sandikai (UPR003) on front and Fai (UPR045) on back.
+                         * cards on it is not filtered. Eg Storm of Sandikai (UPR003) on front and Fai (UPR045) on back.
                          * 
                          */
                         $qb->expr()->not(

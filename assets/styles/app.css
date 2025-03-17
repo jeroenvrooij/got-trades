@@ -43,3 +43,72 @@ body {
     background-color: #a7733f !important;
     color: #ecbe6e !important;
 }
+.rarity-marvel {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    vertical-align: top; /* Aligns with text properly */
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 8px solid #784A8D;
+    margin-top: 8px;
+  }
+
+.rarity-fabled {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    vertical-align: top; /* Aligns with text properly */
+    border-left: 5px solid transparent;  
+    border-right: 5px solid transparent;
+    border-bottom: 8px solid #E69B49;
+    position: relative;
+    margin-top: 5px;
+}
+
+.rarity-fabled::after {
+    content: "";
+    position: absolute;
+    left: -5px; /* Adjust to match new width */
+    top: 8px;  /* Adjust to match new height */
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 8px solid #E69B49;
+}
+
+.rarity-circle {
+    display: inline-flex;  /* Allows centering of text inside */
+    justify-content: center;
+    align-items: center;
+    width: 14px;   /* Small size for inline text */
+    height: 14px;
+    border-radius: 50%;  /* Makes it a circle */
+    color: white;  /* Makes the letter visible */
+    font-size: 8px;  /* Adjust size of "T" */
+    font-family: Arial, sans-serif;
+    text-align: center;
+    vertical-align: top;  /* Aligns with text */
+    line-height: 1; /* Ensures text is centered properly */
+    padding-top: 1px; /* Moves text slightly lower */
+    margin-top: 5px;
+}
+.rarity-circle.common {
+    background-color: #919191;
+}
+.rarity-circle.rare {
+    background-color: #3B7095;
+}
+.rarity-circle.superrare {
+    background-color: #694A87;
+}
+.rarity-circle.majestic {
+    background-color: #C60E08;
+}
+.rarity-circle.legendary {
+    background-color: #E69B49;
+}
+.rarity-circle.promo {
+    background-color: #24863A;
+}
