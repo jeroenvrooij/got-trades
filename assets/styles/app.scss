@@ -48,10 +48,11 @@ body {
     width: 0;
     height: 0;
     vertical-align: top; /* Aligns with text properly */
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 8px solid #784A8D;
-    margin-top: 8px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 10px solid #784A8D;
+    margin-top: 7px;
+    margin-left: 1px;
   }
 
 .rarity-fabled {
@@ -64,6 +65,7 @@ body {
     border-bottom: 8px solid #E69B49;
     position: relative;
     margin-top: 5px;
+    margin-left: 2px;
 }
 
 .rarity-fabled::after {
@@ -94,7 +96,7 @@ body {
     padding-top: 1px; /* Moves text slightly lower */
     margin-top: 5px;
 }
-.rarity-circle.common {
+.rarity-circle.common, .rarity-circle.token {
     background-color: #919191;
 }
 .rarity-circle.rare {
@@ -112,3 +114,11 @@ body {
 .rarity-circle.promo {
     background-color: #24863A;
 }
+.card-printing span.cardId {
+    color: var(--bs-secondary);
+}
+
+// Boostrap SASS + overrides
+// $table-bg: rgba(167,115,63,.25);
+// $table-striped-bg: #E6D1BF;
+@import '../../vendor/twbs/bootstrap/scss/bootstrap';
