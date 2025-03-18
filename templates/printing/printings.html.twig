@@ -13,53 +13,18 @@
 ] %}
 <div class="container-xxl">
     <h1>{{ set.name }}</h1>
-    <table class="table table-hover table-sm table-striped card-printing">
-        <thead>
-            <tr>
-                <th scope="col" style="width: 80px;">Code</th>
-                <th scope="col" {% if set.id in editionSets %} colspan="3" {% else %} colspan="2" {% endif %} style="width: 300px;">Name</th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for printings in cards %}
-                {% for printing in printings.printings %}
-                    <tr>
-                        <td>
-                            <span class="cardId">{{ printings.printings|first.cardId }}</span>
-                        </td>
-                        <td style="width:20px">
-                            {% set rarity = rarityHelper.getRarityDescriptionById(printing.rarity) %}
-                            {% if rarity == 'Marvel' %}
-                                <span class="rarity-marvel"></span>
-                            {% elseif rarity == 'Fabled' %}
-                                <span class="rarity-fabled"></span>
-                            {% else %}
-                                <span class="rarity-circle {{ rarity|lower|replace({' ': ''}) }}">{{ rarity|first }}</span>
-                            {% endif %}
-                        </td>
-                        <td style="width: 280px;">
-                            {{ printings.card.name }}
-
-                            {% if 1 ==  printings.card.pitch %}
-                                <div class="pitch pitch-1"></div>
-                            {% elseif 2 == printings.card.pitch %}
-                                <div class="pitch pitch-2"></div><div class="pitch pitch-2"></div>
-                            {% elseif 3 == printings.card.pitch %}
-                                <div class="pitch pitch-3"></div><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% set foiling = foilingHelper.getFoilingNameById(printing.foiling) %}
-                            {% if foiling != 'Standard' %}{{ foiling }}{% endif %}
-                            {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }}
-                        </td>
-                        {% if printing.edition != "N" %}<td>{{ editionHelper.getEditionNameById(printing.edition) }}</td>{% endif %}
-                    </tr>
-                {% endfor %}
-            {% endfor %}
-        </tbody>
-    </table>
+    <form class="mb-3" aria-label="Default select example" {{ stimulus_controller('printing') }}>
+        <select class="form-select w-auto"  name="foiling" data-action="change->printing#update">
+            <option value="" disabled selected hidden>Filter on foiling</option>
+            <option value="">All</option>
+            <option value="S">Standard</option>
+            <option value="R">Rainbow Foil</option>
+            <option value="C">Cold Foil</option>
+        </select>
+    </form>
+    
+        {% include 'printing/printings_table.html.twig' with { set: set, cards: cards, editionSets: editionSets } %}
+    
 </div>
 
 {% endblock %}

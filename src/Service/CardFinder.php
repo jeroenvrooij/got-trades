@@ -26,9 +26,9 @@ class CardFinder
      * 
      * @return ArrayCollection
      */
-    public function findCardsBySet(Set $set)
+    public function findCardsBySet(Set $set, ?string $foiling)
     {
-        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySet($set);
+        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySet($set, $foiling);
 
         if (!$printings) {
             throw new EntityNotFoundException('No printings found in set by criteria');
