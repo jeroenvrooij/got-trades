@@ -25,7 +25,7 @@ class CardPrintingRepository extends ServiceEntityRepository
     /**
     * @return CardPrinting[] Returns an array of CardPrinting objects
     */
-    public function findBySet(Set $set, ?string $foiling): array
+    public function findBySetAndFoiling(Set $set, ?string $foiling): array
     {
         $qb = $this->createQueryBuilder('cp');
 

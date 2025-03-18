@@ -51,9 +51,9 @@ class PrintingController extends AbstractController
         Set $set
     ): Response {
         try {
-            $foiling = $request->query->get('foiling-filter');
+            $foiling = $request->query->get('foiling-filter', '');
 
-            $cards = $this->cardFinder->findCardsBySet($set, $foiling);
+            $cards = $this->cardFinder->findCardsBySetAndFoiling($set, $foiling);
 
             if ($request->headers->get('Turbo-Frame') === 'printing_table') {
                 return $this->render('printing/printings_table.html.twig', [
