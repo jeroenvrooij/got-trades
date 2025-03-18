@@ -51,16 +51,11 @@ class PrintingController extends AbstractController
         Set $set
     ): Response {
         try {
-
-            $foiling = $request->query->get('foiling');
+            $foiling = $request->query->get('foiling-filter');
 
             $cards = $this->cardFinder->findCardsBySet($set, $foiling);
 
-            // $records = $category ? 
-            //     $recordRepository->findBy(['category' => $category]) : 
-            //     $recordRepository->findAll();
-
-            if ($request->headers->get('Turbo-Frame') === 'records_table') {
+            if ($request->headers->get('Turbo-Frame') === 'printing_table') {
                 return $this->render('printing/printings_table.html.twig', [
                     'editionHelper' => $this->editionHelper,
                     'foilingHelper' => $this->foilingHelper,
@@ -82,7 +77,8 @@ class PrintingController extends AbstractController
                 'foiling' => $foiling,
             ]);
         } catch (\Exception $exception) {
-            throw $this->createNotFoundException($exception->getMessage());
+            return $this->render('printing/empty_table.html.twig', [
+            ]);
         }
     }
 }

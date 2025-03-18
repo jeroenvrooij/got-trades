@@ -1,10 +1,17 @@
-<turbo-frame id="records_table">
+{% set editionSets = [
+    'WTR',
+    'ARC',
+    'CRU',
+    'MON',
+    'ELE',
+    'EVR',
+] %}
+<turbo-frame id="printing_table">
     <table class="table table-hover table-sm table-striped card-printing">
     <thead>
         <tr>
             <th scope="col" style="width: 80px;">Code</th>
-            {# <th scope="col" {% if set.id in editionSets %} colspan="3" {% else %} colspan="2" {% endif %} style="width: 300px;">Name</th> #}
-            <th scope="col" colspan="2" style="width: 300px;">Name</th>
+            <th scope="col" {% if set.id in editionSets %} colspan="3" {% else %} colspan="2" {% endif %} style="width: 300px;">Name</th>
             <th scope="col"></th>
         </tr>
     </thead>

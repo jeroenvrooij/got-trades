@@ -7,33 +7,20 @@
 {% endblock %}
 
 {% block body %}
-{% set editionSets = [
-    'WTR',
-    'ARC'
-] %}
 <div class="container-xxl">
     <h1>{{ set.name }}</h1>
     <form class="mb-3" aria-label="Default select example" {{ stimulus_controller('printing') }}>
-        <select class="form-select w-auto"  name="foiling" data-action="change->printing#update">
+        <select class="form-select w-auto"  name="foiling-filter" data-action="change->printing#update">
             <option value="" disabled selected hidden>Filter on foiling</option>
             <option value="">All</option>
-            <option value="S">Standard</option>
-            <option value="R">Rainbow Foil</option>
-            <option value="C">Cold Foil</option>
+            {% for foilingId, foilingName in foilingHelper.getAllFoilings %}
+                <option value="{{ foilingId }}">{{ foilingName }}</option>
+            {% endfor %}
         </select>
     </form>
     
-        {% include 'printing/printings_table.html.twig' with { set: set, cards: cards, editionSets: editionSets } %}
+    {% include 'printing/printings_table.html.twig' with { set: set, cards: cards } %}
     
 </div>
 
 {% endblock %}
-
-{# {% for printings in cards %}
-        <li>{{ printings.card.name }} ({{ printings.card.pitch }}) {{ printings.printings|first.cardId }}</li>
-        <ul>
-        {% for printing in printings.printings %}
-            <li>{{ rarityHelper.getRarityDescriptionById(printing.rarity) }} - {% if printing.edition != "N" %}{{ editionHelper.getEditionNameById(printing.edition) }} {% endif %} {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }} {{ foilingHelper.getFoilingNameById(printing.foiling) }}</li>
-        {% endfor %}
-        </ul>
-    {% endfor %} #}

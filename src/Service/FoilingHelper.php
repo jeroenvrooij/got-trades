@@ -38,4 +38,9 @@ class FoilingHelper
     {
         return $this->foilings[$foilingId];
     }
+
+    public function getAllFoilings(): ArrayCollection
+    {
+        return $this->foilings;
+    }
 }
