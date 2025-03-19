@@ -8,6 +8,7 @@ use App\Service\CardFinder;
 use App\Service\EditionHelper;
 use App\Service\FoilingHelper;
 use App\Service\RarityHelper;
+use App\Service\UserCollectionManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -30,18 +31,22 @@ class PrintingController extends AbstractController
 
     private ArtVariationsHelper $artVariationsHelper;
 
+    private UserCollectionManager $userCollectionManager;
+
     public function __construct(
         CardFinder $cardFinder,
         FoilingHelper $foilingHelper,
         EditionHelper $editionHelper,
         RarityHelper $rarityHelper,
         ArtVariationsHelper $artVariationsHelper,
+        UserCollectionManager $userCollectionManager,
     ) {
         $this->cardFinder = $cardFinder;
         $this->foilingHelper = $foilingHelper;
         $this->editionHelper = $editionHelper;
         $this->rarityHelper = $rarityHelper;
         $this->artVariationsHelper = $artVariationsHelper;
+        $this->userCollectionManager = $userCollectionManager;
     }
 
     #[Route('/printing-by-set/{setId}')]
@@ -65,6 +70,7 @@ class PrintingController extends AbstractController
                     'foilingHelper' => $this->foilingHelper,
                     'rarityHelper' => $this->rarityHelper,
                     'artVariationsHelper' => $this->artVariationsHelper,
+                    'userCollectionManager' => $this->userCollectionManager,
                     'set' => $set, 
                     'cards' => $cards,
                     'foiling' => $foiling,
@@ -76,6 +82,7 @@ class PrintingController extends AbstractController
                 'foilingHelper' => $this->foilingHelper,
                 'rarityHelper' => $this->rarityHelper,
                 'artVariationsHelper' => $this->artVariationsHelper,
+                'userCollectionManager' => $this->userCollectionManager,
                 'set' => $set, 
                 'cards' => $cards,
                 'foiling' => $foiling,

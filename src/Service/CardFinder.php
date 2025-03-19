@@ -8,13 +8,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class CardFinder
 {
     private EntityManager $entityManager;
 
     public function __construct(
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        private Security $security,
     ) {
         $this->entityManager = $entityManager;    
     }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -42,6 +44,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private bool $isVerified = false;
+
+    /**
+     * @var Collection<int, UserCardPrintings>
+     */
+    #[ORM\OneToMany(targetEntity: UserCardPrintings::class, mappedBy: 'user')]
+    private Collection $cardPrintings;
+
+    public function __construct()
+    {
+        $this->cardPrintings = new ArrayCollection();
+    }
     
     public function getId(): ?Uuid
     {
@@ -138,6 +151,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserCardPrintings>
+     */
+    public function getCardPrintings(): Collection
+    {
+        return $this->cardPrintings;
+    }
+
+    public function addCardPrinting(UserCardPrintings $cardPrinting): static
+    {
+        if (!$this->cardPrintings->contains($cardPrinting)) {
+            $this->cardPrintings->add($cardPrinting);
+            $cardPrinting->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCardPrinting(UserCardPrintings $cardPrinting): static
+    {
+        if ($this->cardPrintings->removeElement($cardPrinting)) {
+            // set the owning side to null (unless already changed)
+            if ($cardPrinting->getUser() === $this) {
+                $cardPrinting->setUser(null);
+            }
+        }
 
         return $this;
     }

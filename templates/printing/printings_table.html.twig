@@ -1,4 +1,4 @@
-{% block success_stream %}
+{% block printing_table %}
     {% set editionSets = [
         'WTR',
         'ARC',
@@ -8,7 +8,6 @@
         'EVR',
     ] %}
     <turbo-frame id="printing_table">
-    {# <twig:Turbo:Frame id="printing_table" /> #}
         <table class="table table-hover table-sm table-striped card-printing align-middle">
         <thead>
             <tr>
@@ -23,7 +22,11 @@
                 {% for printing in printings.printings %}
                     <tr>
                         <td>
-                            <input class="form-control form-control-sm text-center" type="text" value="0" aria-label="0">
+                            {% set amount = 0 %}
+                            {% if userCollectionManager.getAllCollectedCardsFromLoggedInUser.containsKey(printing.uniqueId) %}
+                                {% set amount = userCollectionManager.getAllCollectedCardsFromLoggedInUser.get(printing.uniqueId) %}
+                            {% endif %}
+                            <input class="form-control form-control-sm text-center" type="text" value="{{ amount }}" aria-label="0">
                         </td>
                         <td>
                             <span class="cardId">{{ printings.printings|first.cardId }}</span>
@@ -39,6 +42,7 @@
                             {% endif %}
                         </td>
                         <td style="width: 280px;">
+                            {# {{ printing.uniqueId }} #}
                             {{ printings.card.name }}
 
                             {% if 1 ==  printings.card.pitch %}
