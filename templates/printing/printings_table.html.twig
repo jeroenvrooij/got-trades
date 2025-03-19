@@ -26,7 +26,16 @@
                             {% if userCollectionManager.getAllCollectedCardsFromLoggedInUser.containsKey(printing.uniqueId) %}
                                 {% set amount = userCollectionManager.getAllCollectedCardsFromLoggedInUser.get(printing.uniqueId) %}
                             {% endif %}
-                            <input class="form-control form-control-sm text-center" type="text" value="{{ amount }}" aria-label="0">
+                            <input 
+                                class="form-control form-control-sm text-center" 
+                                type="text" 
+                                value="{{ amount }}" 
+                                aria-label="0"
+                                data-controller="printing"
+                                data-action="input->printing#updateAmount"
+                                data-printing-id-param="{{ printing.uniqueId }}"
+                                data-printing-set-id-param="{{ set.id }}"
+                            >
                         </td>
                         <td>
                             <span class="cardId">{{ printings.printings|first.cardId }}</span>

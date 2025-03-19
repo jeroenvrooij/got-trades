@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Set;
+use App\Entity\UserCardPrintings;
 use App\Service\ArtVariationsHelper;
 use App\Service\CardFinder;
 use App\Service\EditionHelper;
@@ -11,6 +12,7 @@ use App\Service\RarityHelper;
 use App\Service\UserCollectionManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -90,6 +92,39 @@ class PrintingController extends AbstractController
         } catch (\Exception $exception) {
             return $this->renderBlock('printing/empty_table.html.twig', 'printing_table', [
             ]);
+        }
+    }
+
+    #[Route('/update-user-collection', methods: ['POST'])]
+    #[IsGranted('ROLE_USER', message: 'Updating collection is for logged in users')]
+    public function updateUserCollection(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        LoggerInterface $logger
+    ): Response {
+        try {
+            $data = json_decode($request->getContent(), true);
+            
+            $amount = $data['amount'] ?? null;
+
+            if ($amount !== null) {
+                $userCardPrintings = $entityManager->getRepository(UserCardPrintings::class)->find([
+                    'user' => $this->getUser(),
+                    'cardPrintingUniqueId' => $data['id'],
+                ]);
+                if (null === $userCardPrintings) {
+                    $userCardPrintings = new UserCardPrintings();
+                    $userCardPrintings->setUser($this->getUser());
+                    $userCardPrintings->setCardPrintingUniqueId($data['id']);
+                    $entityManager->persist($userCardPrintings);
+                }
+                $userCardPrintings->setCollectionAmount($data['amount']);
+                $entityManager->flush();
+            }
+            
+            return $this->redirectToRoute('app_printing_printingsbyset', ['setId' => $data['setId']], 303);
+        } catch (\Exception $exception) {
+            dump($exception);die();
         }
     }
 }
