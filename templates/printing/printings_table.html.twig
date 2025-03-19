@@ -1,57 +1,64 @@
-{% set editionSets = [
-    'WTR',
-    'ARC',
-    'CRU',
-    'MON',
-    'ELE',
-    'EVR',
-] %}
-<turbo-frame id="printing_table">
-    <table class="table table-hover table-sm table-striped card-printing">
-    <thead>
-        <tr>
-            <th scope="col" style="width: 80px;">Code</th>
-            <th scope="col" {% if set.id in editionSets %} colspan="3" {% else %} colspan="2" {% endif %} style="width: 300px;">Name</th>
-            <th scope="col"></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for printings in cards %}
-            {% for printing in printings.printings %}
-                <tr>
-                    <td>
-                        <span class="cardId">{{ printings.printings|first.cardId }}</span>
-                    </td>
-                    <td style="width:20px">
-                        {% set rarity = rarityHelper.getRarityDescriptionById(printing.rarity) %}
-                        {% if rarity == 'Marvel' %}
-                            <span class="rarity-marvel"></span>
-                        {% elseif rarity == 'Fabled' %}
-                            <span class="rarity-fabled"></span>
-                        {% else %}
-                            <span class="rarity-circle {{ rarity|lower|replace({' ': ''}) }}">{{ rarity|first }}</span>
-                        {% endif %}
-                    </td>
-                    <td style="width: 280px;">
-                        {{ printings.card.name }}
+{% block success_stream %}
+    {% set editionSets = [
+        'WTR',
+        'ARC',
+        'CRU',
+        'MON',
+        'ELE',
+        'EVR',
+    ] %}
+    <turbo-frame id="printing_table">
+    {# <twig:Turbo:Frame id="printing_table" /> #}
+        <table class="table table-hover table-sm table-striped card-printing align-middle">
+        <thead>
+            <tr>
+                <th scope="col" style="width: 40px;"></th>
+                <th scope="col" style="width: 80px;">Code</th>
+                <th scope="col" {% if set.id in editionSets %} colspan="3" {% else %} colspan="2" {% endif %} style="width: 300px;">Name</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for printings in cards %}
+                {% for printing in printings.printings %}
+                    <tr>
+                        <td>
+                            <input class="form-control form-control-sm text-center" type="text" value="0" aria-label="0">
+                        </td>
+                        <td>
+                            <span class="cardId">{{ printings.printings|first.cardId }}</span>
+                        </td>
+                        <td style="width:20px">
+                            {% set rarity = rarityHelper.getRarityDescriptionById(printing.rarity) %}
+                            {% if rarity == 'Marvel' %}
+                                <span class="rarity-marvel"></span>
+                            {% elseif rarity == 'Fabled' %}
+                                <span class="rarity-fabled"></span>
+                            {% else %}
+                                <span class="rarity-circle {{ rarity|lower|replace({' ': ''}) }}">{{ rarity|first }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="width: 280px;">
+                            {{ printings.card.name }}
 
-                        {% if 1 ==  printings.card.pitch %}
-                            <div class="pitch pitch-1"></div>
-                        {% elseif 2 == printings.card.pitch %}
-                            <div class="pitch pitch-2"></div><div class="pitch pitch-2"></div>
-                        {% elseif 3 == printings.card.pitch %}
-                            <div class="pitch pitch-3"></div><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% set foiling = foilingHelper.getFoilingNameById(printing.foiling) %}
-                        {% if foiling != 'Standard' %}{{ foiling }}{% endif %}
-                        {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }}
-                    </td>
-                    {% if printing.edition != "N" %}<td>{{ editionHelper.getEditionNameById(printing.edition) }}</td>{% endif %}
-                </tr>
+                            {% if 1 ==  printings.card.pitch %}
+                                <div class="pitch pitch-1"></div>
+                            {% elseif 2 == printings.card.pitch %}
+                                <div class="pitch pitch-2"></div><div class="pitch pitch-2"></div>
+                            {% elseif 3 == printings.card.pitch %}
+                                <div class="pitch pitch-3"></div><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% set foiling = foilingHelper.getFoilingNameById(printing.foiling) %}
+                            {% if foiling != 'Standard' %}{{ foiling }}{% endif %}
+                            {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }}
+                        </td>
+                        {% if printing.edition != "N" %}<td>{{ editionHelper.getEditionNameById(printing.edition) }}</td>{% endif %}
+                    </tr>
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
-    </tbody>
-</table>
-</turbo-frame>
+        </tbody>
+    </table>
+    </turbo-frame>
+{% endblock %}

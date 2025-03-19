@@ -9,12 +9,14 @@ use App\Service\EditionHelper;
 use App\Service\FoilingHelper;
 use App\Service\RarityHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\UX\Turbo\TurboBundle;
 
 class PrintingController extends AbstractController
 {
@@ -55,8 +57,10 @@ class PrintingController extends AbstractController
 
             $cards = $this->cardFinder->findCardsBySetAndFoiling($set, $foiling);
 
-            if ($request->headers->get('Turbo-Frame') === 'printing_table') {
-                return $this->render('printing/printings_table.html.twig', [
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+               
+                return $this->renderBlock('printing/printings_table.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
                     'foilingHelper' => $this->foilingHelper,
                     'rarityHelper' => $this->rarityHelper,
@@ -77,7 +81,7 @@ class PrintingController extends AbstractController
                 'foiling' => $foiling,
             ]);
         } catch (\Exception $exception) {
-            return $this->render('printing/empty_table.html.twig', [
+            return $this->renderBlock('printing/empty_table.html.twig', 'printing_table', [
             ]);
         }
     }
