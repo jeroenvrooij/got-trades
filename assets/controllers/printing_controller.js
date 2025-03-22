@@ -14,7 +14,9 @@ export default class extends Controller {
         const amount = event.target.value;
         const id = event.params.id; 
         const setId = event.params.setId;
+        const cardName = event.params.cardName;
 
+        console.log(cardName);
         fetch(`/update-user-collection`, {
             method: "POST",
             headers: {
@@ -25,38 +27,49 @@ export default class extends Controller {
         })
         .then(response => response.json())
         .then(data => {
-            this.refreshFlashMessages();
+            if (data.success) {
+
+                // const toastTrigger = document.getElementById('liveToastBtn')
+                // const toastLiveExample = document.getElementById('toast')
+                // const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+                // toastBootstrap.show()
+
+
+                this.showToast("Success", `You now own ${cardName} ${amount} times`, "success");
+            } else {
+                this.showToast("Error", "Failed to update quantity!", "danger");
+            }
         })
-        .catch(error => console.error("Error:", error));
+        .catch(error => {
+            console.error("Error updating quantity:", error);
+        });
     }
     
-    refreshFlashMessages() {
-        fetch('/flash-messages')
-            .then(response => response.text())
-            .then(html => {
-                const flashContainer = document.querySelector("#flash-messages");
+    showToast(title, message, type = "info") {
+        const toastContainer = document.querySelector("#toast-container");
 
-                // Create a temporary div to extract new messages
-                const tempDiv = document.createElement("div");
-                tempDiv.innerHTML = html;
+        const toastId = `toast-${Date.now()}`;
+        const toastHtml = `
+            <div id="${toastId}" class="toast align-items-center text-${type}-emphasis bg-${type}-subtle border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `;
 
-                // Append new messages without removing existing ones
-                tempDiv.querySelectorAll(".flash-message").forEach(newMessage => {
-                    flashContainer.appendChild(newMessage);
+        toastContainer.insertAdjacentHTML("beforeend", toastHtml);
+        
+        // Initialize Bootstrap toast
+        const toastElement = document.getElementById(toastId);
+        const toast = bootstrap.Toast.getOrCreateInstance(toastElement, { delay: 3000 }); // Auto-hide after 3s
+        toast.show();
 
-                    // Apply fade-in effect
-                    setTimeout(() => {
-                        newMessage.classList.add("show");
-                    }, 50);
-
-                    // Auto-hide after 3 seconds
-                    setTimeout(() => {
-                        newMessage.classList.add("fade-out");
-                        setTimeout(() => {
-                            newMessage.remove();
-                        }, 500);
-                    }, 3000);
-                });
-            });
+        // Remove toast after it's hidden
+        toastElement.addEventListener("hidden.bs.toast", () => {
+            toastElement.remove();
+        });
     }
 }
