@@ -119,7 +119,11 @@ class PrintingController extends AbstractController
                     $userCardPrintings->setCardPrintingUniqueId($data['id']);
                     $entityManager->persist($userCardPrintings);
                 }
-                $userCardPrintings->setCollectionAmount($data['amount']);
+                if ('0' === $data['amount']) {
+                    $entityManager->remove($userCardPrintings);
+                } else {
+                    $userCardPrintings->setCollectionAmount($data['amount']);
+                }
                 $entityManager->flush();
             }
 
