@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus";
 
   
 export default class extends Controller {
-    static targets = ["amountInput", "foilFilter"];
+    static targets = ["amountInput", "decrementButton", "incrementButton"];
 
     foilingFilter(event) {
         const foiling = event.target.value;
@@ -21,6 +21,8 @@ export default class extends Controller {
           // Store the original value of each input
           input.dataset.originalValue = input.value;
         });
+
+        this.updateButtonState();
     }
 
     incrementAmount(event) {
@@ -29,6 +31,7 @@ export default class extends Controller {
         
         let currentValue = parseInt(inputField.value);
         inputField.value = currentValue + 1;
+        this.updateButtonState();
 
         // Debounce the request: clear any existing timer and set a new one
         this.debounceUpdate(event, inputField);
@@ -45,15 +48,31 @@ export default class extends Controller {
         if (currentValue > 0) {
             inputField.value = currentValue - 1;
         }
-
+        this.updateButtonState();
+        
         // Debounce the request: clear any existing timer and set a new one
         this.debounceUpdate(event, inputField);
     }
+    
+    updateButtonState() {
+        let value = parseInt(this.amountInputTarget.value, 10);
+        
+        // Disable decrement if value is 0
+        this.decrementButtonTarget.disabled = value <= 0;
+        // this.decrementButtonTarget.style.visibility = value <= 0 ? "hidden" : "visible";
+
+        // OPTIONAL: Disable increment at a max limit (e.g., 10)
+        // this.incrementButtonTarget.disabled = value >= 3;
+      }
 
     // Method to handle the debounced update
     debounceUpdate(event, inputField) {
         // If the value hasn't changed, do nothing
-        if (inputField.value === this.originalValue) {
+            // console.log('original ', inputField.dataset.originalValue);
+            // console.log('new ', inputField.value);
+        if (inputField.value === inputField.dataset.originalValue) {
+        //     console.log('euql');
+            // this.enableFilters();
             return;
         }
 

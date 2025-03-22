@@ -8,12 +8,13 @@
         'EVR',
     ] %}
     <turbo-frame id="printing_table">
-        <table class="table table-hover table-sm table-striped card-printing align-middle">
+        <table class="table table-hover table-sm card-printing align-middle">
         <thead>
             <tr>
-                <th scope="col" style="width: 120px;"></th>
                 <th scope="col" style="width: 80px;">Code</th>
-                <th scope="col" {% if set.id in editionSets %} colspan="3" {% else %} colspan="2" {% endif %} style="width: 300px;">Name</th>
+                <th scope="col" {% if set.id in editionSets %} colspan="3" {% else %} colspan="2" {% endif %}>Name</th>
+                <th scope="col"></th>
+                <th scope="col" style="width: 90px;">Collection</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -21,33 +22,7 @@
             {% for printings in cards %}
                 {% for printing in printings.printings %}
                     <tr>
-                        <td>
-                            {% set amount = 0 %}
-                            {% if userCollectionManager.getAllCollectedCardsFromLoggedInUser.containsKey(printing.uniqueId) %}
-                                {% set amount = userCollectionManager.getAllCollectedCardsFromLoggedInUser.get(printing.uniqueId) %}
-                            {% endif %}
-                            <div class="input-group" {{ stimulus_controller('printing') }} data-quantity-id="amount-selector-{{ printing.uniqueId }}">
-                            <button class="btn btn-outline-secondary decrementBtn" type="button" 
-                                data-action="click->printing#decrementAmount"
-                                data-printing-id-param="{{ printing.uniqueId }}"
-                                data-printing-set-id-param="{{ set.id }}"
-                                data-printing-card-name-param="{{ printing.card.name }}">-</button>
-                            <input 
-                                class="form-control form-control-sm text-center" 
-                                type="text" 
-                                value="{{ amount }}" 
-                                aria-label="0"
-                                data-printing-target="amountInput" 
-                                disabled
-                            > 
-                            <button class="btn btn-outline-secondary incrementBtn" type="button" 
-                                data-action="click->printing#incrementAmount"
-                                data-printing-id-param="{{ printing.uniqueId }}"
-                                data-printing-set-id-param="{{ set.id }}"
-                                data-printing-card-name-param="{{ printing.card.name }}">+</button>
-                            </div>
-                            
-                        </td>
+                        
                         <td>
                             <span class="cardId">{{ printings.printings|first.cardId }}</span>
                         </td>
@@ -73,12 +48,43 @@
                                 <div class="pitch pitch-3"></div><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div>
                             {% endif %}
                         </td>
-                        <td>
+                        <td style="width: 250px;">
                             {% set foiling = foilingHelper.getFoilingNameById(printing.foiling) %}
                             {% if foiling != 'Standard' %}{{ foiling }}{% endif %}
                             {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }}
                         </td>
-                        {% if printing.edition != "N" %}<td>{{ editionHelper.getEditionNameById(printing.edition) }}</td>{% endif %}
+                        {% if printing.edition != "N" %}<td style="width: 200px;">{{ editionHelper.getEditionNameById(printing.edition) }}</td>{% endif %}
+                        <td>
+                            {% set amount = 0 %}
+                            {% if userCollectionManager.getAllCollectedCardsFromLoggedInUser.containsKey(printing.uniqueId) %}
+                                {% set amount = userCollectionManager.getAllCollectedCardsFromLoggedInUser.get(printing.uniqueId) %}
+                            {% endif %}
+                            <div class="input-group" {{ stimulus_controller('printing') }} data-quantity-id="amount-selector-{{ printing.uniqueId }}">
+                            <button class="btn btn-outline-secondary decrementBtn btn-sm" type="button" 
+                                data-action="click->printing#decrementAmount"
+                                data-printing-id-param="{{ printing.uniqueId }}"
+                                data-printing-set-id-param="{{ set.id }}"
+                                data-printing-card-name-param="{{ printing.card.name }}"
+                                data-printing-target="decrementButton"
+                                {% if amount == 0 %}disabled{% endif %}>-</button>
+                            <input 
+                                class="form-control form-control-sm text-center" 
+                                type="text" 
+                                value="{{ amount }}" 
+                                aria-label="0"
+                                data-printing-target="amountInput" 
+                                disabled
+                            > 
+                            <button class="btn btn-outline-secondary incrementBtn btn-sm" type="button" 
+                                data-action="click->printing#incrementAmount"
+                                data-printing-id-param="{{ printing.uniqueId }}"
+                                data-printing-set-id-param="{{ set.id }}"
+                                data-printing-card-name-param="{{ printing.card.name }}"
+                                data-printing-target="incrementButton">+</button>
+                            </div>
+                            
+                        </td>
+                        <td></td>
                     </tr>
                 {% endfor %}
             {% endfor %}

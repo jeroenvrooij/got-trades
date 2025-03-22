@@ -40,8 +40,8 @@ body {
 }
 
 .card-printing thead th {
-    background-color: #a7733f !important;
-    color: #ecbe6e !important;
+    // background-color: #a7733f !important;
+    // color: #ecbe6e !important;
 }
 .rarity-marvel {
     display: inline-block;
@@ -117,8 +117,15 @@ body {
 .card-printing span.cardId {
     color: var(--bs-secondary);
 }
+.input-group input:disabled {
+    background-color: transparent; /* Remove default gray background */
+    border: none; /* Remove border */
+    text-align: center; /* Keep text centered */
+    box-shadow: none; /* Remove any shadows */
+    pointer-events: none; /* Prevent interactions */
+    color: #000; /* Ensure text is visible */
+}
 
 // Boostrap SASS + overrides
-// $table-bg: rgba(167,115,63,.25);
-// $table-striped-bg: #E6D1BF;
+// $table-bg: #E2CDBB;
 @import '../../vendor/twbs/bootstrap/scss/bootstrap';
