@@ -26,7 +26,7 @@
                             {% if userCollectionManager.getAllCollectedCardsFromLoggedInUser.containsKey(printing.uniqueId) %}
                                 {% set amount = userCollectionManager.getAllCollectedCardsFromLoggedInUser.get(printing.uniqueId) %}
                             {% endif %}
-                            <div class="input-group" data-controller="printing" data-quantity-id="amount-selector-{{ printing.uniqueId }}">
+                            <div class="input-group" {{ stimulus_controller('printing') }} data-quantity-id="amount-selector-{{ printing.uniqueId }}">
                             <button class="btn btn-outline-secondary decrementBtn" type="button" 
                                 data-action="click->printing#decrementAmount"
                                 data-printing-id-param="{{ printing.uniqueId }}"

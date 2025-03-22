@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus";
 
   
 export default class extends Controller {
-    static targets = ["amountInput"];
+    static targets = ["amountInput", "foilFilter"];
 
     foilingFilter(event) {
         const foiling = event.target.value;
@@ -56,6 +56,10 @@ export default class extends Controller {
         if (inputField.value === this.originalValue) {
             return;
         }
+
+        // Disable the select element while waiting
+        this.disableFilters();   
+
         // If there is a pending request, clear it
         clearTimeout(this.timeoutId);
 
@@ -75,6 +79,7 @@ export default class extends Controller {
         // console.log('new value: ', parseInt(amount));
         // If the quantity is the same as the original, don't make the request
         if (parseInt(amount) === parseInt(inputField.dataset.originalValue)) {
+            this.enableFilters();
             return;
         }
 
@@ -98,9 +103,26 @@ export default class extends Controller {
         })
         .catch(error => {
             console.error("Error updating quantity:", error);
+        })
+        .finally(() => {
+            this.enableFilters(); // Re-enable the select element after the request
         });
     }
     
+    disableFilters() {
+        const select = document.querySelector('select[name="foiling-filter"]'); // Adjust selector
+        if (select) {
+          select.disabled = true;
+        }
+      }
+    
+    enableFilters() {
+        const select = document.querySelector('select[name="foiling-filter"]'); // Adjust selector
+        if (select) {
+          select.disabled = false;
+        }
+      }
+
     showToast(title, message, type = "info") {
         const toastContainer = document.querySelector("#toast-container");
 
