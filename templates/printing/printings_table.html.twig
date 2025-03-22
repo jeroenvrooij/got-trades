@@ -11,7 +11,7 @@
         <table class="table table-hover table-sm table-striped card-printing align-middle">
         <thead>
             <tr>
-                <th scope="col" style="width: 40px;"></th>
+                <th scope="col" style="width: 120px;"></th>
                 <th scope="col" style="width: 80px;">Code</th>
                 <th scope="col" {% if set.id in editionSets %} colspan="3" {% else %} colspan="2" {% endif %} style="width: 300px;">Name</th>
                 <th scope="col"></th>
@@ -26,17 +26,27 @@
                             {% if userCollectionManager.getAllCollectedCardsFromLoggedInUser.containsKey(printing.uniqueId) %}
                                 {% set amount = userCollectionManager.getAllCollectedCardsFromLoggedInUser.get(printing.uniqueId) %}
                             {% endif %}
+                            <div class="input-group" data-controller="printing" data-quantity-id="amount-selector-{{ printing.uniqueId }}">
+                            <button class="btn btn-outline-secondary decrementBtn" type="button" 
+                                data-action="click->printing#decrementAmount"
+                                data-printing-id-param="{{ printing.uniqueId }}"
+                                data-printing-set-id-param="{{ set.id }}"
+                                data-printing-card-name-param="{{ printing.card.name }}">-</button>
                             <input 
                                 class="form-control form-control-sm text-center" 
                                 type="text" 
                                 value="{{ amount }}" 
                                 aria-label="0"
-                                data-controller="printing"
-                                data-action="input->printing#updateAmount"
+                                data-printing-target="amountInput" 
+                                disabled
+                            > 
+                            <button class="btn btn-outline-secondary incrementBtn" type="button" 
+                                data-action="click->printing#incrementAmount"
                                 data-printing-id-param="{{ printing.uniqueId }}"
                                 data-printing-set-id-param="{{ set.id }}"
-                                data-printing-card-name-param="{{ printing.card.name }}"
-                            >
+                                data-printing-card-name-param="{{ printing.card.name }}">+</button>
+                            </div>
+                            
                         </td>
                         <td>
                             <span class="cardId">{{ printings.printings|first.cardId }}</span>

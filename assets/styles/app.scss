@@ -118,23 +118,6 @@ body {
     color: var(--bs-secondary);
 }
 
-.flash-message {
-    opacity: 0;
-    transform: translateY(-10px); /* More noticeable movement */
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-}
-
-.flash-message.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.flash-message.fade-out {
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 0.5s ease-in, transform 0.5s ease-in;
-}
-
 // Boostrap SASS + overrides
 // $table-bg: rgba(167,115,63,.25);
 // $table-striped-bg: #E6D1BF;

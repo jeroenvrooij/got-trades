@@ -1,6 +1,9 @@
 import { Controller } from "@hotwired/stimulus";
 
+  
 export default class extends Controller {
+    static targets = ["amountInput"];
+
     update(event) {
         const foiling = event.target.value;
         const url = new URL(window.location.href);
@@ -10,13 +13,36 @@ export default class extends Controller {
         Turbo.visit(url, { frame: "printing_table" });
     }
 
-    updateAmount(event) {
-        const amount = event.target.value;
+    incrementAmount(event) {
+        const inputField = this.amountInputTarget; // Accessing the target
+        let currentValue = parseInt(inputField.value);
+        inputField.value = currentValue + 1;
+
+        // Call the backend (via fetch or another method)
+        this.updateAmount(event, inputField.value);
+    }
+
+    // Method to handle decrement
+    decrementAmount(event) {
+        const inputField = this.amountInputTarget; // Accessing the target
+        let currentValue = parseInt(inputField.value);
+        if (currentValue == 0) {
+            return;
+        }
+        if (currentValue > 0) {
+            inputField.value = currentValue - 1;
+        }
+
+        // Call the backend (via fetch or another method)
+        this.updateAmount(event, inputField.value);
+    }
+
+
+    updateAmount(event, amount) {
         const id = event.params.id; 
         const setId = event.params.setId;
         const cardName = event.params.cardName;
 
-        console.log(cardName);
         fetch(`/update-user-collection`, {
             method: "POST",
             headers: {
@@ -66,3 +92,4 @@ export default class extends Controller {
         });
     }
 }
+
