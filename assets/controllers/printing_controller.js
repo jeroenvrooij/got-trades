@@ -22,7 +22,9 @@ export default class extends Controller {
           input.dataset.originalValue = input.value;
         });
 
-        this.updateButtonState();
+        if (!window.requests) {
+            window.requests = [];
+          }
     }
 
     incrementAmount(event) {
@@ -62,22 +64,25 @@ export default class extends Controller {
         // this.decrementButtonTarget.style.visibility = value <= 0 ? "hidden" : "visible";
 
         // OPTIONAL: Disable increment at a max limit (e.g., 10)
-        // this.incrementButtonTarget.disabled = value >= 3;
+        this.incrementButtonTarget.disabled = value >= 99;
       }
 
     // Method to handle the debounced update
     debounceUpdate(event, inputField) {
-        // If the value hasn't changed, do nothing
-            // console.log('original ', inputField.dataset.originalValue);
-            // console.log('new ', inputField.value);
+        // If the value hasn't changed, do nothing, remove request from 'queue' and enable filter if possible
         if (inputField.value === inputField.dataset.originalValue) {
-        //     console.log('euql');
-            // this.enableFilters();
+            window.requests.splice(window.requests.indexOf(event.params.id), 1);
+            this.updateFilterState();
             return;
         }
 
+        // add the request to a 'queue' so we can only enable the filters if all requests are processed
+        if (!window.requests.includes(event.params.id)) {
+            window.requests.push(event.params.id);
+        }
+
         // Disable the select element while waiting
-        this.disableFilters();   
+        this.updateFilterState();   
 
         // If there is a pending request, clear it
         clearTimeout(this.timeoutId);
@@ -94,11 +99,8 @@ export default class extends Controller {
         const cardName = event.params.cardName;
         const amount = inputField.value;
         
-        // console.log('original value: ', parseInt(inputField.dataset.originalValue));
-        // console.log('new value: ', parseInt(amount));
         // If the quantity is the same as the original, don't make the request
         if (parseInt(amount) === parseInt(inputField.dataset.originalValue)) {
-            this.enableFilters();
             return;
         }
 
@@ -124,23 +126,20 @@ export default class extends Controller {
             console.error("Error updating quantity:", error);
         })
         .finally(() => {
-            this.enableFilters(); // Re-enable the select element after the request
+            // this request was handled, so remove it from the pending requests
+            window.requests.splice(window.requests.indexOf(id), 1);
+
+            this.updateFilterState();
         });
     }
-    
-    disableFilters() {
+
+    updateFilterState() {
+        // if the request 'queue' is empty: enable filters, otherwise disable them
         const select = document.querySelector('select[name="foiling-filter"]'); // Adjust selector
         if (select) {
-          select.disabled = true;
+            select.disabled = window.requests.length > 0;
         }
-      }
-    
-    enableFilters() {
-        const select = document.querySelector('select[name="foiling-filter"]'); // Adjust selector
-        if (select) {
-          select.disabled = false;
-        }
-      }
+    }
 
     showToast(title, message, type = "info") {
         const toastContainer = document.querySelector("#toast-container");

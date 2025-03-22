@@ -80,7 +80,8 @@
                                 data-printing-id-param="{{ printing.uniqueId }}"
                                 data-printing-set-id-param="{{ set.id }}"
                                 data-printing-card-name-param="{{ printing.card.name }}"
-                                data-printing-target="incrementButton">+</button>
+                                data-printing-target="incrementButton"
+                                {% if amount >= 99 %}disabled{% endif %}>+</button>
                             </div>
                             
                         </td>
