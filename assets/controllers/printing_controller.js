@@ -4,7 +4,7 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
     static targets = ["amountInput"];
 
-    update(event) {
+    foilingFilter(event) {
         const foiling = event.target.value;
         const url = new URL(window.location.href);
         url.searchParams.set('foiling-filter', foiling);
@@ -13,18 +13,31 @@ export default class extends Controller {
         Turbo.visit(url, { frame: "printing_table" });
     }
 
+    // Store the timer to manage debounce
+    timeoutId = null;
+    
+    connect() {
+        this.amountInputTargets.forEach(input => {
+          // Store the original value of each input
+          input.dataset.originalValue = input.value;
+        });
+    }
+
     incrementAmount(event) {
-        const inputField = this.amountInputTarget; // Accessing the target
+        // const inputField = event.target.closest('.input-group').querySelector('input');
+        const inputField = this.amountInputTarget;
+        
         let currentValue = parseInt(inputField.value);
         inputField.value = currentValue + 1;
 
-        // Call the backend (via fetch or another method)
-        this.updateAmount(event, inputField.value);
+        // Debounce the request: clear any existing timer and set a new one
+        this.debounceUpdate(event, inputField);
     }
 
     // Method to handle decrement
     decrementAmount(event) {
-        const inputField = this.amountInputTarget; // Accessing the target
+        const inputField = this.amountInputTarget;
+
         let currentValue = parseInt(inputField.value);
         if (currentValue == 0) {
             return;
@@ -33,15 +46,37 @@ export default class extends Controller {
             inputField.value = currentValue - 1;
         }
 
-        // Call the backend (via fetch or another method)
-        this.updateAmount(event, inputField.value);
+        // Debounce the request: clear any existing timer and set a new one
+        this.debounceUpdate(event, inputField);
     }
 
+    // Method to handle the debounced update
+    debounceUpdate(event, inputField) {
+        // If the value hasn't changed, do nothing
+        if (inputField.value === this.originalValue) {
+            return;
+        }
+        // If there is a pending request, clear it
+        clearTimeout(this.timeoutId);
 
-    updateAmount(event, amount) {
+        // Set a new timer for 2 seconds
+        this.timeoutId = setTimeout(() => {
+            this.updateAmount(event, inputField);
+        }, 2000); 
+    }
+
+    updateAmount(event, inputField) {
         const id = event.params.id; 
         const setId = event.params.setId;
         const cardName = event.params.cardName;
+        const amount = inputField.value;
+        
+        // console.log('original value: ', parseInt(inputField.dataset.originalValue));
+        // console.log('new value: ', parseInt(amount));
+        // If the quantity is the same as the original, don't make the request
+        if (parseInt(amount) === parseInt(inputField.dataset.originalValue)) {
+            return;
+        }
 
         fetch(`/update-user-collection`, {
             method: "POST",
@@ -54,6 +89,8 @@ export default class extends Controller {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Update the original value after a successful request
+                inputField.dataset.originalValue = amount;
                 this.showToast("Success", `You now own ${cardName} ${amount} times`, "success");
             } else {
                 this.showToast("Error", "Failed to update quantity!", "danger");

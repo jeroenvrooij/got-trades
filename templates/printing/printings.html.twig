@@ -10,7 +10,7 @@
 <div class="container-xxl">
     <h1>{{ set.name }}</h1>
     <form class="mb-3" aria-label="Default select example" {{ stimulus_controller('printing') }}>
-        <select class="form-select w-auto"  name="foiling-filter" data-action="change->printing#update">
+        <select class="form-select w-auto"  name="foiling-filter" data-action="change->printing#foilingFilter">
             <option value="" disabled selected hidden>Filter on foiling</option>
             <option value="">All</option>
             {% for foilingId, foilingName in foilingHelper.getAllFoilings %}
