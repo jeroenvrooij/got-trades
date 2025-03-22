@@ -15,6 +15,7 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -121,10 +122,17 @@ class PrintingController extends AbstractController
                 $userCardPrintings->setCollectionAmount($data['amount']);
                 $entityManager->flush();
             }
-            
-            return $this->redirectToRoute('app_printing_printingsbyset', ['setId' => $data['setId']], 303);
+
+            $this->addFlash('success', 'Quantity updated successfully!');
+            return new JsonResponse(['success' => true]);
         } catch (\Exception $exception) {
             dump($exception);die();
         }
+    }
+
+    #[Route('/flash-messages', name: 'flash_messages')]
+    public function flashMessages(Request $request): Response
+    {
+        return $this->render('partials/_flash_messages.html.twig');
     }
 }

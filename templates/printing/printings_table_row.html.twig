@@ -1,0 +1,51 @@
+
+<tr id="{{ printing.uniqueId }}">
+    <td>
+        {% set amount = 0 %}
+        {% if userCollectionManager.getAllCollectedCardsFromLoggedInUser.containsKey(printing.uniqueId) %}
+            {% set amount = userCollectionManager.getAllCollectedCardsFromLoggedInUser.get(printing.uniqueId) %}
+        {% endif %}
+        <input 
+            class="form-control form-control-sm text-center" 
+            type="text" 
+            value="{{ amount }}" 
+            aria-label="0"
+            data-controller="printing"
+            data-action="input->printing#updateAmount"
+            data-printing-id-param="{{ printing.uniqueId }}"
+            data-printing-set-id-param="{{ set.id }}"
+        >
+    </td>
+    <td>
+        <span class="cardId">{{ printing.cardId }}</span>
+    </td>
+    <td style="width:20px">
+        {% set rarity = rarityHelper.getRarityDescriptionById(printing.rarity) %}
+        {% if rarity == 'Marvel' %}
+            <span class="rarity-marvel"></span>
+        {% elseif rarity == 'Fabled' %}
+            <span class="rarity-fabled"></span>
+        {% else %}
+            <span class="rarity-circle {{ rarity|lower|replace({' ': ''}) }}">{{ rarity|first }}</span>
+        {% endif %}
+    </td>
+    <td style="width: 280px;">
+        {# {{ printing.uniqueId }} #}
+        {{ printing.card.name }}
+        {{ test }}
+
+        {% if 1 ==  printing.card.pitch %}
+            <div class="pitch pitch-1"></div>
+        {% elseif 2 == printing.card.pitch %}
+            <div class="pitch pitch-2"></div><div class="pitch pitch-2"></div>
+        {% elseif 3 == printing.card.pitch %}
+            <div class="pitch pitch-3"></div><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div>
+        {% endif %}
+    </td>
+    <td>
+        {% set foiling = foilingHelper.getFoilingNameById(printing.foiling) %}
+        {% if foiling != 'Standard' %}{{ foiling }}{% endif %}
+        {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }}
+    </td>
+    {% if printing.edition != "N" %}<td>{{ editionHelper.getEditionNameById(printing.edition) }}</td>{% endif %}
+</tr>

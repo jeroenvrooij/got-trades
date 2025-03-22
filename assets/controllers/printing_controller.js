@@ -23,11 +23,40 @@ export default class extends Controller {
             },
             body: JSON.stringify({ id, amount, setId })
         })
-        .then(response => {
-            if (response.redirected) {
-                Turbo.visit(response.url); // 👈 Let Turbo handle the redirect
-            }
+        .then(response => response.json())
+        .then(data => {
+            this.refreshFlashMessages();
         })
         .catch(error => console.error("Error:", error));
+    }
+    
+    refreshFlashMessages() {
+        fetch('/flash-messages')
+            .then(response => response.text())
+            .then(html => {
+                const flashContainer = document.querySelector("#flash-messages");
+
+                // Create a temporary div to extract new messages
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = html;
+
+                // Append new messages without removing existing ones
+                tempDiv.querySelectorAll(".flash-message").forEach(newMessage => {
+                    flashContainer.appendChild(newMessage);
+
+                    // Apply fade-in effect
+                    setTimeout(() => {
+                        newMessage.classList.add("show");
+                    }, 50);
+
+                    // Auto-hide after 3 seconds
+                    setTimeout(() => {
+                        newMessage.classList.add("fade-out");
+                        setTimeout(() => {
+                            newMessage.remove();
+                        }, 500);
+                    }, 3000);
+                });
+            });
     }
 }
