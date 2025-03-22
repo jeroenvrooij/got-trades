@@ -2,6 +2,7 @@
     --color-pitch-1: #c70e09;
     --color-pitch-2: #ffef00;
     --color-pitch-3: #0091d8;
+    --tiny-font-size: 0.85rem;
 }
 body {
     /* background-color: skyblue; */
@@ -116,6 +117,7 @@ body {
 }
 .card-printing span.cardId {
     color: var(--bs-secondary);
+    font-size: var(--tiny-font-size);
 }
 .input-group input:disabled {
     background-color: transparent; /* Remove default gray background */
@@ -128,4 +130,5 @@ body {
 
 // Boostrap SASS + overrides
 // $table-bg: #E2CDBB;
+
 @import '../../vendor/twbs/bootstrap/scss/bootstrap';
