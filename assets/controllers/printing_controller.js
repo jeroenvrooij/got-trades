@@ -28,13 +28,6 @@ export default class extends Controller {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-
-                // const toastTrigger = document.getElementById('liveToastBtn')
-                // const toastLiveExample = document.getElementById('toast')
-                // const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
-                // toastBootstrap.show()
-
-
                 this.showToast("Success", `You now own ${cardName} ${amount} times`, "success");
             } else {
                 this.showToast("Error", "Failed to update quantity!", "danger");
