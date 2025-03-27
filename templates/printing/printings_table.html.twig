@@ -17,7 +17,7 @@
                             <th scope="col" style="width: 80px;">Code</th>
                             <th scope="col" style="width: 20px;"></th>
                             <th scope="col">Name</th>
-                            <th scope="col" style="width: 180px;" class="d-none d-md-table-cell">Foiling</th>
+                            <th scope="col" style="width: 190px;" class="d-none d-md-table-cell">Foiling</th>
                             <th scope="col" style="width: 70px;" class="d-md-none"></th>
                             {% if set.id in editionSets %}
                                 <th scope="col" style="width: 90px;" class="d-none d-md-table-cell">Edition</th>
@@ -45,12 +45,10 @@
                                                     {% if i == 3 and amount > 2 %}filled{% endif %}
                                                 "></div>
                                             {% endfor %}
-                                            {# <div class="card-icon {% if amount > 1 %}filled{% endif %}" ></div> #}
-                                            {# <div class="card-icon {% if amount > 2 %}filled{% endif %}"></div> #}
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="cardId">{{ printings.printings|first.cardId }}</span>
+                                        <span class="cardId">{{ printing.cardId }}</span>
                                     </td>
                                     <td>
                                         {% set rarity = rarityHelper.getRarityDescriptionById(printing.rarity) %}
