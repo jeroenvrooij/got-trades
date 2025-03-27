@@ -8,6 +8,7 @@ import './bootstrap.js';
 // import { Alert, Popover, Toast } from 'bootstrap';
 import * as bootstrap from 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.min.css';
 import './styles/app.scss';
 window.bootstrap = bootstrap;
 

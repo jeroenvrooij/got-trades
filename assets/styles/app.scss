@@ -7,21 +7,6 @@
 body {
     /* background-color: skyblue; */
 }
-.container.cardoverview .row {
-    height: 100px;
-    /* background-color: green; */
-    /* margin: auto; */
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-}
-.container.cardoverview .col {
-    /* background-color: aliceblue; */
-    /* height: 100px; */
-    /* margin: auto; */
-    /* border: 1px solid black; */
-    /* vertical-align: middle; */
-}
 
 .pitch{
     width: 9px;
@@ -39,7 +24,14 @@ body {
 .pitch-3 {
     background-color: var(--color-pitch-3);
 }
-
+.container.cardoverview .row {
+    height: 100px;
+    /* background-color: green; */
+    /* margin: auto; */
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
 .card-printing {
     // table-layout: fixed;
     max-width: 1200px;
@@ -48,6 +40,17 @@ body {
     // background-color: #a7733f !important;
     // color: #ecbe6e !important;
 }
+.card-printing tr{
+    // color: red !important;
+    // color: var(--bs-dark-text-emphasis) !important;
+    // font-weight: bold;
+    // background-color: red !important;
+}
+
+// .card-printing tr.uncollected td {
+//     // color: red !important;
+//     color: var(--bs-secondary) !important;
+// }
 .card-printing td, .table-sm th {
     padding: 2px 8px !important; /* Reduces row height more */
   }
@@ -91,7 +94,6 @@ body {
 .rarity-circle {
     width: 14px; /* Adjust size as needed */
     height: 14px;
-    // background-color: red;
     color: white;
     font-size: 8px;
     font-weight: bold;
@@ -134,8 +136,49 @@ body {
     pointer-events: none; /* Prevent interactions */
     color: #000; /* Ensure text is visible */
 }
+/* Container for the cards */
+.playset-icons-container{
+    position: relative;
+    width: 40px; /* Enough width to accommodate three cards with overlap */
+    height: 30px;
+    overflow: hidden; /* Hide anything that goes outside the container */
+    display: flex;            /* Enable flexbox */
+    align-items: center;      /* Align items vertically to the center */
+    justify-content: center;
+}
+
+/* Positioning the cards */
+.card-icon:nth-child(1) {
+    left: 0;
+    z-index: 3; /* First card on top */
+}
+.card-icon:nth-child(2) {
+    left: 6px; /* Half the width of the card */
+    z-index: 2; /* Second card in the middle */
+}
+.card-icon:nth-child(3) {
+    left: 12px; /* Full width of the card */
+    z-index: 1; /* Third card at the bottom */
+}
 
 // Boostrap SASS + overrides
 // $table-bg: #E2CDBB;
 
 @import '../../vendor/twbs/bootstrap/scss/bootstrap';
+
+/* The individual card icons */
+.card-icon {
+    position: absolute;
+    width: 1rem;
+    height: 1.25rem;
+    border: 1px solid white;
+    border-radius: .1875rem;
+    background-color: $gray-400;
+    z-index: 1; /* Make sure the cards are stacked */
+    vertical-align: middle;
+}
+
+.card-icon.filled {
+    background-color: $yellow-400;
+}
+

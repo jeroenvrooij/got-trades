@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus";
 
   
 export default class extends Controller {
-    static targets = ["amountInput", "decrementButton", "incrementButton"];
+    static targets = ["amountInput", "decrementButton", "incrementButton", "playsetIconsContainer"];
 
     foilingFilter(event) {
         const foiling = event.target.value;
@@ -24,7 +24,7 @@ export default class extends Controller {
 
         if (!window.requests) {
             window.requests = [];
-          }
+        }
     }
 
     incrementAmount(event) {
@@ -90,7 +90,7 @@ export default class extends Controller {
         // Set a new timer for 2 seconds
         this.timeoutId = setTimeout(() => {
             this.updateAmount(event, inputField);
-        }, 2000); 
+        }, 1500); 
     }
 
     updateAmount(event, inputField) {
@@ -117,6 +117,7 @@ export default class extends Controller {
             if (data.success) {
                 // Update the original value after a successful request
                 inputField.dataset.originalValue = amount;
+                
                 this.showToast("Success", `You now own ${cardName} ${amount} times`, "success");
             } else {
                 this.showToast("Error", "Failed to update quantity!", "danger");
@@ -129,7 +130,24 @@ export default class extends Controller {
             // this request was handled, so remove it from the pending requests
             window.requests.splice(window.requests.indexOf(id), 1);
 
+            // update the playset icons and re-enable the filters
+            this.updatePlaysetIcons(amount);
             this.updateFilterState();
+        });
+    }
+
+    updatePlaysetIcons(amount) {
+        this.playsetIconsContainerTarget.querySelectorAll(".card-icon").forEach((playsetIcon, index) => {
+            playsetIcon.classList.remove("filled");
+            if (index == 0 && amount > 0) {
+                playsetIcon.classList.add("filled");
+            }
+            if (index == 1 && amount > 1) {
+                playsetIcon.classList.add("filled");
+            }
+            if (index == 2 && amount > 2) {
+                playsetIcon.classList.add("filled");
+            }
         });
     }
 
