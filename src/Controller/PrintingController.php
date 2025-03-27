@@ -91,6 +91,7 @@ class PrintingController extends AbstractController
                 'foiling' => $foiling,
             ]);
         } catch (\Exception $exception) {
+            dump($exception);die();
             return $this->renderBlock('printing/empty_table.html.twig', 'printing_table', [
             ]);
         }

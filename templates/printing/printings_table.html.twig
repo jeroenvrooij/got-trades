@@ -37,9 +37,16 @@
                                 <tr  {{ stimulus_controller('printing') }}>
                                     <td>
                                         <div class="playset-icons-container" data-printing-target="playsetIconsContainer" >
-                                            <div class="card-icon {% if amount > 0 %}filled{% endif %}"></div>
-                                            <div class="card-icon {% if amount > 1 %}filled{% endif %}" ></div>
-                                            <div class="card-icon {% if amount > 2 %}filled{% endif %}"></div>
+                                        {% set playsetSize = userCollectionManager.getPlaysetSizeForCard(printing.card) %}
+                                            {% for i in 1..playsetSize %}
+                                                <div class="card-icon 
+                                                    {% if i == 1 and amount > 0 %}filled{% endif %}
+                                                    {% if i == 2 and amount > 1 %}filled{% endif %}
+                                                    {% if i == 3 and amount > 2 %}filled{% endif %}
+                                                "></div>
+                                            {% endfor %}
+                                            {# <div class="card-icon {% if amount > 1 %}filled{% endif %}" ></div> #}
+                                            {# <div class="card-icon {% if amount > 2 %}filled{% endif %}"></div> #}
                                         </div>
                                     </td>
                                     <td>
