@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus";
 
   
 export default class extends Controller {
-    static targets = ["amountInput", "decrementButton", "incrementButton", "playsetIconsContainer", 'formpje'];
+    static targets = ["amountInput", "decrementButton", "incrementButton", "playsetIconsContainer", 'filterForm'];
 
     // Store array of timeout, each card will have their own
     timeouts = {}; 
@@ -141,7 +141,7 @@ export default class extends Controller {
             console.log(window.requests);
             if (window.requests.length === 0) {
                 // there are no more pending requests
-                this.formpjeTarget.requestSubmit();
+                this.filterFormTarget.requestSubmit();
             }
         });
     }
@@ -166,9 +166,13 @@ export default class extends Controller {
 
     updateFilterState() {
         // if the request 'queue' is empty: enable filters, otherwise disable them
-        const select = document.querySelector('select[name="card_filter_form[foiling]"]'); // Adjust selector
-        if (select) {
-            select.disabled = window.requests.length > 0;
+        const foilingFilter = document.querySelector('select[name="card_filter_form[foiling]"]'); // Adjust selector
+        if (foilingFilter) {
+            foilingFilter.disabled = window.requests.length > 0;
+        }
+        const playsetSwitch = document.querySelector('input[name="card_filter_form[hide]"]'); // Adjust selector
+        if (playsetSwitch) {
+            playsetSwitch.disabled = window.requests.length > 0;
         }
     }
 

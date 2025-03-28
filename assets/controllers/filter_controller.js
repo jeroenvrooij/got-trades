@@ -2,14 +2,14 @@ import { Controller } from "@hotwired/stimulus";
 
   
 export default class extends Controller {
-    static targets = ["form"];
+    static targets = ["filterForm"];
 
     connect() {
         this.element.addEventListener("change", this.submitForm.bind(this));
     }
 
     submitForm() {
-        this.formTarget.requestSubmit();
+        this.filterFormTarget.requestSubmit();
     }
 }
 
