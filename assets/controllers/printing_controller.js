@@ -2,11 +2,11 @@ import { Controller } from "@hotwired/stimulus";
 
   
 export default class extends Controller {
-    static targets = ["amountInput", "decrementButton", "incrementButton", "playsetIconsContainer"];
+    static targets = ["amountInput", "decrementButton", "incrementButton", "playsetIconsContainer", 'formpje'];
 
-    // Store the timer to manage debounce
-    timeoutId = null;
-    
+    // Store array of timeout, each card will have their own
+    timeouts = {}; 
+
     connect() {
         this.amountInputTargets.forEach(input => {
           // Store the original value of each input
@@ -19,12 +19,14 @@ export default class extends Controller {
     }
 
     incrementAmount(event) {
-        // const inputField = event.target.closest('.input-group').querySelector('input');
-        const inputField = this.amountInputTarget;
-        
+        const inputGroup = event.target.closest(".input-group");
+
+        // Find the input element within this container
+        const inputField = inputGroup.querySelector('[data-printing-target="amountInput"]');
+    
         let currentValue = parseInt(inputField.value);
         inputField.value = currentValue + 1;
-        this.updateButtonState();
+        this.updateButtonState(event);
 
         // Debounce the request: clear any existing timer and set a new one
         this.debounceUpdate(event, inputField);
@@ -32,7 +34,9 @@ export default class extends Controller {
 
     // Method to handle decrement
     decrementAmount(event) {
-        const inputField = this.amountInputTarget;
+        // Find the input element within this container
+        const inputGroup = event.target.closest(".input-group");
+        const inputField = inputGroup.querySelector('[data-printing-target="amountInput"]');
 
         let currentValue = parseInt(inputField.value);
         if (currentValue == 0) {
@@ -41,25 +45,33 @@ export default class extends Controller {
         if (currentValue > 0) {
             inputField.value = currentValue - 1;
         }
-        this.updateButtonState();
+        this.updateButtonState(event);
         
         // Debounce the request: clear any existing timer and set a new one
         this.debounceUpdate(event, inputField);
     }
     
-    updateButtonState() {
-        let value = parseInt(this.amountInputTarget.value, 10);
+    updateButtonState(event) {
+        const inputGroup = event.target.closest(".input-group");
+
+        // Find the input element within this container
+        const inputField = inputGroup.querySelector('[data-printing-target="amountInput"]');
+        const decrementField = inputGroup.querySelector('[data-printing-target="decrementButton"]');
+        const incrementField = inputGroup.querySelector('[data-printing-target="incrementButton"]');
+
+        let value = parseInt(inputField.value, 10);
         
         // Disable decrement if value is 0
-        this.decrementButtonTarget.disabled = value <= 0;
-        // this.decrementButtonTarget.style.visibility = value <= 0 ? "hidden" : "visible";
+        decrementField.disabled = value <= 0;
 
         // OPTIONAL: Disable increment at a max limit (e.g., 10)
-        this.incrementButtonTarget.disabled = value >= 99;
+        incrementField.disabled = value >= 99;
       }
 
     // Method to handle the debounced update
     debounceUpdate(event, inputField) {
+        const quantityId = event.target.closest('.input-group').dataset.quantityId; // Unique id
+
         // If the value hasn't changed, do nothing, remove request from 'queue' and enable filter if possible
         if (inputField.value === inputField.dataset.originalValue) {
             window.requests.splice(window.requests.indexOf(event.params.id), 1);
@@ -75,13 +87,15 @@ export default class extends Controller {
         // Disable the select element while waiting
         this.updateFilterState();   
 
-        // If there is a pending request, clear it
-        clearTimeout(this.timeoutId);
+        // If there is a pending request for this unique quantityId, clear it
+        if (this.timeouts[quantityId]) {
+            clearTimeout(this.timeouts[quantityId]);
+        }
 
-        // Set a new timer for 2 seconds
-        this.timeoutId = setTimeout(() => {
+        // Set a new timer for 1,5 seconds, for this unique quantityId
+        this.timeouts[quantityId] = setTimeout(() => {
             this.updateAmount(event, inputField);
-        }, 1500); 
+        }, 1500);
     }
 
     updateAmount(event, inputField) {
@@ -122,13 +136,21 @@ export default class extends Controller {
             window.requests.splice(window.requests.indexOf(id), 1);
 
             // update the playset icons and re-enable the filters
-            this.updatePlaysetIcons(amount);
+            this.updatePlaysetIcons(event, amount);
             this.updateFilterState();
+            console.log(window.requests);
+            if (window.requests.length === 0) {
+                // there are no more pending requests
+                this.formpjeTarget.requestSubmit();
+            }
         });
     }
 
-    updatePlaysetIcons(amount) {
-        this.playsetIconsContainerTarget.querySelectorAll(".card-icon").forEach((playsetIcon, index) => {
+    updatePlaysetIcons(event, amount) {
+        const inputGroup = event.target.closest("tr"); 
+        const playsetIconsContainer = inputGroup.querySelector('[data-printing-target="playsetIconsContainer"]');
+        
+        playsetIconsContainer.querySelectorAll(".card-icon").forEach((playsetIcon, index) => {
             playsetIcon.classList.remove("filled");
             if (index == 0 && amount > 0) {
                 playsetIcon.classList.add("filled");

@@ -34,7 +34,7 @@
                                 {% if userCollectionManager.getAllCollectedCardsFromLoggedInUser.containsKey(printing.uniqueId) %}
                                     {% set amount = userCollectionManager.getAllCollectedCardsFromLoggedInUser.get(printing.uniqueId) %}
                                 {% endif %}
-                                <tr  {{ stimulus_controller('printing') }}>
+                                <tr>
                                     <td>
                                         <div class="playset-icons-container" data-printing-target="playsetIconsContainer" >
                                         {% set playsetSize = userCollectionManager.getPlaysetSizeForCard(printing.card) %}
