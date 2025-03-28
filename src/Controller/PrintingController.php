@@ -69,12 +69,13 @@ class PrintingController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $formData = $form->getData();
                 $foiling = $formData['foiling'];
+                $hideOwnedCards = $formData['hide'];
     
                 // 🔥 The magic happens here! 🔥
                 if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                     // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                     $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-                    $cards = $this->cardFinder->findCardsBySetAndFoiling($set, $foiling);
+                    $cards = $this->cardFinder->findCardsBySetAndFoiling($set, $foiling, $hideOwnedCards);
 
                     return $this->renderBlock('printing/printings.html.twig', 'printing_table', [
                         'editionHelper' => $this->editionHelper,

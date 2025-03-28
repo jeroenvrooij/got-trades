@@ -28,13 +28,13 @@ class CardFinder
      * 
      * @return ArrayCollection
      */
-    public function findCardsBySetAndFoiling(Set $set, ?string $foiling = '')
+    public function findCardsBySetAndFoiling(Set $set, ?string $foiling = '', bool $hideOwnedCards = false)
     {
         if (FoilingHelper::PLACEHOLDER_KEY === $foiling) {
             $foiling = '';
         }
         
-        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySetAndFoiling($set, $foiling);
+        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySetAndFoiling($set, $foiling, $hideOwnedCards);
 
         if (!$printings) {
             throw new EntityNotFoundException('No printings found in set by criteria');
