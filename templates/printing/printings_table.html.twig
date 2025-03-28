@@ -1,4 +1,4 @@
-{% block printing_table %}
+
     {% set editionSets = [
         'WTR',
         'ARC',
@@ -7,8 +7,8 @@
         'ELE',
         'EVR',
     ] %}
-    <div class="container-sm">
-        <turbo-frame id="printing_table">
+    <div id="printing_table">
+        <div class="container-sm">
             <div class="table-responsive" >
                 <table class="table table-hover table-sm card-printing align-middle">
                     <thead>
@@ -122,6 +122,5 @@
                     </tbody>
                 </table>
             </div>
-        </turbo-frame>
+        </div>
     </div>
-{% endblock %}

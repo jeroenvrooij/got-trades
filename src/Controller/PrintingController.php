@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Set;
 use App\Entity\UserCardPrintings;
+use App\Form\CardFilterFormType;
 use App\Service\ArtVariationsHelper;
 use App\Service\CardFinder;
 use App\Service\EditionHelper;
@@ -61,10 +62,54 @@ class PrintingController extends AbstractController
         Set $set
     ): Response {
         try {
-            $foiling = $request->query->get('foiling-filter', '');
+            $form = $this->createForm(CardFilterFormType::class);
 
-            $cards = $this->cardFinder->findCardsBySetAndFoiling($set, $foiling);
+            $form->handleRequest($request);
 
+            if ($form->isSubmitted() && $form->isValid()) {
+                $formData = $form->getData();
+                $foiling = $formData['foiling'];
+    
+                // 🔥 The magic happens here! 🔥
+                if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                    // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
+                    $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+                    $cards = $this->cardFinder->findCardsBySetAndFoiling($set, $foiling);
+
+                    return $this->renderBlock('printing/printings.html.twig', 'printing_table', [
+                        'editionHelper' => $this->editionHelper,
+                        'foilingHelper' => $this->foilingHelper,
+                        'rarityHelper' => $this->rarityHelper,
+                        'artVariationsHelper' => $this->artVariationsHelper,
+                        'userCollectionManager' => $this->userCollectionManager,
+                        'set' => $set, 
+                        'cards' => $cards,
+                    ]);
+                }
+    
+                // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
+                // Symfony UX Turbo is all about progressively enhancing your applications!
+                // return $this->redirectToRoute('app_printing_printingsbyset', ['setId', $set->getId()], Response::HTTP_SEE_OTHER);
+            }
+    
+            $cards = $this->cardFinder->findCardsBySetAndFoiling($set);
+
+            return $this->render('printing/printings.html.twig', [
+                'editionHelper' => $this->editionHelper,
+                'foilingHelper' => $this->foilingHelper,
+                'rarityHelper' => $this->rarityHelper,
+                'artVariationsHelper' => $this->artVariationsHelper,
+                'userCollectionManager' => $this->userCollectionManager,
+                'set' => $set, 
+                'cards' => $cards,
+                'form' => $form,
+            ]);
+
+
+
+
+
+            
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
                

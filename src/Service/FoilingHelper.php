@@ -9,6 +9,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class FoilingHelper
 {
+    public const PLACEHOLDER_KEY = '%ALL%';
+    public const PLACEHOLDER_DESC = 'All';
+
     private EntityManager $entityManager;
 
     private ArrayCollection $foilings;

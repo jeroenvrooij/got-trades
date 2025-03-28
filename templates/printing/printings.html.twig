@@ -7,20 +7,41 @@
 {% endblock %}
 
 {% block body %}
-<div class="container-xxl">
-    <h1>{{ set.name }}</h1>
-    <form class="mb-3" aria-label="Default select example" {{ stimulus_controller('printing') }}>
-        <select class="form-select w-auto"  name="foiling-filter" data-action="change->printing#foilingFilter">
-            <option value="" disabled selected hidden>Filter on foiling</option>
-            <option value="">All</option>
-            {% for foilingId, foilingName in foilingHelper.getAllFoilings %}
-                <option value="{{ foilingId }}">{{ foilingName }}</option>
-            {% endfor %}
-        </select>
-    </form>
-    
-    {% include 'printing/printings_table.html.twig' %}
-    
-</div>
+    <div class="container-xxl">
+        <h1>{{ set.name }}</h1>
+        {# <form class="mb-3" aria-label="Default select example" {{ stimulus_controller('printing') }}>
+            <select class="form-select w-auto" name="foiling-filter" data-action="change->printing#foilingFilter">
+                <option value="" disabled selected hidden>Filter on foiling</option>
+                <option value="">All</option>
+                {% for foilingId, foilingName in foilingHelper.getAllFoilings %}
+                    <option value="{{ foilingId }}">{{ foilingName }}</option>
+                {% endfor %}
+            </select>
+        </form> #}
+        {{ form_start(form, { attr: { 'data-controller': 'filter', 'data-filter-target': 'form' } }) }}
+ 
+        <div class="my-custom-class-for-errors">
+            {{ form_errors(form) }}
+        </div>
 
+        {{ form_widget(form.foiling) }}
+
+        <div class="form-check form-switch">
+                {{ form_widget(form.hide) }}
+                <label class="form-check-label" for="hideOwnedCards">Hide owned cards</label>
+            </div>
+        </div>
+        {{ form_rest(form) }}
+        {{ form_end(form) }}
+        {% include 'printing/printings_table.html.twig' %}
+        
+    </div>
+{% endblock %}
+
+{% block printing_table %}
+    <turbo-stream action="replace" targets="#printing_table">
+        <template>
+            {% include 'printing/printings_table.html.twig' %}
+        </template>
+    </turbo-stream>
 {% endblock %}

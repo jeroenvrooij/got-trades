@@ -4,15 +4,6 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
     static targets = ["amountInput", "decrementButton", "incrementButton", "playsetIconsContainer"];
 
-    foilingFilter(event) {
-        const foiling = event.target.value;
-        const url = new URL(window.location.href);
-        url.searchParams.set('foiling-filter', foiling);
-
-        // Turbo will automatically fetch and update the frame
-        Turbo.visit(url, { frame: "printing_table" });
-    }
-
     // Store the timer to manage debounce
     timeoutId = null;
     
@@ -153,7 +144,7 @@ export default class extends Controller {
 
     updateFilterState() {
         // if the request 'queue' is empty: enable filters, otherwise disable them
-        const select = document.querySelector('select[name="foiling-filter"]'); // Adjust selector
+        const select = document.querySelector('select[name="card_filter_form[foiling]"]'); // Adjust selector
         if (select) {
             select.disabled = window.requests.length > 0;
         }

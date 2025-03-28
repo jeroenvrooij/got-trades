@@ -28,8 +28,12 @@ class CardFinder
      * 
      * @return ArrayCollection
      */
-    public function findCardsBySetAndFoiling(Set $set, ?string $foiling)
+    public function findCardsBySetAndFoiling(Set $set, ?string $foiling = '')
     {
+        if (FoilingHelper::PLACEHOLDER_KEY === $foiling) {
+            $foiling = '';
+        }
+        
         $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySetAndFoiling($set, $foiling);
 
         if (!$printings) {
