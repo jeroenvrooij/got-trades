@@ -5,7 +5,7 @@ export default class extends Controller {
     static targets = ["form"];
 
     connect() {
-        // this.element.addEventListener("change", this.submitForm.bind(this));
+        this.element.addEventListener("change", this.submitForm.bind(this));
     }
 
     submitForm() {

@@ -47,7 +47,6 @@ class CardFilterFormType extends AbstractType
                 'label' => 'hide own cards?',
                 'required' => false,
             ])
-            ->add('send', SubmitType::class)
         ;
     }
 

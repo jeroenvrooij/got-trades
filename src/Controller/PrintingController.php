@@ -89,7 +89,7 @@ class PrintingController extends AbstractController
     
                 // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
                 // Symfony UX Turbo is all about progressively enhancing your applications!
-                // return $this->redirectToRoute('app_printing_printingsbyset', ['setId', $set->getId()], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_printing_printingsbyset', ['setId', $set->getId()], Response::HTTP_SEE_OTHER);
             }
     
             $cards = $this->cardFinder->findCardsBySetAndFoiling($set);
@@ -104,39 +104,7 @@ class PrintingController extends AbstractController
                 'cards' => $cards,
                 'form' => $form,
             ]);
-
-
-
-
-
-            
-            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-               
-                return $this->renderBlock('printing/printings_table.html.twig', 'printing_table', [
-                    'editionHelper' => $this->editionHelper,
-                    'foilingHelper' => $this->foilingHelper,
-                    'rarityHelper' => $this->rarityHelper,
-                    'artVariationsHelper' => $this->artVariationsHelper,
-                    'userCollectionManager' => $this->userCollectionManager,
-                    'set' => $set, 
-                    'cards' => $cards,
-                    'foiling' => $foiling,
-                ]);
-            }
-
-            return $this->render('printing/printings.html.twig', [
-                'editionHelper' => $this->editionHelper,
-                'foilingHelper' => $this->foilingHelper,
-                'rarityHelper' => $this->rarityHelper,
-                'artVariationsHelper' => $this->artVariationsHelper,
-                'userCollectionManager' => $this->userCollectionManager,
-                'set' => $set, 
-                'cards' => $cards,
-                'foiling' => $foiling,
-            ]);
         } catch (\Exception $exception) {
-            dump($exception);die();
             return $this->renderBlock('printing/empty_table.html.twig', 'printing_table', [
             ]);
         }
