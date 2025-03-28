@@ -92,10 +92,10 @@ export default class extends Controller {
             clearTimeout(this.timeouts[quantityId]);
         }
 
-        // Set a new timer for 1,5 seconds, for this unique quantityId
+        // Set a new timer for 1 second, for this unique quantityId
         this.timeouts[quantityId] = setTimeout(() => {
             this.updateAmount(event, inputField);
-        }, 1500);
+        }, 1000);
     }
 
     updateAmount(event, inputField) {

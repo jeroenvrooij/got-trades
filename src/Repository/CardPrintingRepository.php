@@ -91,17 +91,59 @@ class CardPrintingRepository extends ServiceEntityRepository
 
         if ($hideOwnedCards) {
             $qb->andWhere(
+                // When hiding completed playsets the card printing should not exists in this subsets of completed playsets
                 $qb->expr()->not(
                     $qb->expr()->exists(
                         $this->userCardPrintingsRepository->createQueryBuilder('ucp')
                             ->select('1')
                             ->where('ucp.cardPrintingUniqueId = cp')
                             ->andWhere('ucp.user = :userId')
+                            ->andWhere('
+                                (
+                                    (
+                                        -- for some type of cards a playset is completed is you have one copy
+                                        array_to_string(c.types, \',\') LIKE \'%Hero%\' OR
+                                        array_to_string(c.types, \',\') LIKE \'%Equipment%\' OR
+                                        array_to_string(c.types, \',\') LIKE \'%Token%\' OR
+                                        array_to_string(c.types, \',\') LIKE \'%Weapon%\' AND
+                                        array_to_string(c.types, \',\') LIKE \'%2H%\'
+                                    )
+                                    AND ucp.collectionAmount >=1
+                                )
+                                OR 
+                                (
+                                    (   
+                                        -- for 1 hander weapons a playset consists of two copies
+                                        array_to_string(c.types, \',\') LIKE \'%1H%\' AND
+                                        array_to_string(c.types, \',\') LIKE \'%Weapon%\'
+                                    )
+                                    AND ucp.collectionAmount >= 2
+                                )
+                                OR 
+                                (
+                                    (
+                                        -- default playset size is three
+                                        array_to_string(c.types, \',\') NOT LIKE \'%Hero%\' AND
+                                        array_to_string(c.types, \',\') NOT LIKE \'%Equipment%\' AND
+                                        array_to_string(c.types, \',\') NOT LIKE \'%Token%\' AND
+                                        array_to_string(c.types, \',\') NOT LIKE \'%Weapon%\'
+                                    )
+                                    AND ucp.collectionAmount >= 3
+                                )
+                                OR 
+                                (
+                                    -- playsets of cards with the legendary keywords also just require one copy
+                                    array_to_string(c.keywords, \',\') LIKE \'%Legendary%\' AND 
+                                    ucp.collectionAmount >= 1
+                                )
+                            ')
                             ->getDQL()
-                            )
-                            )
-                        );
-            $qb->setParameter('userId', $this->security->getUser()->getId()->toString());
+                    )
+                )
+            );
+            /** @var App\Entity\User $user */
+            $user = $this->security->getUser();
+            $qb->setParameter('userId', $user->getId()->toString());
         }
 
         return $qb

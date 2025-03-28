@@ -35,7 +35,7 @@ class UserCollectionManager
     public function getPlaysetSizeForCard(Card $card): int
     {
         // cards of these certain types have a smaller playset
-        $smallTypes = ['Hero', 'Equipment', 'Token', 'Weapon'];
+        $smallTypes = ['Demi-Hero', 'Hero', 'Equipment', 'Token', 'Weapon'];
         foreach ($card->getTypes() as $type) {
             if (in_array($type, $smallTypes)) {
                 if('Weapon' === $type && in_array('1H', $card->getTypes())) {
