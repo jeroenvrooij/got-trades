@@ -31,6 +31,10 @@ class Card
     #[ORM\Column(type: 'simple_array', name: 'card_keywords')]
     private array $keywords;
     
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private string $className;
+
     public function __construct()
     {
         $this->printings = new ArrayCollection();
@@ -59,12 +63,12 @@ class Card
         return $this->printings;
     }
 
-    public function getPrintingsFromSet(string $setId): Collection
-    {
-        $criteria = Criteria::create()
-            ->andWhere(Criteria::expr()->eq('setId', $setId));
-        return $this->getPrintings()->matching($criteria);
-    }
+    // public function getPrintingsFromSet(string $setId): Collection
+    // {
+    //     $criteria = Criteria::create()
+    //         ->andWhere(Criteria::expr()->eq('setId', $setId));
+    //     return $this->getPrintings()->matching($criteria);
+    // }
 
     public function getTypes(): array 
     { 
@@ -76,5 +80,10 @@ class Card
     { 
         // trim the curly brackets because Postgres
         return array_map(fn($keyword) => trim($keyword, '{}'), $this->keywords);
+    }
+
+    public function getClassName(): string 
+    { 
+        return $this->className;
     }
 }

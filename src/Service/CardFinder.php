@@ -37,7 +37,7 @@ class CardFinder
             $foiling = '';
         }
         
-        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySetAndFoiling($set, $foiling, $hideOwnedCards, $cardName);
+        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySet($set, $foiling, $hideOwnedCards, $cardName);
 
         $cards = new ArrayCollection();
         foreach ($printings as $printing) {
@@ -48,6 +48,41 @@ class CardFinder
             $cards->get($printing->getCard()->getUniqueId())->get('printings')->add($printing);
         }
         
+        return $cards;
+    }
+
+    /**
+     * Finds all printings belonging to a certain class and returns them grouped by unique cards
+     * 
+     * @param string $className
+     * 
+     * @return ArrayCollection
+     */
+    public function findCardsByClass(
+        ?string $className, 
+        ?string $foiling = '', 
+        ?bool $hideOwnedCards = false, 
+        ?string $cardName = ''
+    ) {
+        if (FoilingHelper::NO_FILTER_KEY === $foiling) {
+            $foiling = '';
+        }
+        
+        $printings = $this->entityManager->getRepository(CardPrinting::class)->findByClass($className, $foiling, $hideOwnedCards, $cardName);
+        
+        $cards = new ArrayCollection();
+        foreach ($printings as $printing) {
+            if(!$cards->get($printing->getSet()->getName())) {
+                $cards->set($printing->getSet()->getName(), new ArrayCollection());
+            }
+            $cardsFromSet = $cards->get($printing->getSet()->getName());
+            if(!$cardsFromSet->get($printing->getCard()->getUniqueId())) {
+                $collection = new ArrayCollection(['card' => $printing->getCard(), 'printings' => new ArrayCollection()]);
+                $cardsFromSet->set($printing->getCard()->getUniqueId(), $collection);
+            }
+            $cardsFromSet->get($printing->getCard()->getUniqueId())->get('printings')->add($printing);
+        }
+
         return $cards;
     }
 }

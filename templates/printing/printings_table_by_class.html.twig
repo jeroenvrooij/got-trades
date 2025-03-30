@@ -10,99 +10,112 @@
                             <th scope="col">Name</th>
                             <th scope="col" style="width: 190px;" class="d-none d-md-table-cell">Foiling</th>
                             <th scope="col" style="width: 70px;" class="d-md-none"></th>
+                            <th scope="col" style="width: 90px;" class="d-none d-md-table-cell">Edition</th>
+                            <th scope="col" style="width: 20px;" class="d-md-none"></th>
                             <th scope="col" style="width: 100px;">Collection</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="table-group-divider">
                         {% if cards|length == 0 %}
                             <tr>
                                 <td colspan='7' class="text-center">No cards found</td>
                             </tr>
                         {% else %}
-                            {% for printings in cards %}
-                                {% for printing in printings.printings %}
-                                    {% set rand = random(0,3) %}
-                                    {% set amount = 0 %}
-                                    {% if userCollectionManager.getAllCollectedCardsFromLoggedInUser.containsKey(printing.uniqueId) %}
-                                        {% set amount = userCollectionManager.getAllCollectedCardsFromLoggedInUser.get(printing.uniqueId) %}
-                                    {% endif %}
-                                    <tr>
-                                        <td>
-                                            <div class="playset-icons-container" data-printing-target="playsetIconsContainer" >
-                                            {% set playsetSize = userCollectionManager.getPlaysetSizeForCard(printing.card) %}
-                                                {% for i in 1..playsetSize %}
-                                                    <div class="card-icon 
-                                                        {% if i == 1 and amount > 0 %}filled{% endif %}
-                                                        {% if i == 2 and amount > 1 %}filled{% endif %}
-                                                        {% if i == 3 and amount > 2 %}filled{% endif %}
-                                                    "></div>
-                                                {% endfor %}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="cardId">{{ printing.cardId }}</span>
-                                        </td>
-                                        <td>
-                                            {% set rarity = rarityHelper.getRarityDescriptionById(printing.rarity) %}
-                                            {% if rarity == 'Marvel' %}
-                                                <span class="rarity-marvel"></span>
-                                            {% elseif rarity == 'Fabled' %}
-                                                <span class="rarity-fabled"></span>
-                                            {% else %}
-                                                <span class="rarity-circle {{ rarity|lower|replace({' ': ''}) }}">{{ rarity|first }}</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {{ printings.card.name }}
+                            {% for setName, sets in cards %}
+                                <tr class="table-active text-center">
+                                    <th colspan='7'>{{ setName }}</th>
+                                </tr>
+                                {% for printings in sets %}
+                                    {% for printing in printings.printings %}
+                                        {% set rand = random(0,3) %}
+                                        {% set amount = 0 %}
+                                        {% if userCollectionManager.getAllCollectedCardsFromLoggedInUser.containsKey(printing.uniqueId) %}
+                                            {% set amount = userCollectionManager.getAllCollectedCardsFromLoggedInUser.get(printing.uniqueId) %}
+                                        {% endif %}
+                                        <tr>
+                                            <td>
+                                                <div class="playset-icons-container" data-printing-target="playsetIconsContainer" >
+                                                {% set playsetSize = userCollectionManager.getPlaysetSizeForCard(printing.card) %}
+                                                    {% for i in 1..playsetSize %}
+                                                        <div class="card-icon 
+                                                            {% if i == 1 and amount > 0 %}filled{% endif %}
+                                                            {% if i == 2 and amount > 1 %}filled{% endif %}
+                                                            {% if i == 3 and amount > 2 %}filled{% endif %}
+                                                        "></div>
+                                                    {% endfor %}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="cardId">{{ printing.cardId }}</span>
+                                            </td>
+                                            <td>
+                                                {% set rarity = rarityHelper.getRarityDescriptionById(printing.rarity) %}
+                                                {% if rarity == 'Marvel' %}
+                                                    <span class="rarity-marvel"></span>
+                                                {% elseif rarity == 'Fabled' %}
+                                                    <span class="rarity-fabled"></span>
+                                                {% else %}
+                                                    <span class="rarity-circle {{ rarity|lower|replace({' ': ''}) }}">{{ rarity|first }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {{ printings.card.name }}
 
-                                            {% if 1 ==  printings.card.pitch %}
-                                                <div class="pitch-container"><div class="pitch pitch-1"></div></div>
-                                            {% elseif 2 == printings.card.pitch %}
-                                                <div class="pitch-container"><div class="pitch pitch-2"></div><div class="pitch pitch-2"></div></div>
-                                            {% elseif 3 == printings.card.pitch %}
-                                                <div class="pitch-container"><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div></div>
-                                            {% endif %}
-                                        </td>
-                                        <td class="d-none d-md-table-cell">
-                                            {# This column is only shown on md+ viewports #}
-                                            {% set foiling = foilingHelper.getFoilingNameById(printing.foiling) %}
-                                            {% if foiling != 'Standard' %}{{ foiling }}{% endif %}
-                                            {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }}
-                                        </td>
-                                        <td class="d-md-none">
-                                            {# This column is only shown on md and smaller viewports #}
-                                            {% if printing.foiling != 'S' %}{{ printing.foiling }}F{% endif %} {{ artVariationsHelper.getShortenedArtVariations(printing.artVariations) }}
-                                        </td>
-                                        <td>
-                                            <div class="input-group" data-quantity-id="amount-selector-{{ printing.uniqueId }}">
-                                                <button class="btn btn-outline-secondary decrementBtn btn-sm" type="button" 
-                                                    data-action="click->printing#decrementAmount"
-                                                    data-printing-id-param="{{ printing.uniqueId }}"
-                                                    data-printing-set-id-param="{{ class }}"
-                                                    data-printing-card-name-param="{{ printing.card.name }}"
-                                                    data-printing-target="decrementButton"
-                                                    {% if amount == 0 %}disabled{% endif %}>-</button>
-                                                <input 
-                                                    class="form-control form-control-sm text-center" 
-                                                    type="text" 
-                                                    value="{{ amount }}" 
-                                                    aria-label="0"
-                                                    data-printing-target="amountInput" 
-                                                    disabled
-                                                > 
-                                                <button class="btn btn-outline-secondary incrementBtn btn-sm" type="button" 
-                                                    data-action="click->printing#incrementAmount"
-                                                    data-printing-id-param="{{ printing.uniqueId }}"
-                                                    data-printing-set-id-param="{{ class }}"
-                                                    data-printing-card-name-param="{{ printing.card.name }}"
-                                                    data-printing-target="incrementButton"
-                                                    {% if amount >= 99 %}disabled{% endif %}>+</button>
-                                            </div>
-                                            
-                                        </td>
-                                    </tr>
+                                                {% if 1 ==  printings.card.pitch %}
+                                                    <div class="pitch-container"><div class="pitch pitch-1"></div></div>
+                                                {% elseif 2 == printings.card.pitch %}
+                                                    <div class="pitch-container"><div class="pitch pitch-2"></div><div class="pitch pitch-2"></div></div>
+                                                {% elseif 3 == printings.card.pitch %}
+                                                    <div class="pitch-container"><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div></div>
+                                                {% endif %}
+                                            </td>
+                                            <td class="d-none d-md-table-cell">
+                                                {# This column is only shown on md+ viewports #}
+                                                {% set foiling = foilingHelper.getFoilingNameById(printing.foiling) %}
+                                                {% if foiling != 'Standard' %}{{ foiling }}{% endif %}
+                                                {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }}
+                                            </td>
+                                            <td class="d-md-none">
+                                                {# This column is only shown on md and smaller viewports #}
+                                                {% if printing.foiling != 'S' %}{{ printing.foiling }}F{% endif %} {{ artVariationsHelper.getShortenedArtVariations(printing.artVariations) }}
+                                            </td>
+                                            <td class="d-none d-md-table-cell">
+                                                    {% if printing.edition != "N" %}{{ editionHelper.getEditionNameById(printing.edition) }}{% endif %}
+                                                </td>
+                                                {# This edition column is only shown on md and smaller viewports #}
+                                                <td class="d-md-none">{% if printing.edition != 'N' %}{{ printing.edition }}{% endif %}</td>
+                                        
+                                            <td>
+                                                <div class="input-group" data-quantity-id="amount-selector-{{ printing.uniqueId }}">
+                                                    <button class="btn btn-outline-secondary decrementBtn btn-sm" type="button" 
+                                                        data-action="click->printing#decrementAmount"
+                                                        data-printing-id-param="{{ printing.uniqueId }}"
+                                                        data-printing-set-id-param="{{ class }}"
+                                                        data-printing-card-name-param="{{ printing.card.name }}"
+                                                        data-printing-target="decrementButton"
+                                                        {% if amount == 0 %}disabled{% endif %}>-</button>
+                                                    <input 
+                                                        class="form-control form-control-sm text-center" 
+                                                        type="text" 
+                                                        value="{{ amount }}" 
+                                                        aria-label="0"
+                                                        data-printing-target="amountInput" 
+                                                        disabled
+                                                    > 
+                                                    <button class="btn btn-outline-secondary incrementBtn btn-sm" type="button" 
+                                                        data-action="click->printing#incrementAmount"
+                                                        data-printing-id-param="{{ printing.uniqueId }}"
+                                                        data-printing-set-id-param="{{ class }}"
+                                                        data-printing-card-name-param="{{ printing.card.name }}"
+                                                        data-printing-target="incrementButton"
+                                                        {% if amount >= 99 %}disabled{% endif %}>+</button>
+                                                </div>
+                                                
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
                                 {% endfor %}
-                            {% endfor %}
+                            {% endfor %}    
                         {% endif %}
                     </tbody>
                 </table>

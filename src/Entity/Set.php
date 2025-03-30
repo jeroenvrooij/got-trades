@@ -9,10 +9,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'sets')]
 class Set
 {
-    #[ORM\Id]
     #[ORM\Column(length: 21, nullable: false)]
     private string $uniqueId;
-
+    
+    #[ORM\Id]
     #[ORM\Column(length: 255, nullable: false)]
     private string $id;
 

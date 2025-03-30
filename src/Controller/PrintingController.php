@@ -107,6 +107,60 @@ class PrintingController extends AbstractController
         ]);
     }
 
+
+    #[Route('/printing-by-class/{className}')]
+    #[IsGranted('ROLE_USER', message: 'Viewing classes is only for logged in users')]
+    public function printingsByClass(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ?string $className
+    ): Response {
+        $form = $this->createForm(CardFilterFormType::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $form->getData();
+            $foiling = $formData['foiling'];
+            $hideOwnedCards = $formData['hide'];
+            $cardName = $formData['cardName'];
+
+            // 🔥 The magic happens here! 🔥
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+                $cards = $this->cardFinder->findCardsByClass($className, $foiling, $hideOwnedCards, $cardName);
+
+                return $this->renderBlock('printing/printings_by_class.html.twig', 'printing_table', [
+                    'editionHelper' => $this->editionHelper,
+                    'foilingHelper' => $this->foilingHelper,
+                    'rarityHelper' => $this->rarityHelper,
+                    'artVariationsHelper' => $this->artVariationsHelper,
+                    'userCollectionManager' => $this->userCollectionManager,
+                    'class' => $className, 
+                    'cards' => $cards,
+                ]);
+            }
+
+            // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
+            // Symfony UX Turbo is all about progressively enhancing your applications!
+            return $this->redirectToRoute('app_printing_printingsbyclass', ['className', $className], Response::HTTP_SEE_OTHER);
+        }
+
+        $cards = $this->cardFinder->findCardsByClass($className);
+
+        return $this->render('printing/printings_by_class.html.twig', [
+            'editionHelper' => $this->editionHelper,
+            'foilingHelper' => $this->foilingHelper,
+            'rarityHelper' => $this->rarityHelper,
+            'artVariationsHelper' => $this->artVariationsHelper,
+            'userCollectionManager' => $this->userCollectionManager,
+            'class' => $className, 
+            'cards' => $cards,
+            'form' => $form,
+        ]);
+    }
+
     #[Route('/update-user-collection', methods: ['POST'])]
     #[IsGranted('ROLE_USER', message: 'Updating collection is for logged in users')]
     public function updateUserCollection(

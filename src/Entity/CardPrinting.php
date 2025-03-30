@@ -16,8 +16,13 @@ class CardPrinting
     #[ORM\Column(length: 15, nullable: false)]
     private string $cardId;
 
-    #[ORM\Column(length: 15, nullable: false)]
-    private string $setId;
+    // #[ORM\Column(length: 15, nullable: false)]
+    // private string $setId;
+
+    #[ORM\ManyToOne(targetEntity: Set::class)]
+    #[ORM\JoinColumn(name: 'set_id', referencedColumnName: 'id', nullable: false)]
+    private Set $set;
+
 
     #[ORM\ManyToOne(targetEntity: Card::class, inversedBy: 'printings')]
     #[ORM\JoinColumn(name: 'card_unique_id', referencedColumnName: 'unique_id', nullable: false)]
@@ -45,8 +50,9 @@ class CardPrinting
         return $this->cardId;
     }
 
-    public function getSetId(): string{
-        return $this->setId;
+    public function getSet(): Set
+    {
+        return $this->set;
     }
 
     public function getCard(): Card
