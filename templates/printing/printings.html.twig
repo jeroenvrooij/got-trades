@@ -1,8 +1,8 @@
 {% extends "base.html.twig" %}
 
 {% block breadcrumblist %}
-    <li class="breadcrumb-item"><a href="{{ path('app_home_homepage') }}">Home</a></li>
-    <li class="breadcrumb-item"><a href="{{ path('app_card_setoverviewpage') }}">Set Overview</a></li>
+    <li class="breadcrumb-item"><a class="link-secondary link-offset-2 link-underline-opacity-40 link-underline-opacity-100-hover" href="{{ path('app_home_homepage') }}">Home</a></li>
+    <li class="breadcrumb-item"><a class="link-secondary link-offset-2 link-underline-opacity-40 link-underline-opacity-100-hover" href="{{ path('app_card_setoverviewpage') }}">Set Overview</a></li>
     <li class="breadcrumb-item active" aria-current="page">{{ set.name }}</li>
 {% endblock %}
 
@@ -17,15 +17,15 @@
 
         <div class="container overflow-hidden">
             <div class="row justify-content-start align-items-center gy-3">
-                <div class="col-md-2 col-6">
+                <div class="col-xl-2 col-lg-3 col-6">
                     {{ form_widget(form.foiling) }}
                 </div>
 
-                <div class="col-md-2 col-6">
+                <div class="col-lg-3 col-6">
                     {{ form_widget(form.cardName, { attr: {'data-filter-target': 'cardName'} }) }}
                 </div>
 
-                <div class="col-md-3 col-12">
+                <div class="col-lg-6 col-12">
                     <div class="form-check form-switch">
                         {{ form_widget(form.hide) }}
                         <label class="form-check-label" for="hideOwnedCards">Hide completed playsets</label>
