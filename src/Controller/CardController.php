@@ -17,4 +17,14 @@ class CardController extends AbstractController
             throw $this->createNotFoundException($exception->getMessage());
         }
     }
+
+    #[Route('/cards/class-overview')]
+    public function classOverviewPage(
+    ): Response {
+        try {
+            return $this->render('card/class_overview.html.twig', []);
+        } catch (\Exception $exception) {
+            throw $this->createNotFoundException($exception->getMessage());
+        }
+    }
 }

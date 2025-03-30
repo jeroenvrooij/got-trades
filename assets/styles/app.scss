@@ -141,27 +141,8 @@ body {
     z-index: 1; /* Third card at the bottom */
 }
 
-// Boostrap SASS + overrides
-// $table-bg: #E2CDBB;
 
-@import '../../vendor/twbs/bootstrap/scss/bootstrap';
-
-/* The individual card icons */
-.card-icon {
-    position: absolute;
-    width: 1rem;
-    height: 1.25rem;
-    border: 1px solid white;
-    border-radius: .1875rem;
-    background-color: $gray-400;
-    z-index: 1; /* Make sure the cards are stacked */
-    vertical-align: middle;
-}
-
-.card-icon.filled {
-    background-color: $yellow-400;
-}
-
+.classImage,
 .setImage {
     background-size: 120%; /* Increases the size of the image */
     background-position: 50% 50%; /* Adjust which part is visible */
@@ -176,11 +157,18 @@ body {
     justify-content: center;
     overflow: hidden;
 }
+.classImage {
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.classImage img,
 .setImage img {
     max-width: 200px;
     object-fit: contain;
 }
 
+.classImage::after,
 .setImage::after {
     content: attr(data-caption); /* Uses the value from the HTML */
     position: absolute;
@@ -282,4 +270,43 @@ body {
     background-image: url('../images/set_art/Welcome_to_Rathe_Key_Art_v1_FullHD.original.jpg'); 
     background-size: 120%;
     background-position: 50% 50%;
+}
+
+
+.classImage.warrior
+{
+    background-image: url('../images/class_art/dorinthea_hero.original.jpg'); 
+}
+.classImage.guardian
+{
+    background-image: url('../images/class_art/bravo_hero.original.jpg'); 
+}
+.classImage.brute
+{
+    background-image: url('../images/class_art/rhinar_hero.original.jpg'); 
+}
+.classImage.ninja
+{
+    background-image: url('../images/class_art/katsu_hero.original.jpg'); 
+}
+
+// Boostrap SASS + overrides
+// $table-bg: #E2CDBB;
+
+@import '../../vendor/twbs/bootstrap/scss/bootstrap';
+
+/* The individual card icons */
+.card-icon {
+    position: absolute;
+    width: 1rem;
+    height: 1.25rem;
+    border: 1px solid white;
+    border-radius: .1875rem;
+    background-color: $gray-400;
+    z-index: 1; /* Make sure the cards are stacked */
+    vertical-align: middle;
+}
+
+.card-icon.filled {
+    background-color: $yellow-400;
 }
