@@ -174,6 +174,10 @@ export default class extends Controller {
         if (playsetSwitch) {
             playsetSwitch.disabled = window.requests.length > 0;
         }
+        const cardNameFilter = document.querySelector('input[name="card_filter_form[cardName]"]'); // Adjust selector
+        if (cardNameFilter) {
+            cardNameFilter.disabled = window.requests.length > 0;
+        }
     }
 
     showToast(title, message, type = "info") {
