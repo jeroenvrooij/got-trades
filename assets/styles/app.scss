@@ -28,33 +28,9 @@ body {
 .pitch-3 {
     background-color: var(--color-pitch-3);
 }
-.container.cardoverview .row {
-    height: 100px;
-    /* background-color: green; */
-    /* margin: auto; */
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-}
 .card-printing {
-    // table-layout: fixed;
     max-width: 1200px;
 }
-.card-printing thead th {
-    // background-color: #a7733f !important;
-    // color: #ecbe6e !important;
-}
-.card-printing tr{
-    // color: red !important;
-    // color: var(--bs-dark-text-emphasis) !important;
-    // font-weight: bold;
-    // background-color: red !important;
-}
-
-// .card-printing tr.uncollected td {
-//     // color: red !important;
-//     color: var(--bs-secondary) !important;
-// }
 .card-printing td, .table-sm th {
     padding: 2px 8px !important; /* Reduces row height more */
   }
@@ -186,3 +162,124 @@ body {
     background-color: $yellow-400;
 }
 
+.setImage {
+    background-size: 120%; /* Increases the size of the image */
+    background-position: 50% 50%; /* Adjust which part is visible */
+    background-repeat: no-repeat;
+    width: 300px;
+    height: 200px;
+    border: 2px solid #a7733f;
+    border-radius: 1px;
+    position: relative; /* Needed for positioning the banner */
+    display: flex;
+    align-items: center; /* Keeps image centered */
+    justify-content: center;
+    overflow: hidden;
+}
+.setImage img {
+    max-width: 200px;
+    object-fit: contain;
+}
+
+.setImage::after {
+    content: attr(data-caption); /* Uses the value from the HTML */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Black with 60% transparency */
+    color: #c19a57;
+    text-align: center;
+    padding: 5px;
+    font-size: 1.5rem;
+    box-sizing: border-box;
+}
+.setImage.hnt {
+    background-image: url('../images/set_art/art_hnt_keyart.original.jpg'); 
+    background-size: 250%;
+    background-position: 50% 30%;
+}
+.setImage.ros {
+    background-image: url('../images/set_art/art_ros_keyart_withlogos.original.jpg'); 
+    background-size: 120%;
+    background-position: 50% 50%;
+}
+.setImage.mst {
+    background-image: url('../images/set_art/part_the_mistveil_key_art.original.jpg'); 
+    background-size: 120%;
+    background-position: 50% 50%;
+}
+.setImage.hvy {
+    background-image: url('../images/set_art/heavy_hitters_key_art.original.jpg'); 
+    background-size: 130%;
+    background-position: 50% 50%;
+}
+.setImage.evo {
+    background-image: url('../images/set_art/bright_lights_key_art.original.jpg'); 
+    background-size: 130%;
+    background-position: 50% 50%;
+}
+.setImage.dtd {
+    background-image: url('../images/set_art/dtd_key_art.original.jpg'); 
+    background-size: 150%;
+    background-position: 50% 50%;
+}
+.setImage.out
+ {
+    background-image: url('../images/set_art/out_keyart.original.jpg'); 
+    background-size: 130%;
+    background-position: 50% 50%;
+}
+.setImage.dyn
+ {
+    background-image: url('../images/set_art/dyn_key_art.original.jpg'); 
+    background-size: 130%;
+    background-position: 50% 50%;
+}
+.setImage.hp1
+ {
+    background-image: url('../images/set_art/1hp_keyart_dnhst.original.jpg'); 
+    background-size: 200%;
+    background-position: 50% 70%;
+}
+.setImage.upr
+ {
+    background-image: url('../images/set_art/upr_key_art_7Zz.original.jpg'); 
+    background-size: 150%;
+    background-position: 50% 50%;
+}
+.setImage.evr
+ {
+    background-image: url('../images/set_art/Everfest_Banner_FullHD.original.jpg'); 
+    background-size: 130%;
+    background-position: 50% 50%;
+}
+.setImage.ele
+ {
+    background-image: url('../images/set_art/toa_art_01.original.jpg'); 
+    background-size: 130%;
+    background-position: 50% 50%;
+}
+.setImage.mon
+ {
+    background-image: url('../images/set_art/Monarch_Key_Art_FullHD.original.jpg'); 
+    background-size: 230%;
+    background-position: 50% 60%;
+}
+.setImage.cru
+ {
+    background-image: url('../images/set_art/CRU_HOME-PAGE.original.png'); 
+    background-size: 130%;
+    background-position: 50% 50%;
+}
+.setImage.arc
+ {
+    background-image: url('../images/set_art/key_img_one.original.jpg'); 
+    background-size: 150%;
+    background-position: 50% 20%;
+}
+.setImage.wtr
+ {
+    background-image: url('../images/set_art/Welcome_to_Rathe_Key_Art_v1_FullHD.original.jpg'); 
+    background-size: 120%;
+    background-position: 50% 50%;
+}
