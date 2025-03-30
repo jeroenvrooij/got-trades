@@ -44,9 +44,10 @@ class CardPrintingRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('cp');
 
         $qb
-            ->select('cp, c')
+            ->select('cp, c, s')
             ->innerJoin('cp.card', 'c')
-            ->andWhere('cp.setId = :setId')
+            ->innerJoin('cp.set', 's')
+            ->andWhere('s.id = :setId')
             ->setParameter('setId', $set->getId())
             ->andWhere(
                 // clause needed for filtering double sided prints
