@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Foiling;
 use App\Service\FoilingHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -25,19 +26,27 @@ class CardFilterFormType extends AbstractType
     {
         $foilings = $this->foilingHelper->getAllFoilings();
         $foilings = array_flip($foilings->toArray());
-        $foilings = array_merge([FoilingHelper::PLACEHOLDER_DESC => FoilingHelper::PLACEHOLDER_KEY], $foilings);
+        $foilings = array_merge([
+                FoilingHelper::NO_FILTER_DESC => FoilingHelper::NO_FILTER_KEY,
+                FoilingHelper::PLACEHOLDER_DESC => FoilingHelper::PLACEHOLDER_KEY,
+            ], 
+        $foilings);
 
         $builder
             ->add('foiling', ChoiceType::class, [
                 'attr' => [
-                    'class' =>'form-select w-auto'
+                    'class' =>'form-select'
                 ],
-                'placeholder' => 'Filter on foiling',
+                'placeholder' => FoilingHelper::PLACEHOLDER_DESC,
                 'placeholder_attr' => [
                     'disabled' => 'true', 
                     // 'hidden' => 'true',
                 ],
                 'choices' => $foilings,
+                'choice_attr' => [
+                    'Filter on foiling' => ['disabled' => 'true', 'selected' => 'true', 'hidden' => 'true'],
+                   
+                ],
                 'required' => false,
             ])
             ->add('cardName', TextType::class, [

@@ -9,8 +9,11 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class FoilingHelper
 {
-    public const PLACEHOLDER_KEY = '%ALL%';
-    public const PLACEHOLDER_DESC = 'All';
+    public const PLACEHOLDER_KEY = '%foiling_filter%';
+    public const PLACEHOLDER_DESC = 'Filter on foiling';
+
+    public const NO_FILTER_KEY = 'no_filter';
+    public const NO_FILTER_DESC = 'No filter';
 
     private EntityManager $entityManager;
 

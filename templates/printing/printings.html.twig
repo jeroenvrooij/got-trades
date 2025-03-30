@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container-xxl" {{ stimulus_controller('filter printing') }}>
+    <div class="container" {{ stimulus_controller('filter printing') }}>
         <h1>{{ set.name }}</h1>
         {{ form_start(form, { attr: {'data-filter-target': 'filterForm', 'data-printing-target': 'filterForm' } }) }}
  
@@ -15,25 +15,27 @@
             {{ form_errors(form) }}
         </div>
 
-        <div class="row mb-3 d-flex align-items-center">
-            <div class="col-auto">
-                {{ form_widget(form.foiling) }}
-            </div>
-
-            <div class="col-auto">
-                {{ form_widget(form.cardName, { attr: {'data-filter-target': 'cardName'} }) }}
-            </div>
-
-            <div class="col-auto">
-                <div class="form-check form-switch">
-                    {{ form_widget(form.hide) }}
-                    <label class="form-check-label" for="hideOwnedCards">Hide completed playsets</label>
+        <div class="container overflow-hidden">
+            <div class="row justify-content-start align-items-center gy-3">
+                <div class="col-md-2 col-6">
+                    {{ form_widget(form.foiling) }}
                 </div>
-            </div>
 
-        
-        {{ form_rest(form) }}
-        {{ form_end(form) }} 
+                <div class="col-md-2 col-6">
+                    {{ form_widget(form.cardName, { attr: {'data-filter-target': 'cardName'} }) }}
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <div class="form-check form-switch">
+                        {{ form_widget(form.hide) }}
+                        <label class="form-check-label" for="hideOwnedCards">Hide completed playsets</label>
+                    </div>
+                </div>
+
+            
+            {{ form_rest(form) }}
+            {{ form_end(form) }} 
+            </div>
         </div>
         {% include 'printing/printings_table.html.twig' %}
         

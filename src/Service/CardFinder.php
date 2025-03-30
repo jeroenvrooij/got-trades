@@ -33,7 +33,7 @@ class CardFinder
         ?bool $hideOwnedCards = false, 
         ?string $cardName = ''
     ) {
-        if (FoilingHelper::PLACEHOLDER_KEY === $foiling) {
+        if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
         
