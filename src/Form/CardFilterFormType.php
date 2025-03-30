@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -37,6 +38,14 @@ class CardFilterFormType extends AbstractType
                     // 'hidden' => 'true',
                 ],
                 'choices' => $foilings,
+                'required' => false,
+            ])
+            ->add('cardName', TextType::class, [
+                'attr' => [
+                    'placeholder' =>'Filter on card name', 
+                    'class' => 'form-control'
+                ],
+                'label' => 'Filter on card name',
                 'required' => false,
             ])
             ->add('hide', CheckboxType::class, [

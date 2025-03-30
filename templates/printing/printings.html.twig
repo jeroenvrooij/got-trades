@@ -21,6 +21,10 @@
             </div>
 
             <div class="col-auto">
+                {{ form_widget(form.cardName) }}
+            </div>
+
+            <div class="col-auto">
                 <div class="form-check form-switch">
                     {{ form_widget(form.hide) }}
                     <label class="form-check-label" for="hideOwnedCards">Hide completed playsets</label>

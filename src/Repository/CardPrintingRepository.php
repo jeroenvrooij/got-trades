@@ -6,6 +6,7 @@ use App\Entity\CardFaceAssociation;
 use App\Entity\CardPrinting;
 use App\Entity\Set;
 use App\Entity\UserCardPrintings;
+use App\Exception\NoCardsFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Expr\Join;
@@ -38,7 +39,7 @@ class CardPrintingRepository extends ServiceEntityRepository
     /**
     * @return CardPrinting[] Returns an array of CardPrinting objects
     */
-    public function findBySetAndFoiling(Set $set, ?string $foiling, bool $hideOwnedCards = false): array
+    public function findBySetAndFoiling(Set $set, ?string $foiling = '', ?bool $hideOwnedCards = false, ?string $cardName = ''): array
     {
         $qb = $this->createQueryBuilder('cp');
 
@@ -86,6 +87,12 @@ class CardPrintingRepository extends ServiceEntityRepository
             $qb
                 ->andWhere('cp.foiling = :foiling')
                 ->setParameter('foiling', $foiling)
+                ;
+        }
+        if($cardName) {
+            $qb
+                ->andWhere('LOWER(c.name) LIKE :cardName')
+                ->setParameter('cardName', '%' . strtolower($cardName) . '%')
                 ;
         }
 
@@ -146,9 +153,11 @@ class CardPrintingRepository extends ServiceEntityRepository
             $qb->setParameter('userId', $user->getId()->toString());
         }
 
-        return $qb
+        $cards = $qb
             ->getQuery()
             ->getResult()
-            ;   
+            ;
+            
+        return $cards;
     }
 }

@@ -7,7 +7,6 @@ use App\Entity\Set;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class CardFinder
@@ -28,17 +27,17 @@ class CardFinder
      * 
      * @return ArrayCollection
      */
-    public function findCardsBySetAndFoiling(Set $set, ?string $foiling = '', bool $hideOwnedCards = false)
-    {
+    public function findCardsBySet(
+        ?Set $set, 
+        ?string $foiling = '', 
+        ?bool $hideOwnedCards = false, 
+        ?string $cardName = ''
+    ) {
         if (FoilingHelper::PLACEHOLDER_KEY === $foiling) {
             $foiling = '';
         }
         
-        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySetAndFoiling($set, $foiling, $hideOwnedCards);
-
-        if (!$printings) {
-            throw new EntityNotFoundException('No printings found in set by criteria');
-        }
+        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySetAndFoiling($set, $foiling, $hideOwnedCards, $cardName);
 
         $cards = new ArrayCollection();
         foreach ($printings as $printing) {

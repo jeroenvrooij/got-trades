@@ -61,54 +61,50 @@ class PrintingController extends AbstractController
         #[MapEntity(mapping: ['setId' => 'id'], message: 'Set could not be found')]
         Set $set
     ): Response {
-        try {
-            $form = $this->createForm(CardFilterFormType::class);
+        $form = $this->createForm(CardFilterFormType::class);
 
-            $form->handleRequest($request);
+        $form->handleRequest($request);
 
-            if ($form->isSubmitted() && $form->isValid()) {
-                $formData = $form->getData();
-                $foiling = $formData['foiling'];
-                $hideOwnedCards = $formData['hide'];
-    
-                // 🔥 The magic happens here! 🔥
-                if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
-                    // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
-                    $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-                    $cards = $this->cardFinder->findCardsBySetAndFoiling($set, $foiling, $hideOwnedCards);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $form->getData();
+            $foiling = $formData['foiling'];
+            $hideOwnedCards = $formData['hide'];
+            $cardName = $formData['cardName'];
 
-                    return $this->renderBlock('printing/printings.html.twig', 'printing_table', [
-                        'editionHelper' => $this->editionHelper,
-                        'foilingHelper' => $this->foilingHelper,
-                        'rarityHelper' => $this->rarityHelper,
-                        'artVariationsHelper' => $this->artVariationsHelper,
-                        'userCollectionManager' => $this->userCollectionManager,
-                        'set' => $set, 
-                        'cards' => $cards,
-                    ]);
-                }
-    
-                // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
-                // Symfony UX Turbo is all about progressively enhancing your applications!
-                return $this->redirectToRoute('app_printing_printingsbyset', ['setId', $set->getId()], Response::HTTP_SEE_OTHER);
+            // 🔥 The magic happens here! 🔥
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+                $cards = $this->cardFinder->findCardsBySet($set, $foiling, $hideOwnedCards, $cardName);
+
+                return $this->renderBlock('printing/printings.html.twig', 'printing_table', [
+                    'editionHelper' => $this->editionHelper,
+                    'foilingHelper' => $this->foilingHelper,
+                    'rarityHelper' => $this->rarityHelper,
+                    'artVariationsHelper' => $this->artVariationsHelper,
+                    'userCollectionManager' => $this->userCollectionManager,
+                    'set' => $set, 
+                    'cards' => $cards,
+                ]);
             }
-    
-            $cards = $this->cardFinder->findCardsBySetAndFoiling($set);
 
-            return $this->render('printing/printings.html.twig', [
-                'editionHelper' => $this->editionHelper,
-                'foilingHelper' => $this->foilingHelper,
-                'rarityHelper' => $this->rarityHelper,
-                'artVariationsHelper' => $this->artVariationsHelper,
-                'userCollectionManager' => $this->userCollectionManager,
-                'set' => $set, 
-                'cards' => $cards,
-                'form' => $form,
-            ]);
-        } catch (\Exception $exception) {
-            return $this->renderBlock('printing/empty_table.html.twig', 'printing_table', [
-            ]);
+            // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
+            // Symfony UX Turbo is all about progressively enhancing your applications!
+            return $this->redirectToRoute('app_printing_printingsbyset', ['setId', $set->getId()], Response::HTTP_SEE_OTHER);
         }
+
+        $cards = $this->cardFinder->findCardsBySet($set);
+
+        return $this->render('printing/printings.html.twig', [
+            'editionHelper' => $this->editionHelper,
+            'foilingHelper' => $this->foilingHelper,
+            'rarityHelper' => $this->rarityHelper,
+            'artVariationsHelper' => $this->artVariationsHelper,
+            'userCollectionManager' => $this->userCollectionManager,
+            'set' => $set, 
+            'cards' => $cards,
+            'form' => $form,
+        ]);
     }
 
     #[Route('/update-user-collection', methods: ['POST'])]
