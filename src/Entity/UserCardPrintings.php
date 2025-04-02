@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserCardPrintingsRepository;
+use Doctrine\DBAL\FetchMode;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserCardPrintingsRepository::class)]
@@ -14,7 +15,7 @@ class UserCardPrintings
     private ?user $user = null;
 
     #[ORM\Id]
-    #[ORM\ManyToOne()]
+    #[ORM\ManyToOne(fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'card_printing_unique_id', referencedColumnName: 'unique_id', nullable: false)]
     private CardPrinting $cardPrinting;
 
