@@ -31,21 +31,22 @@ class CardFinder
         ?Set $set, 
         ?string $foiling = '', 
         ?bool $hideOwnedCards = false, 
-        ?string $cardName = ''
+        ?string $cardName = '',
+        ?bool $collectorView = true
     ) {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
         
-        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySet($set, $foiling, $hideOwnedCards, $cardName);
+        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySet($set, $foiling, $hideOwnedCards, $cardName, $collectorView);
 
         $cards = new ArrayCollection();
         foreach ($printings as $printing) {
-            if(!$cards->get($printing->getCard()->getUniqueId())) {
+            if(!$cards->get($printing->getCardId())) {
                 $collection = new ArrayCollection(['card' => $printing->getCard(), 'printings' => new ArrayCollection()]);
-                $cards->set($printing->getCard()->getUniqueId(), $collection);
+                $cards->set($printing->getCardId(), $collection);
             }
-            $cards->get($printing->getCard()->getUniqueId())->get('printings')->add($printing);
+            $cards->get($printing->getCardId())->get('printings')->add($printing);
         }
         
         return $cards;

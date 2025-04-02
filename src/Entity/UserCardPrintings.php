@@ -14,8 +14,9 @@ class UserCardPrintings
     private ?user $user = null;
 
     #[ORM\Id]
-    #[ORM\Column(length: 21, nullable: false)]
-    private string $cardPrintingUniqueId;
+    #[ORM\ManyToOne()]
+    #[ORM\JoinColumn(name: 'card_printing_unique_id', referencedColumnName: 'unique_id', nullable: false)]
+    private CardPrinting $cardPrinting;
 
     #[ORM\Column]
     private ?int $collectionAmount = null;
@@ -32,14 +33,14 @@ class UserCardPrintings
         return $this;
     }
 
-    public function getCardPrintingUniqueId(): ?string
+    public function getCardPrinting(): ?CardPrinting
     {
-        return $this->cardPrintingUniqueId;
+        return $this->cardPrinting;
     }
 
-    public function setCardPrintingUniqueId(?string $cardPrintingUniqueId): static
+    public function setCardPrinting(?CardPrinting $cardPrinting): static
     {
-        $this->cardPrintingUniqueId = $cardPrintingUniqueId;
+        $this->cardPrinting = $cardPrinting;
 
         return $this;
     }

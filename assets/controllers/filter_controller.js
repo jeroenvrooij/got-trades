@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-    static targets = ["filterForm"];
+    static targets = ["filterForm", "foilingFilter", "collectorViewFilter"];
 
     connect() {
         // Debounced form submission function
@@ -18,6 +18,13 @@ export default class extends Controller {
     }
 
     submitForm() {
+        let foilingFilterDiv = this.foilingFilterTarget.closest(".foiling-filter");
+        if (this.collectorViewFilterTarget.checked) {
+            foilingFilterDiv.hidden = false;
+        } else {
+            this.foilingFilterTarget.selectedIndex = 0;
+            foilingFilterDiv.hidden = true;
+        }
         this.filterFormTarget.requestSubmit();
     }
 

@@ -29,8 +29,8 @@
                                     {% for printing in printings.printings %}
                                         {% set rand = random(0,3) %}
                                         {% set amount = 0 %}
-                                        {% if userCollectionManager.getAllCollectedCardsFromLoggedInUser.containsKey(printing.uniqueId) %}
-                                            {% set amount = userCollectionManager.getAllCollectedCardsFromLoggedInUser.get(printing.uniqueId) %}
+                                        {% if userCollectionManager.getAllCollectedPrintingsFromLoggedInUser.containsKey(printing.uniqueId) %}
+                                            {% set amount = userCollectionManager.getAllCollectedPrintingsFromLoggedInUser.get(printing.uniqueId) %}
                                         {% endif %}
                                         <tr>
                                             <td>

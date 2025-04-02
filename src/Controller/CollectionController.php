@@ -2,6 +2,7 @@
 // src/Controller/PrintingController.php
 namespace App\Controller;
 
+use App\Entity\CardPrinting;
 use App\Entity\Set;
 use App\Entity\UserCardPrintings;
 use App\Form\CardFilterFormType;
@@ -23,7 +24,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\UX\Turbo\TurboBundle;
 
-class PrintingController extends AbstractController
+class CollectionController extends AbstractController
 {
     private CardFinder $cardFinder;
 
@@ -53,9 +54,9 @@ class PrintingController extends AbstractController
         $this->userCollectionManager = $userCollectionManager;
     }
 
-    #[Route('/printing-by-set/{setId}')]
+    #[Route('/manage-collection-by-set/{setId}')]
     #[IsGranted('ROLE_USER', message: 'Viewing sets is only for logged in users')]
-    public function printingsBySet(
+    public function manageCollectionBySet(
         Request $request,
         EntityManagerInterface $entityManager,
         #[MapEntity(mapping: ['setId' => 'id'], message: 'Set could not be found')]
@@ -70,14 +71,15 @@ class PrintingController extends AbstractController
             $foiling = $formData['foiling'];
             $hideOwnedCards = $formData['hide'];
             $cardName = $formData['cardName'];
+            $collectorView = $formData['collectorView'];
 
             // 🔥 The magic happens here! 🔥
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-                $cards = $this->cardFinder->findCardsBySet($set, $foiling, $hideOwnedCards, $cardName);
+                $cards = $this->cardFinder->findCardsBySet($set, $foiling, $hideOwnedCards, $cardName, $collectorView);
 
-                return $this->renderBlock('printing/printings.html.twig', 'printing_table', [
+                return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
                     'foilingHelper' => $this->foilingHelper,
                     'rarityHelper' => $this->rarityHelper,
@@ -85,17 +87,18 @@ class PrintingController extends AbstractController
                     'userCollectionManager' => $this->userCollectionManager,
                     'set' => $set, 
                     'cards' => $cards,
+                    'collectorView' => $collectorView,
                 ]);
             }
 
             // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
             // Symfony UX Turbo is all about progressively enhancing your applications!
-            return $this->redirectToRoute('app_printing_printingsbyset', ['setId', $set->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_collection_managecollectionbyset', ['setId', $set->getId()], Response::HTTP_SEE_OTHER);
         }
 
         $cards = $this->cardFinder->findCardsBySet($set);
 
-        return $this->render('printing/printings.html.twig', [
+        return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
             'foilingHelper' => $this->foilingHelper,
             'rarityHelper' => $this->rarityHelper,
@@ -104,6 +107,7 @@ class PrintingController extends AbstractController
             'set' => $set, 
             'cards' => $cards,
             'form' => $form,
+            'collectorView' => false,
         ]);
     }
 
@@ -176,12 +180,13 @@ class PrintingController extends AbstractController
             if ($amount !== null) {
                 $userCardPrintings = $entityManager->getRepository(UserCardPrintings::class)->find([
                     'user' => $this->getUser(),
-                    'cardPrintingUniqueId' => $data['id'],
+                    'cardPrinting' => $data['id'],
                 ]);
                 if (null === $userCardPrintings) {
                     $userCardPrintings = new UserCardPrintings();
                     $userCardPrintings->setUser($this->getUser());
-                    $userCardPrintings->setCardPrintingUniqueId($data['id']);
+                    $cardPrinting = $entityManager->getRepository(CardPrinting::class)->findOneBy(['uniqueId' => $data['id']]);
+                    $userCardPrintings->setCardPrinting($cardPrinting);
                     $entityManager->persist($userCardPrintings);
                 }
                 if ('0' === $data['amount']) {

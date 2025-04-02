@@ -32,16 +32,17 @@
                                 <td colspan='7' class="text-center">No cards found</td>
                             </tr>
                         {% else %}
-                            {% for printings in cards %}
+                            {% set collectedCards = userCollectionManager.getAllCollectedPrintingsFromLoggedInUser %}
+                            {% for printingId, printings in cards %}
                                 {% for printing in printings.printings %}
                                     {% set rand = random(0,3) %}
                                     {% set amount = 0 %}
-                                    {% if userCollectionManager.getAllCollectedCardsFromLoggedInUser.containsKey(printing.uniqueId) %}
-                                        {% set amount = userCollectionManager.getAllCollectedCardsFromLoggedInUser.get(printing.uniqueId) %}
+                                    {% if collectedCards.containsKey(printing.uniqueId) %}
+                                        {% set amount = collectedCards.get(printing.uniqueId) %}
                                     {% endif %}
                                     <tr>
                                         <td>
-                                            <div class="playset-icons-container" data-printing-target="playsetIconsContainer" >
+                                            <div class="playset-icons-container" data-id="{{ printing.uniqueId }}" data-printing-target="playsetIconsContainer" >
                                             {% set playsetSize = userCollectionManager.getPlaysetSizeForCard(printing.card) %}
                                                 {% for i in 1..playsetSize %}
                                                     <div class="card-icon 
@@ -107,6 +108,7 @@
                                                     class="form-control form-control-sm text-center" 
                                                     type="text" 
                                                     value="{{ amount }}" 
+                                                    data-original-value="{{ amount }}" 
                                                     aria-label="0"
                                                     data-printing-target="amountInput" 
                                                     disabled

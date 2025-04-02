@@ -44,6 +44,12 @@ class CardPrinting
     {
         return $this->uniqueId;
     }
+    
+    public function setUniqueId($uniqueId): self
+    {
+        $this->uniqueId = $uniqueId;
+        return $this;
+    }
 
     public function getCardId(): string
     {

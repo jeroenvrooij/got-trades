@@ -1,0 +1,131 @@
+
+    {% set editionSets = [
+        'WTR',
+        'ARC',
+        'CRU',
+        'MON',
+        'ELE',
+        'EVR',
+    ] %}
+    <div id="printing_table">
+        <div class="container-sm">
+            <div class="table-responsive" >
+                <table class="table table-sm card-printing align-middle">
+                    <tbody>
+                        {% if cards|length == 0 %}
+                            <tr>
+                                <td colspan='7' class="text-center">No cards found</td>
+                            </tr>
+                        {% else %}
+                            {% set collectedCards = userCollectionManager.getAllCollectedCardsFromLoggedInUser %}
+                            {% set collectedPrintings = userCollectionManager.getAllCollectedPrintingsFromLoggedInUser %}
+
+                            {% for printingId, printings in cards %}
+                                <tr>
+                                    <td style="width: 20px;">
+                                        <i class="bi bi-chevron-down" id="icon-{{ printingId }}" style="font-size: 1rem; color: gray; cursor: pointer;" data-action="click->printing#toggleRow" data-printing-row-param="row-{{ printingId }}"></i>
+                                    </td>
+                                        <td style="width: 40px;">
+                                        <div class="playset-icons-container" data-id="{{ printingId }}" data-printing-target="playsetIconsContainer" >
+                                        {# Get correct playset size for this card #}
+                                        {% set playsetSize = 3 %}
+                                        {% set playsetSize = userCollectionManager.getPlaysetSizeForCard(printings|first) %}
+
+                                        {# Get how many copies of this CARD the user has collected #}
+                                        {% set playsetAmount = 0 %}
+                                        {% if collectedCards.containsKey(printingId) %}
+                                            {% set playsetAmount = collectedCards.get(printingId) %}
+                                        {% endif %} 
+                                        
+                                            {% for i in 1..playsetSize %}
+                                                <div class="card-icon 
+                                                    {% if i == 1 and playsetAmount > 0 %}filled{% endif %}
+                                                    {% if i == 2 and playsetAmount > 1 %}filled{% endif %}
+                                                    {% if i == 3 and playsetAmount > 2 %}filled{% endif %}
+                                                "></div>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    <td style="width: 80px;">
+                                        <span class="cardId">{{ printingId }}</span>
+                                    </td>
+                                    <td>
+                                        {{ printings.card.name }}
+
+                                        {% if 1 ==  printings.card.pitch %}
+                                            <div class="pitch-container"><div class="pitch pitch-1"></div></div>
+                                        {% elseif 2 == printings.card.pitch %}
+                                            <div class="pitch-container"><div class="pitch pitch-2"></div><div class="pitch pitch-2"></div></div>
+                                        {% elseif 3 == printings.card.pitch %}
+                                            <div class="pitch-container"><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div></div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr id="row-{{ printingId }}" data-printing-target="playerviewRow" data-filter-target="playerviewRow">
+                                    <td colspan="4" >
+                                        <table class="table table-hover table-borderless table-sm card-printing align-middle">
+                                            {% for printing in printings.printings %}
+                                                {# Get how many copies of this PRINTING the user has collected #}
+                                                {% set collectedPrintingAmount = 0 %}
+                                                {% if collectedPrintings.containsKey(printing.uniqueId) %}
+                                                    {% set collectedPrintingAmount = collectedPrintings.get(printing.uniqueId) %}
+                                                {% endif %}
+
+                                                <tr>
+                                                    <td style="width: 20px;"></td>
+                                                    <td style="width: 100px;">
+                                                        <div class="input-group input-group-sm" data-quantity-id="amount-selector-{{ printing.uniqueId }}">
+                                                            <button class="btn btn-outline-secondary decrementBtn btn-sm" type="button" 
+                                                                data-action="click->printing#decrementAmount"
+                                                                data-printing-id-param="{{ printing.uniqueId }}"
+                                                                data-printing-set-id-param="{{ set.id }}"
+                                                                data-printing-card-name-param="{{ printing.card.name }}"
+                                                                data-printing-card-id-param="{{ printing.cardId }}"
+                                                                data-printing-target="decrementButton"
+                                                                {% if collectedPrintingAmount == 0 %}disabled{% endif %}>-</button>
+                                                            <input 
+                                                                class="form-control form-control-sm text-center" 
+                                                                type="text" 
+                                                                value="{{ collectedPrintingAmount }}" 
+                                                                data-original-value="{{ collectedPrintingAmount }}" 
+                                                                aria-label="0"
+                                                                data-printing-target="amountInput" 
+                                                                disabled
+                                                            > 
+                                                            <button class="btn btn-outline-secondary incrementBtn btn-sm" type="button" 
+                                                                data-action="click->printing#incrementAmount"
+                                                                data-printing-id-param="{{ printing.uniqueId }}"
+                                                                data-printing-set-id-param="{{ set.id }}"
+                                                                data-printing-card-name-param="{{ printing.card.name }}"
+                                                                data-printing-card-id-param="{{ printing.cardId }}"
+                                                                data-printing-target="incrementButton"
+                                                                {% if collectedPrintingAmount >= 99 %}disabled{% endif %}>+</button>
+                                                        </div>
+                                                    </td>
+                                                    <td style="width: 20px;">
+                                                        {% set rarity = rarityHelper.getRarityDescriptionById(printing.rarity) %}
+                                                        {% if rarity == 'Marvel' %}
+                                                            <span class="rarity-marvel"></span>
+                                                        {% elseif rarity == 'Fabled' %}
+                                                            <span class="rarity-fabled"></span>
+                                                        {% else %}
+                                                            <span class="rarity-circle {{ rarity|lower|replace({' ': ''}) }}">{{ rarity|first }}</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {{ foilingHelper.getFoilingNameById(printing.foiling) }}
+                                                        {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }}
+                                                        {% if printing.edition != "N" %}<i> - {{ editionHelper.getEditionNameById(printing.edition) }}</i>{% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>

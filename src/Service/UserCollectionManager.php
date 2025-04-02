@@ -8,16 +8,38 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 class UserCollectionManager
 {
+    private ArrayCollection $userCollectedPrintings;
     private ArrayCollection $userCollectedCards;
-
+    
     // Avoid calling getUser() in the constructor: auth may not
     // be complete yet. Instead, store the entire Security object.
     public function __construct(
         private Security $security,
     ) {
+        $this->userCollectedPrintings = new ArrayCollection();
         $this->userCollectedCards = new ArrayCollection();
     }
 
+    /**
+     * Get's all collected card printings for logged in user
+     */
+    public function getAllCollectedPrintingsFromLoggedInUser(): ArrayCollection
+    {
+        if ($this->userCollectedPrintings->isEmpty()) {
+            /** @var App\Entity\User $user */
+            $user = $this->security->getUser();
+        
+            foreach ($user->getCardPrintings() as $userCardPrinting) {
+                $this->userCollectedPrintings->set($userCardPrinting->getCardPrinting()->getUniqueId(), $userCardPrinting->getCollectionAmount());
+            }
+        }
+
+        return $this->userCollectedPrintings;
+    }
+
+    /**
+     * Get's all collected cards for logged in user
+     */
     public function getAllCollectedCardsFromLoggedInUser(): ArrayCollection
     {
         if ($this->userCollectedCards->isEmpty()) {
@@ -25,7 +47,15 @@ class UserCollectionManager
             $user = $this->security->getUser();
         
             foreach ($user->getCardPrintings() as $userCardPrinting) {
-                $this->userCollectedCards->set($userCardPrinting->getCardPrintingUniqueId(), $userCardPrinting->getCollectionAmount());
+                $alreadyOwnedAmount = 0;
+                if (null !== $this->userCollectedCards->get($userCardPrinting->getCardPrinting()->getCardId())) {
+                    $alreadyOwnedAmount = $this->userCollectedCards->get($userCardPrinting->getCardPrinting()->getCardId());
+                }
+
+                $this->userCollectedCards->set(
+                    $userCardPrinting->getCardPrinting()->getCardId(), 
+                    $userCardPrinting->getCollectionAmount() + $alreadyOwnedAmount
+                );
             }
         }
 

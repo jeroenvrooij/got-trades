@@ -65,6 +65,14 @@ class CardFilterFormType extends AbstractType
                 'label' => 'hide own cards?',
                 'required' => false,
             ])
+            ->add('collectorView', CheckboxType::class, [
+                'attr' => [
+                    'class' =>'form-check-input', 
+                    'role' => 'switch'
+                ],
+                'label' => 'Show expanded collectors view',
+                'required' => false,
+            ])
         ;
     }
 

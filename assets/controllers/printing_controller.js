@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus";
 
   
 export default class extends Controller {
-    static targets = ["amountInput", "decrementButton", "incrementButton", "playsetIconsContainer", 'filterForm'];
+    static targets = ["amountInput", "decrementButton", "incrementButton", "playsetIconsContainer", 'filterForm', 'playerviewRow'];
 
     // Store array of timeout, each card will have their own
     timeouts = {}; 
@@ -12,12 +12,68 @@ export default class extends Controller {
           // Store the original value of each input
           input.dataset.originalValue = input.value;
         });
-
+        
         if (!window.requests) {
             window.requests = [];
         }
+        if (!window.openRows) {
+            window.openRows = [];
+        }
+        this.playerviewRowTargets.forEach(row => {
+            this.closeRow(row);
+        })
     }
 
+    playerviewRowTargetConnected(row) {
+        if (window.openRows) {
+            if(!window.openRows.includes(row.id)) {
+                this.closeRow(row, true);
+            }
+        } else {
+            this.closeRow(row, true);
+        }
+    }
+
+    openRow(row) {
+        row.hidden = false;
+        if (window.openRows) {
+            window.openRows.push(row.id);
+        }
+    }
+    
+    closeRow(row, keepOpen = false) {
+        row.hidden = true;
+        const icon = this.element.querySelector('[data-printing-row-param="' + row.id + '"]');
+        icon.classList.remove("bi-chevron-down");
+        icon.classList.add("bi-chevron-right");
+        if (window.openRows && !keepOpen) {
+            window.openRows.splice(window.openRows.indexOf(row.id), 1);
+        }
+    }
+
+    toggleRow(event) {
+        const icon = event.target;
+
+        // Toggle the icon
+        if (icon.classList.contains("bi-chevron-right")) {
+            icon.classList.remove("bi-chevron-right");
+            icon.classList.add("bi-chevron-down");
+        } else {
+            icon.classList.remove("bi-chevron-down");
+            icon.classList.add("bi-chevron-right");
+        }
+
+        // Toggle the row
+        // console.log(event.params.row);
+        const row =  document.getElementById(event.params.row);
+        
+        // if the row was opened, store it in window.openRows so we can keep it open (after form is submitted)
+        if (row.hidden) {
+            this.openRow(row);
+        } else {
+            this.closeRow(row);
+        }
+    }
     incrementAmount(event) {
         const inputGroup = event.target.closest(".input-group");
 
@@ -122,8 +178,12 @@ export default class extends Controller {
             if (data.success) {
                 // Update the original value after a successful request
                 inputField.dataset.originalValue = amount;
-                
-                this.showToast("Success", `You now own ${cardName} ${amount} times`, "success");
+                let totalAmount = this.calculateTotalAmountBasedOnEvent(event);
+                if (null == totalAmount) {
+                    totalAmount = amount;
+                }
+        
+                this.showToast("Success", `You now own ${cardName} ${totalAmount} times`, "success");
             } else {
                 this.showToast("Error", "Failed to update quantity!", "danger");
             }
@@ -134,31 +194,55 @@ export default class extends Controller {
         .finally(() => {
             // this request was handled, so remove it from the pending requests
             window.requests.splice(window.requests.indexOf(id), 1);
-
+            
             // update the playset icons and re-enable the filters
             this.updatePlaysetIcons(event, amount);
             this.updateFilterState();
-            console.log(window.requests);
             if (window.requests.length === 0) {
                 // there are no more pending requests
-                this.filterFormTarget.requestSubmit();
+                // this.filterFormTarget.requestSubmit();
             }
         });
     }
 
+    calculateTotalAmountBasedOnEvent(event)
+    {
+        let playsetIconsContainer = this.playsetIconsContainerTargets.find(el => el.dataset.id === event.params.cardId);
+        let totalAmount = null;
+        if (playsetIconsContainer) {
+            // Find the closest nested table (ancestor of the clicked button)
+            const nestedTable = event.target.closest("table");
+            if (!nestedTable) return;
+
+            // Get all amount input fields inside this specific nested table
+            const inputs = nestedTable.querySelectorAll("[data-printing-target='amountInput']");
+
+            // Calculate total
+            totalAmount = Array.from(inputs).reduce((sum, input) => sum + parseInt(input.dataset.originalValue || 0, 10), 0);
+        }
+        return totalAmount;
+
+    }
+
     updatePlaysetIcons(event, amount) {
-        const inputGroup = event.target.closest("tr"); 
-        const playsetIconsContainer = inputGroup.querySelector('[data-printing-target="playsetIconsContainer"]');
-        
+        let playsetIconsContainer = this.playsetIconsContainerTargets.find(el => el.dataset.id === event.params.cardId);
+        let totalAmount = amount;
+        if (playsetIconsContainer) {
+           totalAmount = this.calculateTotalAmountBasedOnEvent(event);
+        } else {
+            const inputGroup = event.target.closest("tr"); 
+            playsetIconsContainer = inputGroup.querySelector('[data-printing-target="playsetIconsContainer"]');
+        }
+
         playsetIconsContainer.querySelectorAll(".card-icon").forEach((playsetIcon, index) => {
             playsetIcon.classList.remove("filled");
-            if (index == 0 && amount > 0) {
+            if (index == 0 && totalAmount > 0) {
                 playsetIcon.classList.add("filled");
             }
-            if (index == 1 && amount > 1) {
+            if (index == 1 && totalAmount > 1) {
                 playsetIcon.classList.add("filled");
             }
-            if (index == 2 && amount > 2) {
+            if (index == 2 && totalAmount > 2) {
                 playsetIcon.classList.add("filled");
             }
         });
@@ -180,7 +264,7 @@ export default class extends Controller {
         }
     }
 
-    showToast(title, message, type = "info") {
+    showToast(event, message, type = "info") {
         const toastContainer = document.querySelector("#toast-container");
 
         const toastId = `toast-${Date.now()}`;
