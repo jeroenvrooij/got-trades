@@ -81,7 +81,7 @@ class CollectionController extends AbstractController
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-                dump($hideOwnedCards, $collectorView);
+                
                 $cards = $this->cardFinder->findCardsBySet($set, $hideOwnedCards, $collectorView, $foiling, $cardName);
 
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
@@ -158,7 +158,7 @@ class CollectionController extends AbstractController
                     'userCollectionManager' => $this->userCollectionManager,
                     'cardPrintingsTree' => $cards,
                     'collectorView' => $collectorView,
-                    'pageTitle' => $className,
+                    'pageTitle' => ucfirst($className),
                 ]);
             }
 
@@ -188,7 +188,7 @@ class CollectionController extends AbstractController
             'cardPrintingsTree' => $cards,
             'form' => $form,
             'collectorView' => false,
-            'pageTitle' => $className,
+            'pageTitle' => ucfirst($className),
         ]);
     }
 
@@ -199,36 +199,33 @@ class CollectionController extends AbstractController
         EntityManagerInterface $entityManager,
         LoggerInterface $logger
     ): Response {
-        try {
-            $data = json_decode($request->getContent(), true);
-            
-            $amount = $data['amount'] ?? null;
+        $data = json_decode($request->getContent(), true);
+        
+        $amount = $data['amount'] ?? null;
 
-            if ($amount !== null) {
-                $userCardPrintings = $entityManager->getRepository(UserCardPrintings::class)->find([
-                    'user' => $this->getUser(),
-                    'cardPrinting' => $data['id'],
-                ]);
-                if (null === $userCardPrintings) {
-                    $userCardPrintings = new UserCardPrintings();
-                    $userCardPrintings->setUser($this->getUser());
-                    $cardPrinting = $entityManager->getRepository(CardPrinting::class)->findOneBy(['uniqueId' => $data['id']]);
-                    $userCardPrintings->setCardPrinting($cardPrinting);
-                    $entityManager->persist($userCardPrintings);
-                }
-                if ('0' === $data['amount']) {
-                    $entityManager->remove($userCardPrintings);
-                } else {
-                    $userCardPrintings->setCollectionAmount($data['amount']);
-                }
-                $entityManager->flush();
+        if ($amount !== null) {
+            $userCardPrintings = $entityManager->getRepository(UserCardPrintings::class)->find([
+                'user' => $this->getUser(),
+                'cardPrinting' => $data['id'],
+            ]);
+            if (null === $userCardPrintings) {
+                $userCardPrintings = new UserCardPrintings();
+                $userCardPrintings->setUser($this->getUser());
+                $cardPrinting = $entityManager->getRepository(CardPrinting::class)->findOneBy(['uniqueId' => $data['id']]);
+                $userCardPrintings->setCardPrinting($cardPrinting);
+                $entityManager->persist($userCardPrintings);
             }
-
-            $this->addFlash('success', 'Quantity updated successfully!');
-            return new JsonResponse(['success' => true]);
-        } catch (\Exception $exception) {
-            dump($exception);die();
+            if ('0' === $data['amount']) {
+                $entityManager->remove($userCardPrintings);
+            } else {
+                $userCardPrintings->setCollectionAmount($data['amount']);
+            }
+            $entityManager->flush();
         }
+
+        $this->addFlash('success', 'Quantity updated successfully!');
+        
+        return new JsonResponse(['success' => true]);
     }
 
     #[Route('/flash-messages', name: 'flash_messages')]

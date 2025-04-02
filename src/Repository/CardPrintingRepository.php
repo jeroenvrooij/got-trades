@@ -95,7 +95,6 @@ class CardPrintingRepository extends ServiceEntityRepository
         ?string $cardName = '', 
     ): QueryBuilder
     {
-        dump($hideOwnedCards, $collectorView);
         $qb = $this->createQueryBuilder('cp');
 
         $qb
