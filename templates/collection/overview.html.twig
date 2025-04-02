@@ -7,12 +7,12 @@
 	<li class="breadcrumb-item">
 		<a class="link-secondary link-offset-2 link-underline-opacity-40 link-underline-opacity-100-hover" href="{{ path('app_card_setoverviewpage') }}">Booster set overview</a>
 	</li>
-	<li class="breadcrumb-item active" aria-current="page">{{ set.name }}</li>
+	<li class="breadcrumb-item active" aria-current="page">{{ pageTitle }}</li>
 {% endblock %}
 
 {% block body %}
 	<div class="container text-center">
-		<h1 class="text-secondary">{{ set.name }}</h1>
+		<h1 class="text-secondary">{{ pageTitle }}</h1>
 	</div>
 	<div class="container" {{ stimulus_controller('filter printing') }}>
 		{{ form_start(form, { attr: {'data-filter-target': 'filterForm', 'data-printing-target': 'filterForm' } }) }}

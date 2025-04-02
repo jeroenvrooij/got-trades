@@ -1,39 +1,42 @@
 
-    {% set editionSets = [
-        'WTR',
-        'ARC',
-        'CRU',
-        'MON',
-        'ELE',
-        'EVR',
-    ] %}
-    <div id="printing_table">
-        <div class="container-sm">
-            <div class="table-responsive" >
-                <table class="table table-hover table-sm card-printing align-middle">
-                    <thead>
-                        <tr>
-                            <th scope="col" style="width: 40px;"></th>  
-                            <th scope="col" style="width: 80px;">Code</th>
-                            <th scope="col" style="width: 20px;"></th>
-                            <th scope="col">Name</th>
-                            <th scope="col" style="width: 190px;" class="d-none d-md-table-cell">Foiling</th>
-                            <th scope="col" style="width: 70px;" class="d-md-none"></th>
-                            {% if set.id in editionSets %}
+{% set editionSets = [
+    'Welcome to Rathe',
+    'Arcane Rising',
+    'Crucible of War',
+    'Monarch',
+    'Tales of Aria',
+] %}
+<div id="printing_table">
+    <div class="container-sm">
+        <div class="table-responsive" >
+            <table class="table table-hover table-sm card-printing align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 40px;"></th>  
+                        <th scope="col" style="width: 80px;">Code</th>
+                        <th scope="col" style="width: 20px;"></th>
+                        <th scope="col">Name</th>
+                        <th scope="col" style="width: 190px;" class="d-none d-md-table-cell">Foiling</th>
+                        <th scope="col" style="width: 70px;" class="d-md-none"></th>
+                        {% if cardPrintingsTree|length == 1 %}
+                            {% set setId = cardPrintingsTree|keys|first %}
+                            {% if setId in editionSets %}
                                 <th scope="col" style="width: 90px;" class="d-none d-md-table-cell">Edition</th>
                                 <th scope="col" style="width: 20px;" class="d-md-none"></th>
                             {% endif %}
-                            <th scope="col" style="width: 100px;">Collection</th>
+                        {% endif %}
+                        <th scope="col" style="width: 100px;">Collection</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if cardPrintingsTree|length == 0 %}
+                        <tr>
+                            <td colspan='7' class="text-center">No cards found</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {% if cards|length == 0 %}
-                            <tr>
-                                <td colspan='7' class="text-center">No cards found</td>
-                            </tr>
-                        {% else %}
+                    {% else %}
+                        {% for setName, sets in cardPrintingsTree %}
                             {% set collectedCards = userCollectionManager.getAllCollectedPrintingsFromLoggedInUser %}
-                            {% for printingId, printings in cards %}
+                            {% for printingId, printings in sets %}
                                 {% for printing in printings.printings %}
                                     {% set rand = random(0,3) %}
                                     {% set amount = 0 %}
@@ -87,7 +90,7 @@
                                             {# This column is only shown on md and smaller viewports #}
                                             {% if printing.foiling != 'S' %}{{ printing.foiling }}F{% endif %} {{ artVariationsHelper.getShortenedArtVariations(printing.artVariations) }}
                                         </td>
-                                        {% if set.id in editionSets %}
+                                        {% if setName in editionSets %}
                                             {# This edition column is only shown on md+ viewports #}
                                             <td class="d-none d-md-table-cell">
                                                 {% if printing.edition != "N" %}{{ editionHelper.getEditionNameById(printing.edition) }}{% endif %}
@@ -100,7 +103,6 @@
                                                 <button class="btn btn-outline-secondary decrementBtn btn-sm" type="button" 
                                                     data-action="click->printing#decrementAmount"
                                                     data-printing-id-param="{{ printing.uniqueId }}"
-                                                    data-printing-set-id-param="{{ set.id }}"
                                                     data-printing-card-name-param="{{ printing.card.name }}"
                                                     data-printing-target="decrementButton"
                                                     {% if amount == 0 %}disabled{% endif %}>-</button>
@@ -116,7 +118,6 @@
                                                 <button class="btn btn-outline-secondary incrementBtn btn-sm" type="button" 
                                                     data-action="click->printing#incrementAmount"
                                                     data-printing-id-param="{{ printing.uniqueId }}"
-                                                    data-printing-set-id-param="{{ set.id }}"
                                                     data-printing-card-name-param="{{ printing.card.name }}"
                                                     data-printing-target="incrementButton"
                                                     {% if amount >= 99 %}disabled{% endif %}>+</button>
@@ -126,9 +127,10 @@
                                     </tr>
                                 {% endfor %}
                             {% endfor %}
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
         </div>
     </div>
+</div>

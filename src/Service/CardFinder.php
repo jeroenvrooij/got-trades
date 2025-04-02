@@ -29,27 +29,18 @@ class CardFinder
      */
     public function findCardsBySet(
         ?Set $set, 
-        ?string $foiling = '', 
         ?bool $hideOwnedCards = false, 
+        ?bool $collectorView = false,
+        ?string $foiling = '', 
         ?string $cardName = '',
-        ?bool $collectorView = true
     ) {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
         
-        $printings = $this->entityManager->getRepository(CardPrinting::class)->findBySet($set, $foiling, $hideOwnedCards, $cardName, $collectorView);
+        $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findBySet($set, $hideOwnedCards, $collectorView, $foiling, $cardName);
 
-        $cards = new ArrayCollection();
-        foreach ($printings as $printing) {
-            if(!$cards->get($printing->getCardId())) {
-                $collection = new ArrayCollection(['card' => $printing->getCard(), 'printings' => new ArrayCollection()]);
-                $cards->set($printing->getCardId(), $collection);
-            }
-            $cards->get($printing->getCardId())->get('printings')->add($printing);
-        }
-        
-        return $cards;
+        return $this->buildPrintingTree($cardPrintings);
     }
 
     /**
@@ -61,27 +52,43 @@ class CardFinder
      */
     public function findCardsByClass(
         ?string $className, 
-        ?string $foiling = '', 
         ?bool $hideOwnedCards = false, 
-        ?string $cardName = ''
+        ?bool $collectorView = false,
+        ?string $foiling = '', 
+        ?string $cardName = '',
     ) {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
         
-        $printings = $this->entityManager->getRepository(CardPrinting::class)->findByClass($className, $foiling, $hideOwnedCards, $cardName);
+        $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findByClass($className, $hideOwnedCards, $collectorView, $foiling, $cardName);
         
+        return $this->buildPrintingTree($cardPrintings);
+    }
+
+    /**
+     * Takes an array of card printings and build a tree structured like:
+     * 
+     * [%SET_ID%] => [
+     *  [%CARD_ID%] => [
+     *          'card' => App\Entity\Card,
+     *          'printings => <ArrayCollection> App\Entity\CardPrinting
+     *  ]
+     * ]
+     */
+    private function buildPrintingTree(array $cardPrintings): ArrayCollection
+    {
         $cards = new ArrayCollection();
-        foreach ($printings as $printing) {
+        foreach ($cardPrintings as $printing) {
             if(!$cards->get($printing->getSet()->getName())) {
                 $cards->set($printing->getSet()->getName(), new ArrayCollection());
             }
             $cardsFromSet = $cards->get($printing->getSet()->getName());
-            if(!$cardsFromSet->get($printing->getCard()->getUniqueId())) {
+            if(!$cardsFromSet->get($printing->getCardId())) {
                 $collection = new ArrayCollection(['card' => $printing->getCard(), 'printings' => new ArrayCollection()]);
-                $cardsFromSet->set($printing->getCard()->getUniqueId(), $collection);
+                $cardsFromSet->set($printing->getCardId(), $collection);
             }
-            $cardsFromSet->get($printing->getCard()->getUniqueId())->get('printings')->add($printing);
+            $cardsFromSet->get($printing->getCardId())->get('printings')->add($printing);
         }
 
         return $cards;

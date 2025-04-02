@@ -1,26 +1,18 @@
-
-    {% set editionSets = [
-        'WTR',
-        'ARC',
-        'CRU',
-        'MON',
-        'ELE',
-        'EVR',
-    ] %}
-    <div id="printing_table">
-        <div class="container-sm">
-            <div class="table-responsive" >
-                <table class="table table-sm card-printing align-middle">
-                    <tbody>
-                        {% if cards|length == 0 %}
-                            <tr>
-                                <td colspan='7' class="text-center">No cards found</td>
-                            </tr>
-                        {% else %}
+<div id="printing_table">
+    <div class="container-sm">
+        <div class="table-responsive" >
+            <table class="table table-sm card-printing align-middle">
+                <tbody>
+                    {% if cardPrintingsTree|length == 0 %}
+                        <tr>
+                            <td colspan='7' class="text-center">No cards found</td>
+                        </tr>
+                    {% else %}
+                        {% for setName, sets in cardPrintingsTree %}
                             {% set collectedCards = userCollectionManager.getAllCollectedCardsFromLoggedInUser %}
                             {% set collectedPrintings = userCollectionManager.getAllCollectedPrintingsFromLoggedInUser %}
 
-                            {% for printingId, printings in cards %}
+                            {% for printingId, printings in sets %}
                                 <tr>
                                     <td style="width: 20px;">
                                         <i class="bi bi-chevron-down" id="icon-{{ printingId }}" style="font-size: 1rem; color: gray; cursor: pointer;" data-action="click->printing#toggleRow" data-printing-row-param="row-{{ printingId }}"></i>
@@ -78,7 +70,6 @@
                                                             <button class="btn btn-outline-secondary decrementBtn btn-sm" type="button" 
                                                                 data-action="click->printing#decrementAmount"
                                                                 data-printing-id-param="{{ printing.uniqueId }}"
-                                                                data-printing-set-id-param="{{ set.id }}"
                                                                 data-printing-card-name-param="{{ printing.card.name }}"
                                                                 data-printing-card-id-param="{{ printing.cardId }}"
                                                                 data-printing-target="decrementButton"
@@ -95,7 +86,6 @@
                                                             <button class="btn btn-outline-secondary incrementBtn btn-sm" type="button" 
                                                                 data-action="click->printing#incrementAmount"
                                                                 data-printing-id-param="{{ printing.uniqueId }}"
-                                                                data-printing-set-id-param="{{ set.id }}"
                                                                 data-printing-card-name-param="{{ printing.card.name }}"
                                                                 data-printing-card-id-param="{{ printing.cardId }}"
                                                                 data-printing-target="incrementButton"
@@ -123,9 +113,10 @@
                                     </td>
                                 </tr>
                             {% endfor %}
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
         </div>
     </div>
+</div>

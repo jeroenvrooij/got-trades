@@ -156,7 +156,6 @@ export default class extends Controller {
 
     updateAmount(event, inputField) {
         const id = event.params.id; 
-        const setId = event.params.setId;
         const cardName = event.params.cardName;
         const amount = inputField.value;
         
@@ -171,7 +170,7 @@ export default class extends Controller {
                 "Content-Type": "application/json",
                 "X-Requested-With": "XMLHttpRequest"
             },
-            body: JSON.stringify({ id, amount, setId })
+            body: JSON.stringify({ id, amount })
         })
         .then(response => response.json())
         .then(data => {
