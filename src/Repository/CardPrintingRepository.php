@@ -133,6 +133,7 @@ class CardPrintingRepository extends ServiceEntityRepository
                 )
             )
             ->addOrderBy('cp.cardId', 'ASC')
+            ->addOrderBy('cp.edition', 'DESC')
             ->addOrderBy('cp.foiling', 'DESC')
             ->addOrderBy('cp.artVariations', 'DESC')
             ;
