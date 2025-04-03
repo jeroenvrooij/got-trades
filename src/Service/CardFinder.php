@@ -63,7 +63,10 @@ class CardFinder
         
         $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findByClass($className, $hideOwnedCards, $collectorView, $foiling, $cardName);
         
-        return $this->buildPrintingTree($cardPrintings);
+        $cardPrintings = $this->buildPrintingTree($cardPrintings);
+        $printingsOrderedBySet = $this->orderPrintingTreeBySet($cardPrintings);
+
+        return $printingsOrderedBySet;
     }
 
     /**
@@ -92,5 +95,47 @@ class CardFinder
         }
 
         return $cards;
+    }
+
+    /**
+     * Orders the tree, moving booster sets up in order the came out. All other sets, 
+     * like armory decks will be added last.
+     */
+    private function orderPrintingTreeBySet(?ArrayCollection $cardPrintings): ArrayCollection
+    {
+         $desiredSetOrder = [
+            'The Hunted',
+            'Rosetta',
+            'Part the Mistveil',
+            'Heavy Hitters',
+            'Bright Lights',
+            'Dusk till Dawn',
+            'Outsiders',
+            'Dynasty',
+            'History Pack 1',
+            'Uprising',
+            'Everfest',
+            'Tales of Aria',
+            'Monarch',
+            'Crucible of War',
+            'Arcane Rising',
+            'Welcome to Rathe',
+        ];
+        $printingsOrderedBySet = new ArrayCollection();
+        
+        foreach ($desiredSetOrder as $key) {
+            if (null !== $cardPrintings->get($key)) {
+                $printingsOrderedBySet->set($key, $cardPrintings->get($key));
+            }
+        }
+
+        // Add all elements that where not ordered
+        foreach ($cardPrintings as $setKey => $setContents) {
+            if (null === $printingsOrderedBySet->get($setKey)) {
+                $printingsOrderedBySet->set($setKey, $setContents);
+            }
+        }
+
+        return $printingsOrderedBySet;
     }
 }

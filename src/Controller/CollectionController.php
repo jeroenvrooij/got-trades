@@ -141,15 +141,6 @@ class CollectionController extends AbstractController
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
                 $cards = $this->cardFinder->findCardsByClass($className, $hideOwnedCards, $collectorView, $foiling, $cardName);
 
-                // return $this->renderBlock('printing/printings_by_class.html.twig', 'printing_table', [
-                //     'editionHelper' => $this->editionHelper,
-                //     'foilingHelper' => $this->foilingHelper,
-                //     'rarityHelper' => $this->rarityHelper,
-                //     'artVariationsHelper' => $this->artVariationsHelper,
-                //     'userCollectionManager' => $this->userCollectionManager,
-                //     'class' => $className, 
-                //     'cards' => $cards,
-                // ]);
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
                     'foilingHelper' => $this->foilingHelper,
@@ -169,16 +160,6 @@ class CollectionController extends AbstractController
 
         $cards = $this->cardFinder->findCardsByClass($className);
 
-        // return $this->render('printing/printings_by_class.html.twig', [
-        //     'editionHelper' => $this->editionHelper,
-        //     'foilingHelper' => $this->foilingHelper,
-        //     'rarityHelper' => $this->rarityHelper,
-        //     'artVariationsHelper' => $this->artVariationsHelper,
-        //     'userCollectionManager' => $this->userCollectionManager,
-        //     'class' => $className, 
-        //     'cards' => $cards,
-        //     'form' => $form,
-        // ]);
        return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
             'foilingHelper' => $this->foilingHelper,
@@ -224,7 +205,7 @@ class CollectionController extends AbstractController
         }
 
         $this->addFlash('success', 'Quantity updated successfully!');
-        
+
         return new JsonResponse(['success' => true]);
     }
 
