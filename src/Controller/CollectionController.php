@@ -124,6 +124,28 @@ class CollectionController extends AbstractController
         EntityManagerInterface $entityManager,
         ?string $className
     ): Response {
+        $allowedClasses = [
+            'adjudicator',
+            'assassin',
+            'bard',
+            'brute',
+            'generic',
+            'guardian',
+            'illusionist',
+            'mechanologist',
+            'merchant',
+            'ninja',
+            'ranger',
+            'runeblade',
+            'shapeshifter',
+            'warrior',
+            'wizard',
+        ]; 
+
+        if (!in_array($className, $allowedClasses, true)) {
+            throw $this->createNotFoundException("Invalid class: $className");
+        }
+
         $form = $this->createForm(CardFilterFormType::class);
 
         $form->handleRequest($request);
