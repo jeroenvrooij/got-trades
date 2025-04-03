@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\CardRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CardRepository::class)]
@@ -31,9 +30,8 @@ class Card
     #[ORM\Column(type: 'simple_array', name: 'card_keywords')]
     private array $keywords;
     
-
-    #[ORM\Column(length: 50, nullable: true)]
-    private string $className;
+    #[ORM\OneToMany(mappedBy: "card", targetEntity: CardClass::class, cascade: ["remove"])]
+    private Collection $cardClasses;
 
     public function __construct()
     {
@@ -82,8 +80,12 @@ class Card
         return array_map(fn($keyword) => trim($keyword, '{}'), $this->keywords);
     }
 
-    public function getClassName(): string 
-    { 
-        return $this->className;
+    /**
+     * @return Collection<int, CardClass>
+     */
+    public function getCardClasses(): Collection
+    {
+        return $this->cardClasses;
     }
+
 }

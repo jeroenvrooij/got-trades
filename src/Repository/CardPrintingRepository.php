@@ -71,7 +71,8 @@ class CardPrintingRepository extends ServiceEntityRepository
         $qb = $this->buildCoreQuery($hideOwnedCards, $collectorView, $foiling, $cardName);
 
         $qb
-            ->andWhere('c.className = :className')
+            ->innerJoin('c.cardClasses', 'classes')
+            ->andWhere('classes.className = :className')
             ->setParameter('className', ucfirst($className))
             ->andWhere('cp.rarity != :promo')
             ->setParameter('promo', 'P')
