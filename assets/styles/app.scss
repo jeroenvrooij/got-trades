@@ -267,6 +267,11 @@
 }
 
 
+.classImage.generic
+{
+    background-image: url('../images/class_art/talishar_cropped.png'); 
+}
+
 .classImage.warrior
 {
     background-image: url('../images/class_art/dorinthea_hero.original.jpg'); 
@@ -282,6 +287,42 @@
 .classImage.ninja
 {
     background-image: url('../images/class_art/katsu_hero.original.jpg'); 
+}
+.classImage.wizard
+{
+    background-image: url('../images/class_art/kano_old.original.jpg'); 
+}
+.classImage.mechanologist
+{
+    background-image: url('../images/class_art/mechanologist.jpg'); 
+}
+.classImage.runeblade
+{
+    background-image: url('../images/class_art/vis19238.original.jpg'); 
+}
+.classImage.illusionist
+{
+    background-image: url('../images/class_art/prism.jpg'); 
+}
+.classImage.ranger
+{
+    background-image: url('../images/class_art/azalea.original.jpg'); 
+}
+.classImage.assassin
+{
+    background-image: url('../images/class_art/out_art_uzuri.original.jpg'); 
+}
+.classImage.bard
+{
+    background-image: url('../images/class_art/melody.jpg'); 
+}
+.classImage.merchant
+{
+    background-image: url('../images/class_art/art_image_genis.original.jpg'); 
+}
+.classImage.shapeshifter
+{
+    background-image: url('../images/class_art/Shiyana.original.jpg'); 
 }
 
 // Boostrap SASS + overrides
