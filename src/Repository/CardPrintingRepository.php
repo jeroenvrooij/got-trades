@@ -243,6 +243,8 @@ class CardPrintingRepository extends ServiceEntityRepository
                                 ->groupBy('ucp_c.uniqueId')
                                 ->where('ucp_c = c')
                                 ->andWhere('ucp.user = :userId')
+                                // only cards from within the same set should be filtered out 
+                                ->andWhere('ucp_cp.cardId = cp.cardId')
                                 ->having('
                                     SUM(ucp.collectionAmount) >=
                                     CASE
