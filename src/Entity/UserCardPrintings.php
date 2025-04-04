@@ -14,10 +14,11 @@ class UserCardPrintings
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     private ?user $user = null;
 
+    // This can't be a relation as Doctrine would then make a FK, which would cascase delete records when
+    // card db is recreated
     #[ORM\Id]
-    #[ORM\ManyToOne(fetch: 'EAGER')]
-    #[ORM\JoinColumn(name: 'card_printing_unique_id', referencedColumnName: 'unique_id', nullable: false)]
-    private CardPrinting $cardPrinting;
+    #[ORM\Column(name: 'card_printing_unique_id', length: 21, nullable: false)]
+    private string $cardPrinting;
 
     #[ORM\Column]
     private ?int $collectionAmount = null;
@@ -34,12 +35,12 @@ class UserCardPrintings
         return $this;
     }
 
-    public function getCardPrinting(): ?CardPrinting
+    public function getCardPrinting(): ?string
     {
         return $this->cardPrinting;
     }
 
-    public function setCardPrinting(?CardPrinting $cardPrinting): static
+    public function setCardPrinting(?string $cardPrinting): static
     {
         $this->cardPrinting = $cardPrinting;
 

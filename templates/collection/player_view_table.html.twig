@@ -8,15 +8,16 @@
                             <td colspan='7' class="text-center">No cards found</td>
                         </tr>
                     {% else %}
+                        {% set collectedCards = userCollectionManager.getAllCollectedCardsFromLoggedInUser %}
+                        {% set collectedPrintings = userCollectionManager.getAllCollectedPrintingsFromLoggedInUser %}
+
                         {% for setName, sets in cardPrintingsTree %}
                             {% if cardPrintingsTree|length > 1 %}
                                 <tr class="table-active text-center">
                                     <th colspan='7'>{{ setName }}</th>
                                 </tr>
                             {% endif %}
-                            {% set collectedCards = userCollectionManager.getAllCollectedCardsFromLoggedInUser %}
-                            {% set collectedPrintings = userCollectionManager.getAllCollectedPrintingsFromLoggedInUser %}
-
+                            
                             {% for printingId, printings in sets %}
                                 <tr>
                                     <td style="width: 20px;">

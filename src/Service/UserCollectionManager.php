@@ -3,21 +3,26 @@
 namespace App\Service;
 
 use App\Entity\Card;
+use App\Entity\UserCardPrintings;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class UserCollectionManager
 {
     private ArrayCollection $userCollectedPrintings;
     private ArrayCollection $userCollectedCards;
+    private EntityManagerInterface $entityManager;
     
     // Avoid calling getUser() in the constructor: auth may not
     // be complete yet. Instead, store the entire Security object.
     public function __construct(
         private Security $security,
+        EntityManagerInterface $entityManager,
     ) {
         $this->userCollectedPrintings = new ArrayCollection();
         $this->userCollectedCards = new ArrayCollection();
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -29,8 +34,9 @@ class UserCollectionManager
             /** @var App\Entity\User $user */
             $user = $this->security->getUser();
         
-            foreach ($user->getCardPrintings() as $userCardPrinting) {
-                $this->userCollectedPrintings->set($userCardPrinting->getCardPrinting()->getUniqueId(), $userCardPrinting->getCollectionAmount());
+            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForUser($user);
+            foreach ($userCollectionModels as $userCollectionModel) {
+                $this->userCollectedPrintings->set($userCollectionModel->getCardPrintingUniqueId(), $userCollectionModel->getCollectionAmount());
             }
         }
 
@@ -46,15 +52,16 @@ class UserCollectionManager
             /** @var App\Entity\User $user */
             $user = $this->security->getUser();
         
-            foreach ($user->getCardPrintings() as $userCardPrinting) {
+            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForUser($user);
+            foreach ($userCollectionModels as $userCollectionModel) {
                 $alreadyOwnedAmount = 0;
-                if (null !== $this->userCollectedCards->get($userCardPrinting->getCardPrinting()->getCardId())) {
-                    $alreadyOwnedAmount = $this->userCollectedCards->get($userCardPrinting->getCardPrinting()->getCardId());
+                if (null !== $this->userCollectedCards->get($userCollectionModel->getCardId())) {
+                    $alreadyOwnedAmount = $this->userCollectedCards->get($userCollectionModel->getCardId());
                 }
 
                 $this->userCollectedCards->set(
-                    $userCardPrinting->getCardPrinting()->getCardId(), 
-                    $userCardPrinting->getCollectionAmount() + $alreadyOwnedAmount
+                    $userCollectionModel->getCardId(), 
+                    $userCollectionModel->getCollectionAmount() + $alreadyOwnedAmount
                 );
             }
         }

@@ -2,8 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\CardPrinting;
+use App\Entity\User;
 use App\Entity\UserCardPrintings;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,28 +19,18 @@ class UserCardPrintingsRepository extends ServiceEntityRepository
         parent::__construct($registry, UserCardPrintings::class);
     }
 
-    //    /**
-    //     * @return UserCardPrintings[] Returns an array of UserCardPrintings objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?UserCardPrintings
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+       /**
+        * @return UserCardPrintings[] Returns an array of UserCardPrintings objects
+        */
+        public function getCollectionDataForUser(User $user): array
+        {
+            return $this->createQueryBuilder('ucp')
+                ->select('NEW App\Model\UserCollectionModel(cp.uniqueId, cp.cardId, ucp.collectionAmount)')
+                ->innerJoin(CardPrinting::class, 'cp', Join::WITH, 'ucp.cardPrinting = cp.uniqueId')
+                ->andWhere('ucp.user = :user')
+                ->setParameter('user', $user)
+                ->getQuery()
+                ->getResult()
+            ;
+        }
 }

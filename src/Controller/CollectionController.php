@@ -200,28 +200,27 @@ class CollectionController extends AbstractController
     public function updateUserCollection(
         Request $request,
         EntityManagerInterface $entityManager,
-        LoggerInterface $logger
     ): Response {
         $data = json_decode($request->getContent(), true);
         
         $amount = $data['amount'] ?? null;
-
+        
         if ($amount !== null) {
+            $cardPrintingId = $data['id'];
             $userCardPrintings = $entityManager->getRepository(UserCardPrintings::class)->find([
                 'user' => $this->getUser(),
-                'cardPrinting' => $data['id'],
+                'cardPrinting' => $cardPrintingId,
             ]);
             if (null === $userCardPrintings) {
                 $userCardPrintings = new UserCardPrintings();
                 $userCardPrintings->setUser($this->getUser());
-                $cardPrinting = $entityManager->getRepository(CardPrinting::class)->findOneBy(['uniqueId' => $data['id']]);
-                $userCardPrintings->setCardPrinting($cardPrinting);
+                $userCardPrintings->setCardPrinting($cardPrintingId);
                 $entityManager->persist($userCardPrintings);
             }
-            if ('0' === $data['amount']) {
+            if ('0' === $amount) {
                 $entityManager->remove($userCardPrintings);
             } else {
-                $userCardPrintings->setCollectionAmount($data['amount']);
+                $userCardPrintings->setCollectionAmount($amount);
             }
             $entityManager->flush();
         }
@@ -229,11 +228,5 @@ class CollectionController extends AbstractController
         $this->addFlash('success', 'Quantity updated successfully!');
 
         return new JsonResponse(['success' => true]);
-    }
-
-    #[Route('/flash-messages', name: 'flash_messages')]
-    public function flashMessages(Request $request): Response
-    {
-        return $this->render('partials/_flash_messages.html.twig');
     }
 }

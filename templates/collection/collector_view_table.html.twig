@@ -33,13 +33,13 @@
                             <td colspan='7' class="text-center">No cards found</td>
                         </tr>
                     {% else %}
+                        {% set collectedCards = userCollectionManager.getAllCollectedPrintingsFromLoggedInUser %}
                         {% for setName, sets in cardPrintingsTree %}
                             {% if cardPrintingsTree|length > 1 %}
                                 <tr class="table-active text-center">
                                     <th colspan='7'>{{ setName }}</th>
                                 </tr>
                             {% endif %}
-                            {% set collectedCards = userCollectionManager.getAllCollectedPrintingsFromLoggedInUser %}
                             {% for printingId, printings in sets %}
                                 {% for printing in printings.printings %}
                                     {% set rand = random(0,3) %}
