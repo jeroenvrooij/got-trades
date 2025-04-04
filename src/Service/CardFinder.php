@@ -78,7 +78,6 @@ class CardFinder
      */
     public function findPromos(
         ?bool $hideOwnedCards = false, 
-        ?bool $collectorView = false,
         ?string $foiling = '', 
         ?string $cardName = '',
     ) {
@@ -86,7 +85,7 @@ class CardFinder
             $foiling = '';
         }
         
-        $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findPromos($hideOwnedCards, $collectorView, $foiling, $cardName);
+        $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findPromos($hideOwnedCards, $foiling, $cardName);
         
         $cardPrintings = $this->buildPrintingTree($cardPrintings);
         $printingsOrderedBySet = $this->orderPrintingTreeBySet($cardPrintings);

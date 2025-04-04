@@ -217,13 +217,12 @@ class CollectionController extends AbstractController
             $foiling = $formData['foiling'];
             $hideOwnedCards = $formData['hide'];
             $cardName = $formData['cardName'];
-            $collectorView = $formData['collectorView'];
 
             // 🔥 The magic happens here! 🔥
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-                $cards = $this->cardFinder->findPromos($hideOwnedCards, $collectorView, $foiling, $cardName);
+                $cards = $this->cardFinder->findPromos($hideOwnedCards, $foiling, $cardName);
                 
                 return $this->renderBlock('collection/promo_overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,

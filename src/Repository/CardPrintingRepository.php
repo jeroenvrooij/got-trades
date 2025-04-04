@@ -92,12 +92,11 @@ class CardPrintingRepository extends ServiceEntityRepository
     */
     public function findPromos(
         ?bool $hideOwnedCards = false, 
-        ?bool $collectorView = false,
         ?string $foiling = '', 
         ?string $cardName = '', 
     ): array
     {
-        $qb = $this->buildCoreQuery($hideOwnedCards, $collectorView, $foiling, $cardName);
+        $qb = $this->buildCoreQuery($hideOwnedCards, true, $foiling, $cardName);
 
         $qb
             ->andWhere('cp.rarity = :promo')
