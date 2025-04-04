@@ -8,9 +8,6 @@
                             <td colspan='7' class="text-center">No cards found</td>
                         </tr>
                     {% else %}
-                        {% set collectedCards = userCollectionManager.getAllCollectedCardsFromLoggedInUser %}
-                        {% set collectedPrintings = userCollectionManager.getAllCollectedPrintingsFromLoggedInUser %}
-
                         {% for setName, sets in cardPrintingsTree %}
                             {% if cardPrintingsTree|length > 1 %}
                                 <tr class="table-active text-center">
@@ -31,8 +28,8 @@
 
                                         {# Get how many copies of this CARD the user has collected #}
                                         {% set playsetAmount = 0 %}
-                                        {% if collectedCards.containsKey(printingId) %}
-                                            {% set playsetAmount = collectedCards.get(printingId) %}
+                                        {% if userCollectedCards.containsKey(printingId) %}
+                                            {% set playsetAmount = userCollectedCards.get(printingId) %}
                                         {% endif %} 
                                         
                                             {% for i in 1..playsetSize %}
@@ -65,8 +62,8 @@
                                             {% for printing in printings.printings %}
                                                 {# Get how many copies of this PRINTING the user has collected #}
                                                 {% set collectedPrintingAmount = 0 %}
-                                                {% if collectedPrintings.containsKey(printing.uniqueId) %}
-                                                    {% set collectedPrintingAmount = collectedPrintings.get(printing.uniqueId) %}
+                                                {% if userCollectedPrintings.containsKey(printing.uniqueId) %}
+                                                    {% set collectedPrintingAmount = userCollectedPrintings.get(printing.uniqueId) %}
                                                 {% endif %}
 
                                                 <tr>

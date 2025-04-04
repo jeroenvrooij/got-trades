@@ -2,7 +2,6 @@
 // src/Controller/PrintingController.php
 namespace App\Controller;
 
-use App\Entity\CardPrinting;
 use App\Entity\Set;
 use App\Entity\UserCardPrintings;
 use App\Form\CardFilterFormType;
@@ -13,8 +12,6 @@ use App\Service\FoilingHelper;
 use App\Service\RarityHelper;
 use App\Service\UserCollectionManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
-use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -58,7 +55,6 @@ class CollectionController extends AbstractController
     #[IsGranted('ROLE_USER', message: 'Viewing sets is only for logged in users')]
     public function manageCollectionBySet(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity(mapping: ['setId' => 'id'], message: 'Set could not be found')]
         Set $set
     ): Response {
@@ -66,9 +62,12 @@ class CollectionController extends AbstractController
         $collectorView = false;
         $cardName = '';
         $foiling = '';
+        
         $form = $this->createForm(CardFilterFormType::class);
-
         $form->handleRequest($request);
+
+        $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $set);
+        $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $set);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
@@ -91,6 +90,8 @@ class CollectionController extends AbstractController
                     'artVariationsHelper' => $this->artVariationsHelper,
                     'userCollectionManager' => $this->userCollectionManager,
                     'cardPrintingsTree' => $cards,
+                    'userCollectedCards' => $collectedCards,
+                    'userCollectedPrintings' => $collectedPrintings,
                     'collectorView' => $collectorView,
                     'pageTitle' => $set->getName(),
                 ]);
@@ -102,7 +103,7 @@ class CollectionController extends AbstractController
         }
 
         $cards = $this->cardFinder->findCardsBySet($set, $hideOwnedCards, $collectorView, $foiling, $cardName);
-
+        
         return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
             'foilingHelper' => $this->foilingHelper,
@@ -110,6 +111,8 @@ class CollectionController extends AbstractController
             'artVariationsHelper' => $this->artVariationsHelper,
             'userCollectionManager' => $this->userCollectionManager,
             'cardPrintingsTree' => $cards,
+            'userCollectedCards' => $collectedCards,
+            'userCollectedPrintings' => $collectedPrintings,
             'form' => $form,
             'collectorView' => $collectorView,
             'pageTitle' => $set->getName(),
@@ -121,7 +124,6 @@ class CollectionController extends AbstractController
     #[IsGranted('ROLE_USER', message: 'Viewing classes is only for logged in users')]
     public function manageCollectionByClass(
         Request $request,
-        EntityManagerInterface $entityManager,
         ?string $className
     ): Response {
         $allowedClasses = [
@@ -147,8 +149,10 @@ class CollectionController extends AbstractController
         }
 
         $form = $this->createForm(CardFilterFormType::class);
-
         $form->handleRequest($request);
+        
+        $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, $className);
+        $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, $className);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
@@ -162,7 +166,7 @@ class CollectionController extends AbstractController
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
                 $cards = $this->cardFinder->findCardsByClass($className, $hideOwnedCards, $collectorView, $foiling, $cardName);
-
+                
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
                     'foilingHelper' => $this->foilingHelper,
@@ -170,6 +174,8 @@ class CollectionController extends AbstractController
                     'artVariationsHelper' => $this->artVariationsHelper,
                     'userCollectionManager' => $this->userCollectionManager,
                     'cardPrintingsTree' => $cards,
+                    'userCollectedCards' => $collectedCards,
+                    'userCollectedPrintings' => $collectedPrintings,
                     'collectorView' => $collectorView,
                     'pageTitle' => ucfirst($className),
                 ]);
@@ -181,14 +187,16 @@ class CollectionController extends AbstractController
         }
 
         $cards = $this->cardFinder->findCardsByClass($className);
-
-       return $this->render('collection/overview.html.twig', [
+                
+        return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
             'foilingHelper' => $this->foilingHelper,
             'rarityHelper' => $this->rarityHelper,
             'artVariationsHelper' => $this->artVariationsHelper,
             'userCollectionManager' => $this->userCollectionManager,
             'cardPrintingsTree' => $cards,
+            'userCollectedCards' => $collectedCards,
+            'userCollectedPrintings' => $collectedPrintings,
             'form' => $form,
             'collectorView' => false,
             'pageTitle' => ucfirst($className),

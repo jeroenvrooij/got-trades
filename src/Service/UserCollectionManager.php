@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Card;
+use App\Entity\Set;
+use App\Entity\User;
 use App\Entity\UserCardPrintings;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,13 +30,10 @@ class UserCollectionManager
     /**
      * Get's all collected card printings for logged in user
      */
-    public function getAllCollectedPrintingsFromLoggedInUser(): ArrayCollection
+    public function getCollectedPrintingsBy(User $user, ?Set $set = null, ?string $className = null): ArrayCollection
     {
         if ($this->userCollectedPrintings->isEmpty()) {
-            /** @var App\Entity\User $user */
-            $user = $this->security->getUser();
-        
-            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForUser($user);
+            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForUser($user, $set, $className);
             foreach ($userCollectionModels as $userCollectionModel) {
                 $this->userCollectedPrintings->set($userCollectionModel->getCardPrintingUniqueId(), $userCollectionModel->getCollectionAmount());
             }
@@ -46,13 +45,10 @@ class UserCollectionManager
     /**
      * Get's all collected cards for logged in user
      */
-    public function getAllCollectedCardsFromLoggedInUser(): ArrayCollection
+    public function getCollectedCardsBy(User $user, ?Set $set = null, ?string $className = null): ArrayCollection
     {
         if ($this->userCollectedCards->isEmpty()) {
-            /** @var App\Entity\User $user */
-            $user = $this->security->getUser();
-        
-            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForUser($user);
+            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForUser($user, $set, $className);
             foreach ($userCollectionModels as $userCollectionModel) {
                 $alreadyOwnedAmount = 0;
                 if (null !== $this->userCollectedCards->get($userCollectionModel->getCardId())) {

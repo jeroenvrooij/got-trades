@@ -33,7 +33,6 @@
                             <td colspan='7' class="text-center">No cards found</td>
                         </tr>
                     {% else %}
-                        {% set collectedCards = userCollectionManager.getAllCollectedPrintingsFromLoggedInUser %}
                         {% for setName, sets in cardPrintingsTree %}
                             {% if cardPrintingsTree|length > 1 %}
                                 <tr class="table-active text-center">
@@ -42,10 +41,9 @@
                             {% endif %}
                             {% for printingId, printings in sets %}
                                 {% for printing in printings.printings %}
-                                    {% set rand = random(0,3) %}
                                     {% set amount = 0 %}
-                                    {% if collectedCards.containsKey(printing.uniqueId) %}
-                                        {% set amount = collectedCards.get(printing.uniqueId) %}
+                                    {% if userCollectedPrintings.containsKey(printing.uniqueId) %}
+                                        {% set amount = userCollectedPrintings.get(printing.uniqueId) %}
                                     {% endif %}
                                     <tr>
                                         <td>
