@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus";
 
   
 export default class extends Controller {
-    static targets = ["amountInput", "decrementButton", "incrementButton", "playsetIconsContainer", 'filterForm', 'playerviewRow'];
+    static targets = ["amountInput", "decrementButton", "incrementButton", "playsetIconsContainer", 'filterForm', 'playerviewRow', 'toggleAllRowsElement'];
 
     // Store array of timeout, each card will have their own
     timeouts = {}; 
@@ -34,8 +34,41 @@ export default class extends Controller {
         }
     }
 
+    toggleAllRows() {
+        const linkTarget = this.toggleAllRowsElementTarget;
+        const icon = linkTarget.querySelector("i");
+
+        if (icon.classList.contains("bi-chevron-expand")) {
+            icon.classList.remove("bi-chevron-expand");
+            icon.classList.add("bi-chevron-contract");
+            linkTarget.innerHTML = ''; // clear contents
+            linkTarget.appendChild(icon); // keep the icon
+            linkTarget.insertAdjacentText('beforeend', ' Contract all rows'); // add new text
+
+            this.playerviewRowTargets.forEach(row => {
+                this.openRow(row);
+            })
+        } else {
+            icon.classList.add("bi-chevron-expand");
+            icon.classList.remove("bi-chevron-contract");
+            linkTarget.innerHTML = ''; // clear contents
+            linkTarget.appendChild(icon); // keep the icon
+            linkTarget.insertAdjacentText('beforeend', ' Expand all rows'); // add new text
+
+            this.playerviewRowTargets.forEach(row => {
+                this.closeRow(row);
+            })
+        }
+
+    }
+
     openRow(row) {
         row.hidden = false;
+        const icon = this.element.querySelector('[data-printing-row-param="' + row.id + '"]');
+       
+        const parentRow = icon.closest("tr");
+        parentRow.style.fontStyle = "italic";
+
         if (window.openRows) {
             window.openRows.push(row.id);
         }
@@ -46,6 +79,10 @@ export default class extends Controller {
         const icon = this.element.querySelector('[data-printing-row-param="' + row.id + '"]');
         icon.classList.remove("bi-chevron-down");
         icon.classList.add("bi-chevron-right");
+
+        const parentRow = icon.closest("tr");
+        parentRow.style.fontStyle = "normal";
+        
         if (window.openRows && !keepOpen) {
             window.openRows.splice(window.openRows.indexOf(row.id), 1);
         }
@@ -64,7 +101,6 @@ export default class extends Controller {
         }
 
         // Toggle the row
-        // console.log(event.params.row);
         const row =  document.getElementById(event.params.row);
         
         // if the row was opened, store it in window.openRows so we can keep it open (after form is submitted)
