@@ -19,7 +19,7 @@ export default class extends Controller {
 
     submitForm() {
         let foilingFilterDiv = this.foilingFilterTarget.closest(".foiling-filter");
-        if (this.collectorViewFilterTarget.checked) {
+        if (this.collectorViewFilterTarget.checked || this.collectorViewFilterTarget.hidden == true) {
             foilingFilterDiv.hidden = false;
         } else {
             this.foilingFilterTarget.selectedIndex = 0;
