@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\CardPrinting;
 use App\Entity\Set;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -237,7 +238,7 @@ class CardPrintingRepository extends ServiceEntityRepository
                         $qb->expr()->exists(
                             $this->userCardPrintingsRepository->createQueryBuilder('ucp')
                                 ->select('SUM(ucp.collectionAmount) AS totalCollectionAmount')
-                                ->innerJoin('ucp.cardPrinting', 'ucp_cp')
+                                ->innerJoin(CardPrinting::class, 'ucp_cp', Join::WITH, 'ucp.cardPrinting = ucp_cp.uniqueId')
                                 ->innerJoin('ucp_cp.card', 'ucp_c')
                                 ->groupBy('ucp_c.uniqueId')
                                 ->where('ucp_c = c')
