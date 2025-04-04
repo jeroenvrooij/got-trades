@@ -5,7 +5,7 @@
 		<a class="link-secondary link-offset-2 link-underline-opacity-40 link-underline-opacity-100-hover" href="#">My Collection</a>
 	</li>
 	<li class="breadcrumb-item">
-        {% if cardPrintingsTree|length == 0 %}
+        {% if cardPrintingsTree|length == 1 %}
 		    <a class="link-secondary link-offset-2 link-underline-opacity-40 link-underline-opacity-100-hover" href="{{ path('app_card_setoverviewpage') }}">Booster set overview</a>
         {% else %}
 		    <a class="link-secondary link-offset-2 link-underline-opacity-40 link-underline-opacity-100-hover" href="{{ path('app_card_classoverviewpage') }}">Class overview</a>
