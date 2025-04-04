@@ -87,6 +87,31 @@ class CardPrintingRepository extends ServiceEntityRepository
     }
 
     /**
+    * @return CardPrinting[] Returns an array of CardPrinting objects
+    */
+    public function findPromos(
+        ?bool $hideOwnedCards = false, 
+        ?bool $collectorView = false,
+        ?string $foiling = '', 
+        ?string $cardName = '', 
+    ): array
+    {
+        $qb = $this->buildCoreQuery($hideOwnedCards, $collectorView, $foiling, $cardName);
+
+        $qb
+            ->andWhere('cp.rarity = :promo')
+            ->setParameter('promo', 'P')
+        ;
+
+        $cards = $qb
+            ->getQuery()
+            ->getResult()
+            ;
+            
+        return $cards;
+    }
+
+    /**
      * Builds the QueryBuilder object with the core query for fetching card printings.
      */
     private function buildCoreQuery(

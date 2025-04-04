@@ -119,7 +119,6 @@ class CollectionController extends AbstractController
         ]);
     }
 
-
     #[Route('/manage-collection-by-class/{className}')]
     #[IsGranted('ROLE_USER', message: 'Viewing classes is only for logged in users')]
     public function manageCollectionByClass(
@@ -200,6 +199,61 @@ class CollectionController extends AbstractController
             'form' => $form,
             'collectorView' => false,
             'pageTitle' => ucfirst($className),
+        ]);
+    }
+    #[Route('/manage-promo-collection')]
+    #[IsGranted('ROLE_USER', message: 'Viewing promos is only for logged in users')]
+    public function managePromoCollection(
+        Request $request,
+    ): Response {
+        $form = $this->createForm(CardFilterFormType::class);
+        $form->handleRequest($request);
+        
+        $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, null, true);
+        $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, null, true);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $form->getData();
+            $foiling = $formData['foiling'];
+            $hideOwnedCards = $formData['hide'];
+            $cardName = $formData['cardName'];
+            $collectorView = $formData['collectorView'];
+
+            // 🔥 The magic happens here! 🔥
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+                $cards = $this->cardFinder->findPromos($hideOwnedCards, $collectorView, $foiling, $cardName);
+                
+                return $this->renderBlock('collection/promo_overview.html.twig', 'printing_table', [
+                    'editionHelper' => $this->editionHelper,
+                    'foilingHelper' => $this->foilingHelper,
+                    'rarityHelper' => $this->rarityHelper,
+                    'artVariationsHelper' => $this->artVariationsHelper,
+                    'userCollectionManager' => $this->userCollectionManager,
+                    'cardPrintingsTree' => $cards,
+                    'userCollectedCards' => $collectedCards,
+                    'userCollectedPrintings' => $collectedPrintings,
+                ]);
+            }
+
+            // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
+            // Symfony UX Turbo is all about progressively enhancing your applications!
+            return $this->redirectToRoute('app_collection_managepromocollection', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $cards = $this->cardFinder->findPromos();
+                
+        return $this->render('collection/promo_overview.html.twig', [
+            'editionHelper' => $this->editionHelper,
+            'foilingHelper' => $this->foilingHelper,
+            'rarityHelper' => $this->rarityHelper,
+            'artVariationsHelper' => $this->artVariationsHelper,
+            'userCollectionManager' => $this->userCollectionManager,
+            'cardPrintingsTree' => $cards,
+            'userCollectedCards' => $collectedCards,
+            'userCollectedPrintings' => $collectedPrintings,
+            'form' => $form,
         ]);
     }
 

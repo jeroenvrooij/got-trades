@@ -30,10 +30,15 @@ class UserCollectionManager
     /**
      * Get's all collected card printings for logged in user
      */
-    public function getCollectedPrintingsBy(User $user, ?Set $set = null, ?string $className = null): ArrayCollection
+    public function getCollectedPrintingsBy(
+        User $user, 
+        ?Set $set = null, 
+        ?string $className = null,
+        ?bool $promosOnly = false,
+    ): ArrayCollection
     {
         if ($this->userCollectedPrintings->isEmpty()) {
-            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForUser($user, $set, $className);
+            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForUser($user, $set, $className, $promosOnly);
             foreach ($userCollectionModels as $userCollectionModel) {
                 $this->userCollectedPrintings->set($userCollectionModel->getCardPrintingUniqueId(), $userCollectionModel->getCollectionAmount());
             }
@@ -45,10 +50,15 @@ class UserCollectionManager
     /**
      * Get's all collected cards for logged in user
      */
-    public function getCollectedCardsBy(User $user, ?Set $set = null, ?string $className = null): ArrayCollection
+    public function getCollectedCardsBy(
+        User $user, 
+        ?Set $set = null, 
+        ?string $className = null,
+        ?bool $promosOnly = false,
+    ): ArrayCollection
     {
         if ($this->userCollectedCards->isEmpty()) {
-            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForUser($user, $set, $className);
+            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForUser($user, $set, $className, $promosOnly);
             foreach ($userCollectionModels as $userCollectionModel) {
                 $alreadyOwnedAmount = 0;
                 if (null !== $this->userCollectedCards->get($userCollectionModel->getCardId())) {

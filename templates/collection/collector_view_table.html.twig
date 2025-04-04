@@ -19,7 +19,7 @@
                         <th scope="col" style="width: 220px;" class="d-none d-lg-table-cell">Foiling</th>
                         <th scope="col" style="width: 70px;" class="d-lg-none"></th>
                         {% set setId = cardPrintingsTree|keys|first %}
-                        {% if setId in editionSets or cardPrintingsTree|length > 1 %}
+                        {% if (setId in editionSets or cardPrintingsTree|length > 1) and promoView is not defined %}
                             {#  Show if just viewing one set (manage by set) and set has multiple editions or when in class view #}
                             <th scope="col" style="width: 90px;" class="d-none d-lg-table-cell">Edition</th>
                             <th scope="col" style="width: 20px;" class="d-lg-none"></th>
@@ -93,7 +93,7 @@
                                             {% if printing.foiling != 'S' %}{{ printing.foiling }}F{% endif %} {{ artVariationsHelper.getShortenedArtVariations(printing.artVariations) }}
                                         </td>
                                         {# when set has multiple editions, or when in 'Manage by class' view shown edition column #}
-                                        {% if setName in editionSets or cardPrintingsTree|length > 1%}
+                                        {% if (setName in editionSets or cardPrintingsTree|length > 1) and promoView is not defined %}
                                             {# This edition column is only shown on md+ viewports #}
                                             <td class="d-none d-lg-table-cell">
                                                 {% if printing.edition != "N" %}{{ editionHelper.getEditionNameById(printing.edition) }}{% endif %}

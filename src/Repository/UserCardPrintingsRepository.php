@@ -25,7 +25,12 @@ class UserCardPrintingsRepository extends ServiceEntityRepository
     /**
     * @return UserCardPrintings[] Returns an array of UserCardPrintings objects
     */
-    public function getCollectionDataForUser(User $user, ?Set $set = null, ?string $className = null): array
+    public function getCollectionDataForUser(
+        User $user, 
+        ?Set $set = null, 
+        ?string $className = null,
+        ?bool $promosOnly = false,
+    ): array
     {
         $qb = $this->createQueryBuilder('ucp')
             ->select('NEW App\Model\UserCollectionModel(cp.uniqueId, cp.cardId, ucp.collectionAmount)')
@@ -48,6 +53,13 @@ class UserCardPrintingsRepository extends ServiceEntityRepository
             
                 ->andWhere('cc.className = :className')
                 ->setParameter('className', ucfirst($className))
+            ;
+        }
+
+        if ($promosOnly) {
+            $qb
+                ->andWhere('cp.rarity = :promo')
+                ->setParameter('promo', 'P')
             ;
         }
 

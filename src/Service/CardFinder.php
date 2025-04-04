@@ -68,6 +68,31 @@ class CardFinder
 
         return $printingsOrderedBySet;
     }
+     
+    /**
+     * Finds all printings belonging to a certain class and returns them grouped by unique cards
+     * 
+     * @param string $className
+     * 
+     * @return ArrayCollection
+     */
+    public function findPromos(
+        ?bool $hideOwnedCards = false, 
+        ?bool $collectorView = false,
+        ?string $foiling = '', 
+        ?string $cardName = '',
+    ) {
+        if (FoilingHelper::NO_FILTER_KEY === $foiling) {
+            $foiling = '';
+        }
+        
+        $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findPromos($hideOwnedCards, $collectorView, $foiling, $cardName);
+        
+        $cardPrintings = $this->buildPrintingTree($cardPrintings);
+        $printingsOrderedBySet = $this->orderPrintingTreeBySet($cardPrintings);
+
+        return $printingsOrderedBySet;
+    }
 
     /**
      * Takes an array of card printings and build a tree structured like:
