@@ -14,7 +14,7 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
+    <body class="d-flex flex-column min-vh-100">
         {{ include('navbar.html.twig') }}
 
         <div class="toast-container position-fixed top-0 end-0 p-3" id="toast-container">
@@ -33,6 +33,20 @@
             </div>
         {% endblock %}
 
-        {% block body %}{% endblock %}
+        <main class="flex-grow-1">
+            {% block body %}{% endblock %}
+        </main>
+        
+        <footer class="bg-dark text-light py-4 mt-auto text-center">
+            <div class="container text-center text-secondary">
+                <div class="row">
+                    <div class="col-12">
+                        'That all you got?' is in no way affiliated with <a href="https://legendstory.com/" target="_blank" class="link-secondary">Legend Story Studios®</a>. <a href="https://fabtcg.com/" target="_blank" class="link-secondary">Flesh and Blood™</a> is a registered trademark of Legend Story Studios. <br />
+                        Flesh and Blood™ and all associated images are copyright © Legend Story Studios. All rights reserved. 
+                    </div>
+                </div>
+            </div>
+        </footer>
+
     </body>
 </html>

@@ -2,6 +2,72 @@
 
 {% block breadcrumbs %}{% endblock %}
 {% block body %}
-<h1>Got trades?</h1>
+<div class="container text-center text-secondary" style="padding: 50px;">
+    <h1>That all you got?</h1>
 
+    <p style="margin-top: 30px;">
+        This is a fanmade tool to keep track of collected cards and incomplete playsets. <br />
+        Other players and collectors may create an account so they can also use it's functionalities.
+    </p>
+
+    <p>Start by searching for cards or:</p>
+    <div class="container text-center">
+        {# <div class="row align-items-center">
+            <div class="col d-flex justify-content-center align-items-center">
+            <a href="{{ path('app_collection_managecollectionbyset', {setId: "HNT"}) }}"  data-caption="Manage by set" class="setImage my-3 hnt d-flex justify-content-center align-items-center">
+                <img src="{{ asset('images/set_logos/the_hunted_logo.original.png') }}">
+            </a>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center">
+            <a href="{{ path('app_collection_managecollectionbyset', {setId: "ROS"}) }}" data-caption="Manage by class" class="setImage my-3 ros d-flex justify-content-center align-items-center">
+                <img src="{{ asset('images/set_logos/logo_rosetta_full.original.png') }}">
+            </a>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center">
+            <a href="{{ path('app_collection_managecollectionbyset', {setId: "MST"}) }}" data-caption="Manage promos" class="setImage my-3 mst d-flex justify-content-center align-items-center">
+                <img src="{{ asset('images/set_logos/logo_mst.original.png') }}">
+            </a>
+            </div>
+        </div> #}
+        <div class="row align-items-center">
+            <div class="col d-flex justify-content-center align-items-center gy-4">
+                <div class="card text-secondary" style="width: 18rem; height: 13rem;">
+                    {# <img src="{{ asset('images/that_all_you_got.png')}}" class="card-img-top" alt="..."> #}
+                    <h5 class="card-header">By set</h5>
+                    <div class="card-body">
+                        <p class="card-text">Manage your collection by browsing cards from a specific booster set.</p>
+                    </div>
+                    <div class="card-footer text-body-secondary" style="background: white !important;">
+                        <a href="#" class="btn btn-secondary">Select a set</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center gy-4">
+                <div class="card text-secondary" style="width: 18rem; height: 13rem;">
+                    {# <img src="{{ asset('images/that_all_you_got.png')}}" class="card-img-top" alt="..."> #}
+                    <h5 class="card-header">By class</h5>
+                    <div class="card-body">
+                        <p class="card-text">Manage your collection by browsing cards from a specific class.</p>
+                    </div>
+                    <div class="card-footer text-body-secondary" style="background: white !important;">
+                        <a href="#" class="btn btn-secondary">Select a class</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col d-flex justify-content-center align-items-center gy-4">
+                <div class="card text-secondary" style="width: 18rem; height: 13rem;">
+                    {# <img src="{{ asset('images/that_all_you_got.png')}}" class="card-img-top" alt="..."> #}
+                    <h5 class="card-header">Promos</h5>
+                    <div class="card-body">
+                        <p class="card-text">Browse all promos and mark your treasures!</p>
+                    </div>
+                    <div class="card-footer" style="background: white !important;">
+                        <a href="#" class="btn btn-secondary">Browse promos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 {% endblock %} 
