@@ -1,10 +1,10 @@
 {% set currentRoute = app.request.attributes.get('_route') %}
-<nav class="navbar navbar-expand-lg sticky-top  bg-dark border-bottom border-body" data-bs-theme="dark">
+<nav class="navbar navbar-expand-md sticky-top  bg-dark border-bottom border-body" data-bs-theme="dark">
     <div class="container-fluid">
+        <a class="navbar-brand" href="{{ path('app_home_homepage') }}">That all you got?</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="{{ path('app_home_homepage') }}">That all you got?</a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {# <li class="nav-item"> #}
