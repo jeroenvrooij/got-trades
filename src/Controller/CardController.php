@@ -5,10 +5,12 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class CardController extends AbstractController
 {
     #[Route('/cards/set-overview')]
+    #[IsGranted('ROLE_USER', message: 'Website is only accessible for logged in users')]
     public function setOverviewPage(
     ): Response {
         try {
@@ -19,6 +21,7 @@ class CardController extends AbstractController
     }
 
     #[Route('/cards/class-overview')]
+    #[IsGranted('ROLE_USER', message: 'Website is only accessible for logged in user')]
     public function classOverviewPage(
     ): Response {
         try {
