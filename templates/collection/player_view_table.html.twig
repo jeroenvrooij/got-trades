@@ -75,13 +75,19 @@
                                                     <td style="width: 20px;"></td>
                                                     <td style="width: 100px;">
                                                         <div class="input-group input-group-sm" data-quantity-id="amount-selector-{{ printing.uniqueId }}">
-                                                            <button class="btn btn-outline-secondary decrementBtn btn-sm" type="button" 
-                                                                data-action="click->printing#decrementAmount"
-                                                                data-printing-id-param="{{ printing.uniqueId }}"
-                                                                data-printing-card-name-param="{{ printing.card.name }}"
-                                                                data-printing-card-id-param="{{ printing.cardId }}"
-                                                                data-printing-target="decrementButton"
-                                                                {% if collectedPrintingAmount == 0 %}disabled{% endif %}>-</button>
+                                                            {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
+                                                                <span data-popover-target="trigger" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="You need to be signed in to manage your collection.">
+                                                                    <button class="btn btn-outline-secondary decrementBtn btn-sm" type="button" disabled>-</button>
+                                                                </span>
+                                                            {% else %}
+                                                                <button class="btn btn-outline-secondary decrementBtn btn-sm" type="button" 
+                                                                    data-action="click->printing#decrementAmount"
+                                                                    data-printing-id-param="{{ printing.uniqueId }}"
+                                                                    data-printing-card-name-param="{{ printing.card.name }}"
+                                                                    data-printing-card-id-param="{{ printing.cardId }}"
+                                                                    data-printing-target="decrementButton"
+                                                                    {% if collectedPrintingAmount == 0 %}disabled{% endif %}>-</button>
+                                                            {% endif %}
                                                             <input 
                                                                 class="form-control form-control-sm text-center" 
                                                                 type="text" 
@@ -91,13 +97,19 @@
                                                                 data-printing-target="amountInput" 
                                                                 disabled
                                                             > 
-                                                            <button class="btn btn-outline-secondary incrementBtn btn-sm" type="button" 
-                                                                data-action="click->printing#incrementAmount"
-                                                                data-printing-id-param="{{ printing.uniqueId }}"
-                                                                data-printing-card-name-param="{{ printing.card.name }}"
-                                                                data-printing-card-id-param="{{ printing.cardId }}"
-                                                                data-printing-target="incrementButton"
-                                                                {% if collectedPrintingAmount >= 99 %}disabled{% endif %}>+</button>
+                                                            {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
+                                                                <span data-popover-target="trigger" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="You need to be signed in to manage your collection.">
+                                                                    <button class="btn btn-outline-secondary incrementBtn btn-sm" type="button" disabled>+</button>
+                                                                </span>
+                                                            {% else %}
+                                                                <button class="btn btn-outline-secondary incrementBtn btn-sm" type="button" 
+                                                                    data-action="click->printing#incrementAmount"
+                                                                    data-printing-id-param="{{ printing.uniqueId }}"
+                                                                    data-printing-card-name-param="{{ printing.card.name }}"
+                                                                    data-printing-card-id-param="{{ printing.cardId }}"
+                                                                    data-printing-target="incrementButton"
+                                                                    {% if collectedPrintingAmount >= 99 %}disabled{% endif %}>+</button>
+                                                            {% endif %}
                                                         </div>
                                                     </td>
                                                     <td style="width: 20px;">

@@ -18,7 +18,7 @@
 	<div class="container text-center">
 		<h1 class="text-secondary">{{ pageTitle }}</h1>
 	</div>
-	<div class="container" {{ stimulus_controller('filter printing') }}>
+	<div class="container" {{ stimulus_controller('filter printing popover') }}>
 		{{ form_start(form, { attr: {'data-filter-target': 'filterForm', 'data-printing-target': 'filterForm' } }) }}
 
 		<div class="my-custom-class-for-errors">

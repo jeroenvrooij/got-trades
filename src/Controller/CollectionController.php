@@ -11,6 +11,7 @@ use App\Service\EditionHelper;
 use App\Service\FoilingHelper;
 use App\Service\RarityHelper;
 use App\Service\UserCollectionManager;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -52,7 +53,6 @@ class CollectionController extends AbstractController
     }
 
     #[Route('/manage-collection-by-set/{setId}')]
-    #[IsGranted('ROLE_USER', message: 'Viewing sets is only for logged in users')]
     public function manageCollectionBySet(
         Request $request,
         #[MapEntity(mapping: ['setId' => 'id'], message: 'Set could not be found')]
@@ -66,8 +66,12 @@ class CollectionController extends AbstractController
         $form = $this->createForm(CardFilterFormType::class);
         $form->handleRequest($request);
 
-        $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $set);
-        $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $set);
+        $collectedCards = new ArrayCollection();
+        $collectedPrintings = new ArrayCollection();
+        if (null !== $this->getUser()) {
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $set);
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $set);
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
@@ -120,7 +124,6 @@ class CollectionController extends AbstractController
     }
 
     #[Route('/manage-collection-by-class/{className}')]
-    #[IsGranted('ROLE_USER', message: 'Viewing classes is only for logged in users')]
     public function manageCollectionByClass(
         Request $request,
         ?string $className
@@ -150,8 +153,12 @@ class CollectionController extends AbstractController
         $form = $this->createForm(CardFilterFormType::class);
         $form->handleRequest($request);
         
-        $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, $className);
-        $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, $className);
+        $collectedCards = new ArrayCollection();
+        $collectedPrintings = new ArrayCollection();
+        if (null !== $this->getUser()) {
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, $className);
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, $className);
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
@@ -202,15 +209,18 @@ class CollectionController extends AbstractController
         ]);
     }
     #[Route('/manage-promo-collection')]
-    #[IsGranted('ROLE_USER', message: 'Viewing promos is only for logged in users')]
     public function managePromoCollection(
         Request $request,
     ): Response {
         $form = $this->createForm(CardFilterFormType::class);
         $form->handleRequest($request);
         
-        $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, null, true);
-        $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, null, true);
+        $collectedCards = new ArrayCollection();
+        $collectedPrintings = new ArrayCollection();
+        if (null !== $this->getUser()) {
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, null, true);
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, null, true);
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
