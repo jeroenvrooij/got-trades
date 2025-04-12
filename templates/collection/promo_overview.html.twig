@@ -32,8 +32,23 @@
 
 				<div class="col-lg-6 col-12">
 					<div class="form-check form-switch">
-						{{ form_widget(form.hide) }}
-						<label class="form-check-label" for="card_filter_form_hide">Hide completed playsets</label>
+						{% set loggedIn = is_granted('IS_AUTHENTICATED_FULLY') %}
+						{{ form_widget(form.hide, { attr: {'disabled': not loggedIn} }) }}
+						{{ form_label(form.hide, null, {'label_attr': {'class': 'form-check-label'} }) }}
+							
+						{% if not loggedIn %}
+    						<i 
+								class="bi bi-info-circle text-muted" 
+								aria-label="Info"
+								tabindex="0"
+								role="button"
+								data-bs-toggle="popover"
+								data-bs-trigger="hover focus"
+								data-bs-placement="bottom"
+								data-bs-content="You need to be signed in to manage your collection."
+								style="cursor: pointer;"
+							></i>
+						{% endif %}
 					</div>
 				</div>
 
