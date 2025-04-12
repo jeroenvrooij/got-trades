@@ -45,13 +45,13 @@ export default class extends Controller {
           const popover = new bootstrap.Popover(el)
           el._popoverInitialized = true
           // Add a click event listener to toggle the popover visibility
-          // el.addEventListener('click', (event) => {
-          //   if (popover._isShown()) {
-          //     popover.hide()
-          //   } else {
-          //     popover.show()
-          //   }
-          // })
+          el.addEventListener('click', (event) => {
+            if (popover._isShown()) {
+              popover.hide()
+            } else {
+              popover.show()
+            }
+          })
         } catch (error) {
           console.error("Error initializing popover: ", error)
         }
