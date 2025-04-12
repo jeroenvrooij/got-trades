@@ -62,7 +62,7 @@ class CardFilterFormType extends AbstractType
                     'class' =>'form-check-input', 
                     'role' => 'switch'
                 ],
-                'label' => 'hide own cards?',
+                'label' => 'Hide completed playsets',
                 'required' => false,
             ])
             ->add('collectorView', CheckboxType::class, [
@@ -70,7 +70,7 @@ class CardFilterFormType extends AbstractType
                     'class' =>'form-check-input', 
                     'role' => 'switch'
                 ],
-                'label' => 'Show expanded collectors view',
+                'label' => 'Show expanded \'collector view\'',
                 'required' => false,
             ])
         ;

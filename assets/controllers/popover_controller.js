@@ -42,7 +42,6 @@ export default class extends Controller {
     popoverTriggers.forEach(el => {
       if (!el._popoverInitialized) {
         try {
-          console.log('init popover');
           new bootstrap.Popover(el)
           el._popoverInitialized = true
         } catch (error) {
