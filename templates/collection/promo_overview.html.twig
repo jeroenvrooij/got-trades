@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block body %}
-	<div class="container text-center">
+	<div class="container text-center pb-3">
 		<h1 class="text-secondary">Promo collection</h1>
 	</div>
 	<div class="container" {{ stimulus_controller('filter printing popover') }}>
@@ -21,16 +21,15 @@
 		<div class="container overflow-hidden">
 			<div class="row justify-content-start align-items-center gy-3">
 
-
-				<div class="col-xl-2 col-lg-3 col-6 foiling-filter">
+				<div class="col-12 col-md-6 col-lg-3 foiling-filter">
 					{{ form_widget(form.foiling, { attr: {'data-filter-target': 'foilingFilter'} }) }}
 				</div>
 
-				<div class="col-lg-3 col-6">
+				<div class="col-12 col-md-6 col-lg-3">
 					{{ form_widget(form.cardName, { attr: {'data-filter-target': 'cardName'} }) }}
 				</div>
 
-				<div class="col-lg-6 col-12">
+				<div class="col-12 col-md-6 col-lg-3">
 					<div class="form-check form-switch">
 						{% set loggedIn = is_granted('IS_AUTHENTICATED_FULLY') %}
 						{{ form_widget(form.hide, { attr: {'disabled': not loggedIn} }) }}
@@ -52,7 +51,7 @@
 					</div>
 				</div>
 
-				<div class="col-12 d-flex justify-content-end align-items-center">
+				<div class="col-12 d-flex justify-content-start justify-content-md-end align-items-center">
 					<div class="form-check form-switch" hidden>
 						{{ form_widget(form.collectorView, { attr: {'data-filter-target': 'collectorViewFilter', 'hidden': true} }) }}
 						<label class="form-check-label" for="card_filter_form_collectorView">Show expanded 'collector view'</label>
