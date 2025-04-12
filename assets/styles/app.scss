@@ -138,7 +138,6 @@
 
 .classImage,
 .setImage {
-    background-size: 120%; /* Increases the size of the image */
     background-position: 50% 50%; /* Adjust which part is visible */
     background-repeat: no-repeat;
     width: 300px;
@@ -152,8 +151,8 @@
     overflow: hidden;
 }
 .classImage {
-    background-size: contain;
-    background-position: center;
+    background-size: 100%;
+    background-position: 50% 15% !important;
     background-repeat: no-repeat;
 }
 .classImage img,
@@ -175,101 +174,90 @@
     font-size: 1.5rem;
     box-sizing: border-box;
 }
-.setImage.hnt {
+.setImage._hnt {
     background-image: url('../images/set_art/art_hnt_keyart.original.jpg'); 
     background-size: 250%;
-    background-position: 50% 30%;
+    background-position: 50% 35%;
 }
-.setImage.ros {
+.setImage._ros {
     background-image: url('../images/set_art/art_ros_keyart_withlogos.original.jpg'); 
     background-size: 120%;
-    background-position: 50% 50%;
 }
-.setImage.mst {
+.setImage._mst {
     background-image: url('../images/set_art/part_the_mistveil_key_art.original.jpg'); 
     background-size: 120%;
-    background-position: 50% 50%;
 }
-.setImage.hvy {
+.setImage._hvy {
     background-image: url('../images/set_art/heavy_hitters_key_art.original.jpg'); 
     background-size: 130%;
-    background-position: 50% 50%;
 }
-.setImage.evo {
+.setImage._evo {
     background-image: url('../images/set_art/bright_lights_key_art.original.jpg'); 
     background-size: 130%;
-    background-position: 50% 50%;
 }
-.setImage.dtd {
+.setImage._dtd {
     background-image: url('../images/set_art/dtd_key_art.original.jpg'); 
     background-size: 150%;
-    background-position: 50% 50%;
 }
-.setImage.out
+.setImage._out
  {
     background-image: url('../images/set_art/out_keyart.original.jpg'); 
     background-size: 130%;
-    background-position: 50% 50%;
 }
-.setImage.dyn
+.setImage._dyn
  {
     background-image: url('../images/set_art/dyn_key_art.original.jpg'); 
     background-size: 130%;
-    background-position: 50% 50%;
 }
-.setImage.hp1
+.setImage._1hp
  {
     background-image: url('../images/set_art/1hp_keyart_dnhst.original.jpg'); 
     background-size: 200%;
     background-position: 50% 70%;
 }
-.setImage.upr
+.setImage._upr
  {
     background-image: url('../images/set_art/upr_key_art_7Zz.original.jpg'); 
     background-size: 150%;
-    background-position: 50% 50%;
 }
-.setImage.evr
+.setImage._evr
  {
     background-image: url('../images/set_art/Everfest_Banner_FullHD.original.jpg'); 
     background-size: 130%;
-    background-position: 50% 50%;
 }
-.setImage.ele
+.setImage._ele
  {
     background-image: url('../images/set_art/toa_art_01.original.jpg'); 
     background-size: 130%;
-    background-position: 50% 50%;
 }
-.setImage.mon
+.setImage._mon
  {
     background-image: url('../images/set_art/Monarch_Key_Art_FullHD.original.jpg'); 
     background-size: 230%;
     background-position: 50% 60%;
 }
-.setImage.cru
+.setImage._cru
  {
     background-image: url('../images/set_art/CRU_HOME-PAGE.original.png'); 
     background-size: 130%;
-    background-position: 50% 50%;
 }
-.setImage.arc
+.setImage._arc
  {
     background-image: url('../images/set_art/key_img_one.original.jpg'); 
     background-size: 150%;
     background-position: 50% 20%;
 }
-.setImage.wtr
+.setImage._wtr
  {
     background-image: url('../images/set_art/Welcome_to_Rathe_Key_Art_v1_FullHD.original.jpg'); 
     background-size: 120%;
-    background-position: 50% 50%;
 }
 
 
 .classImage.generic
 {
     background-image: url('../images/class_art/talishar_cropped.png'); 
+    background-position: 50% 50% !important;
 }
 
 .classImage.warrior
@@ -282,23 +270,29 @@
 }
 .classImage.brute
 {
-    background-image: url('../images/class_art/rhinar_hero.original.jpg'); 
+    background-image: url('../images/class_art/rhinar_hero.original.jpg');
+    background-position: 50% 20% !important; 
 }
 .classImage.ninja
 {
     background-image: url('../images/class_art/katsu_hero.original.jpg'); 
+    background-position: 50% 10% !important;
 }
 .classImage.wizard
 {
     background-image: url('../images/class_art/kano_old.original.jpg'); 
+    background-size: 150%;
+    background-position: 50% 30% !important;
 }
 .classImage.mechanologist
 {
     background-image: url('../images/class_art/mechanologist.jpg'); 
+    background-position: 50% 30% !important;
 }
 .classImage.runeblade
 {
     background-image: url('../images/class_art/vis19238.original.jpg'); 
+    background-position: 50% 20% !important;
 }
 .classImage.illusionist
 {
@@ -311,18 +305,22 @@
 .classImage.assassin
 {
     background-image: url('../images/class_art/out_art_uzuri.original.jpg'); 
+    background-position: 50% 30% !important;
 }
 .classImage.bard
 {
     background-image: url('../images/class_art/melody.jpg'); 
+    background-position: 50% 20% !important;
 }
 .classImage.merchant
 {
     background-image: url('../images/class_art/art_image_genis.original.jpg'); 
+    background-position: 50% 25% !important;
 }
 .classImage.shapeshifter
 {
     background-image: url('../images/class_art/Shiyana.original.jpg'); 
+    background-position: 50% 20% !important;
 }
 
 // Boostrap SASS + overrides

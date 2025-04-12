@@ -6,55 +6,27 @@
 {% endblock %}
 
 {% block body %}
-<div class="container-xl text-center">
-<h1 class="text-secondary">Classes</h1> 
-  <div class="row align-items-center">
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "generic"}) }}"  data-caption="Generic" class="classImage my-3 generic d-flex justify-content-center align-items-center"></a>
+  <div class="container-xl text-center">
+    <h1 class="text-secondary">Classes</h1>
+
+    <!-- Shared structure: Bootstrap grid for both list and tile views -->
+    <div class="row d-none d-md-flex align-items-center">
+      {% for class in classes %}
+        <div class="col col col-md-6 col-lg-4 col-xxl-3 d-flex justify-content-center align-items-center">
+          <a href="{{ path('app_collection_managecollectionbyclass', {className: class.slug}) }}"  data-caption="{{ class.name}}" class="classImage {{ class.slug }} my-3 d-flex justify-content-center align-items-center"></a>
+        </div>
+      {% endfor %}
     </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "warrior"}) }}"  data-caption="Warrior" class="classImage my-3 warrior d-flex justify-content-center align-items-center"></a>
+
+    <!-- List layout for mobile -->
+    <div class="d-block d-md-none">
+      <ul class="list-group">
+        {% for class in classes %}
+          <li class="list-group-item">
+            <a href="{{ path('app_collection_managecollectionbyclass', {className: class.slug}) }}" class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">{{ class.name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
     </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "guardian"}) }}"  data-caption="Guardian" class="classImage my-3 guardian d-flex justify-content-center align-items-center"></a>
-    </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "brute"}) }}"  data-caption="Brute" class="classImage my-3 brute d-flex justify-content-center align-items-center"></a>
-    </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "ninja"}) }}"  data-caption="Ninja" class="classImage my-3 ninja d-flex justify-content-center align-items-center"></a>
-    </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "wizard"}) }}"  data-caption="Wizard" class="classImage my-3 wizard d-flex justify-content-center align-items-center"></a>
-    </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "illusionist"}) }}"  data-caption="Illusionist" class="classImage my-3 illusionist d-flex justify-content-center align-items-center"></a>
-    </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "assassin"}) }}"  data-caption="Assassin" class="classImage my-3 assassin d-flex justify-content-center align-items-center"></a>
-    </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "mechanologist"}) }}"  data-caption="Mechanologist" class="classImage my-3 mechanologist d-flex justify-content-center align-items-center"></a>
-    </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "runeblade"}) }}"  data-caption="Runeblade" class="classImage my-3 runeblade d-flex justify-content-center align-items-center"></a>
-    </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "ranger"}) }}"  data-caption="Ranger" class="classImage my-3 ranger d-flex justify-content-center align-items-center"></a>
-    </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "bard"}) }}"  data-caption="Bard" class="classImage my-3 bard d-flex justify-content-center align-items-center"></a>
-    </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "merchant"}) }}"  data-caption="Merchant" class="classImage my-3 merchant d-flex justify-content-center align-items-center"></a>
-    </div>
-    <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "shapeshifter"}) }}"  data-caption="Shapeshifter" class="classImage my-3 shapeshifter d-flex justify-content-center align-items-center"></a>
-    </div>
-    {# <div class="col d-flex justify-content-center align-items-center">
-      <a href="{{ path('app_collection_managecollectionbyclass', {className: "adjudicator"}) }}"  data-caption="Adjudicator" class="classImage my-3 adjudicator d-flex justify-content-center align-items-center"></a>
-    </div> #}
-    
   </div>
-</div>
 {% endblock %} 
