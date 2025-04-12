@@ -8,17 +8,17 @@
 {% endblock %}
 
 {% block body %}
-	<div class="container text-center pb-3">
+	<div class="text-center pb-3">
 		<h1 class="text-secondary">Promo collection</h1>
 	</div>
-	<div class="container" {{ stimulus_controller('filter printing popover') }}>
+	<div class="mx-auto" {{ stimulus_controller('filter printing popover') }}>
 		{{ form_start(form, { attr: {'data-filter-target': 'filterForm', 'data-printing-target': 'filterForm' } }) }}
 
 		<div class="my-custom-class-for-errors">
 			{{ form_errors(form) }}
 		</div>
 
-		<div class="container overflow-hidden">
+		<div class="overflow-hidden">
 			<div class="row justify-content-start align-items-center gy-3">
 
 				<div class="col-12 col-md-6 col-lg-3 foiling-filter">

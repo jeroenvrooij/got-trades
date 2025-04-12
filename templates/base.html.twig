@@ -21,21 +21,20 @@
         <div class="toast-container position-fixed top-0 end-0 p-3" id="toast-container">
             <!-- Toast messages will be inserted here dynamically -->
         </div>
-       
-        {% block breadcrumbs %}
-            <div class="container">
-                <p>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            {% block breadcrumblist %}{% endblock breadcrumblist %}
-                        </ol>
-                    </nav>
-                </p>
-            </div>
-        {% endblock %}
-
         <main class="flex-grow-1" style="min-height: calc(100vh - 60px);">
-            <div class="container">
+            <div class="container-sm px-0 px-sm-3">
+                {% block breadcrumbs %}
+                    <div class="justify-content-start">
+                        <p>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    {% block breadcrumblist %}{% endblock breadcrumblist %}
+                                </ol>
+                            </nav>
+                        </p>
+                    </div>
+                {% endblock %}
+        
                 {% block body %}{% endblock %}
             </div>
         </main>
