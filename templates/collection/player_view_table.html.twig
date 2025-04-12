@@ -76,7 +76,7 @@
                                                     <td style="width: 100px;">
                                                         <div class="input-group input-group-sm" data-quantity-id="amount-selector-{{ printing.uniqueId }}">
                                                             {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
-                                                                <span data-popover-target="trigger" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="You need to be signed in to manage your collection.">
+                                                                <span data-popover-target="trigger" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="You need to be signed in to manage your collection.">
                                                                     <button class="btn btn-outline-secondary decrementBtn btn-sm" type="button" disabled>-</button>
                                                                 </span>
                                                             {% else %}
@@ -98,7 +98,7 @@
                                                                 disabled
                                                             > 
                                                             {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
-                                                                <span data-popover-target="trigger" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-content="You need to be signed in to manage your collection.">
+                                                                <span data-popover-target="trigger" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="You need to be signed in to manage your collection.">
                                                                     <button class="btn btn-outline-secondary incrementBtn btn-sm" type="button" disabled>+</button>
                                                                 </span>
                                                             {% else %}
