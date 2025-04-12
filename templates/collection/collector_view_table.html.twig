@@ -13,9 +13,9 @@
                 <th scope="col" style="width: 40px;"></th>  
                 <th scope="col" style="width: 80px;">Code</th>
                 <th scope="col" style="width: 20px;"></th>
-                <th scope="col">Name</th>
+                <th scope="col" style="min-width: 250px">Name</th>
                 <th scope="col" style="width: 220px;" class="d-none d-lg-table-cell">Foiling</th>
-                <th scope="col" style="width: 70px;" class="d-lg-none"></th>
+                <th scope="col" style="min-width: 60px;" class="d-lg-none"></th>
                 {% set setId = cardPrintingsTree|keys|first %}
                 {% if (setId in editionSets or cardPrintingsTree|length > 1) and promoView is not defined %}
                     {#  Show if just viewing one set (manage by set) and set has multiple editions or when in class view #}

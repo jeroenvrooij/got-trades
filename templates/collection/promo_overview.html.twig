@@ -1,12 +1,5 @@
 {% extends "base.html.twig" %}
 
-{% block breadcrumblist %}
-	{# <li class="breadcrumb-item"> #}
-		{# <a class="link-secondary link-offset-2 link-underline-opacity-40 link-underline-opacity-100-hover" href="#">My Collection</a> #}
-	{# </li> #}
-	{# <li class="breadcrumb-item active" aria-current="page">Promo collection</li> #}
-{% endblock %}
-
 {% block body %}
 	<div class="text-center pb-3">
 		<h1 class="text-secondary">Promo collection</h1>
@@ -19,7 +12,7 @@
 		</div>
 
 		<div class="overflow-hidden">
-			<div class="row justify-content-start align-items-center gy-3">
+			<div class="row justify-content-start align-items-center gy-3 px-sm-0 px-3">
 
 				<div class="col-12 col-md-6 col-lg-3 foiling-filter">
 					{{ form_widget(form.foiling, { attr: {'data-filter-target': 'foilingFilter'} }) }}
@@ -29,7 +22,7 @@
 					{{ form_widget(form.cardName, { attr: {'data-filter-target': 'cardName'} }) }}
 				</div>
 
-				<div class="col-12 col-md-6 col-lg-3">
+				<div class="col-12 col-md-6 col-lg-4">
 					<div class="form-check form-switch">
 						{% set loggedIn = is_granted('IS_AUTHENTICATED_FULLY') %}
 						{{ form_widget(form.hide, { attr: {'disabled': not loggedIn} }) }}
