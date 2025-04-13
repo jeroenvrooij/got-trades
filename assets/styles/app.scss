@@ -4,10 +4,7 @@
     --color-pitch-3: #0091d8;
     --tiny-font-size: 0.85rem;
 }
-body {
-    padding-top: 60px;
-}
-  
+
 button[data-bs-toggle="collapse"].btn-outline-secondary {
 	background-color: transparent !important;
 	color: var(--bs-secondary) !important;
@@ -38,9 +35,6 @@ button[aria-expanded="true"] i.bi-chevron-down {
     display: inline-block;
 }
 
-.navbar {
-    height: 57px;
-}
 .pitch-container {
     display: inline-flex;
     align-items: center; /* Align dots vertically */
@@ -80,7 +74,7 @@ button[aria-expanded="true"] i.bi-chevron-down {
     width: 0;
     height: 0;
     vertical-align: top; /* Aligns with text properly */
-    border-left: 5px solid transparent;  
+    border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-bottom: 8px solid #E69B49;
     position: relative;
@@ -210,151 +204,151 @@ button[aria-expanded="true"] i.bi-chevron-down {
     box-sizing: border-box;
 }
 .setImage._hnt {
-    background-image: url('../images/set_art/art_hnt_keyart.original.jpg'); 
+    background-image: url('../images/set_art/art_hnt_keyart.original.jpg');
     background-size: 250%;
     background-position: 50% 35%;
 }
 .setImage._ros {
-    background-image: url('../images/set_art/art_ros_keyart_withlogos.original.jpg'); 
+    background-image: url('../images/set_art/art_ros_keyart_withlogos.original.jpg');
     background-size: 120%;
 }
 .setImage._mst {
-    background-image: url('../images/set_art/part_the_mistveil_key_art.original.jpg'); 
+    background-image: url('../images/set_art/part_the_mistveil_key_art.original.jpg');
     background-size: 120%;
 }
 .setImage._hvy {
-    background-image: url('../images/set_art/heavy_hitters_key_art.original.jpg'); 
+    background-image: url('../images/set_art/heavy_hitters_key_art.original.jpg');
     background-size: 130%;
 }
 .setImage._evo {
-    background-image: url('../images/set_art/bright_lights_key_art.original.jpg'); 
+    background-image: url('../images/set_art/bright_lights_key_art.original.jpg');
     background-size: 130%;
 }
 .setImage._dtd {
-    background-image: url('../images/set_art/dtd_key_art.original.jpg'); 
+    background-image: url('../images/set_art/dtd_key_art.original.jpg');
     background-size: 150%;
 }
 .setImage._out
  {
-    background-image: url('../images/set_art/out_keyart.original.jpg'); 
+    background-image: url('../images/set_art/out_keyart.original.jpg');
     background-size: 130%;
 }
 .setImage._dyn
  {
-    background-image: url('../images/set_art/dyn_key_art.original.jpg'); 
+    background-image: url('../images/set_art/dyn_key_art.original.jpg');
     background-size: 130%;
 }
 .setImage._1hp
  {
-    background-image: url('../images/set_art/1hp_keyart_dnhst.original.jpg'); 
+    background-image: url('../images/set_art/1hp_keyart_dnhst.original.jpg');
     background-size: 200%;
     background-position: 50% 70%;
 }
 .setImage._upr
  {
-    background-image: url('../images/set_art/upr_key_art_7Zz.original.jpg'); 
+    background-image: url('../images/set_art/upr_key_art_7Zz.original.jpg');
     background-size: 150%;
 }
 .setImage._evr
  {
-    background-image: url('../images/set_art/Everfest_Banner_FullHD.original.jpg'); 
+    background-image: url('../images/set_art/Everfest_Banner_FullHD.original.jpg');
     background-size: 130%;
 }
 .setImage._ele
  {
-    background-image: url('../images/set_art/toa_art_01.original.jpg'); 
+    background-image: url('../images/set_art/toa_art_01.original.jpg');
     background-size: 130%;
 }
 .setImage._mon
  {
-    background-image: url('../images/set_art/Monarch_Key_Art_FullHD.original.jpg'); 
+    background-image: url('../images/set_art/Monarch_Key_Art_FullHD.original.jpg');
     background-size: 230%;
     background-position: 50% 60%;
 }
 .setImage._cru
  {
-    background-image: url('../images/set_art/CRU_HOME-PAGE.original.png'); 
+    background-image: url('../images/set_art/CRU_HOME-PAGE.original.png');
     background-size: 130%;
 }
 .setImage._arc
  {
-    background-image: url('../images/set_art/key_img_one.original.jpg'); 
+    background-image: url('../images/set_art/key_img_one.original.jpg');
     background-size: 150%;
     background-position: 50% 20%;
 }
 .setImage._wtr
  {
-    background-image: url('../images/set_art/Welcome_to_Rathe_Key_Art_v1_FullHD.original.jpg'); 
+    background-image: url('../images/set_art/Welcome_to_Rathe_Key_Art_v1_FullHD.original.jpg');
     background-size: 120%;
 }
 
 
 .classImage.generic
 {
-    background-image: url('../images/class_art/talishar_cropped.png'); 
+    background-image: url('../images/class_art/talishar_cropped.png');
     background-position: 50% 50% !important;
 }
 
 .classImage.warrior
 {
-    background-image: url('../images/class_art/dorinthea_hero.original.jpg'); 
+    background-image: url('../images/class_art/dorinthea_hero.original.jpg');
 }
 .classImage.guardian
 {
-    background-image: url('../images/class_art/bravo_hero.original.jpg'); 
+    background-image: url('../images/class_art/bravo_hero.original.jpg');
 }
 .classImage.brute
 {
     background-image: url('../images/class_art/rhinar_hero.original.jpg');
-    background-position: 50% 20% !important; 
+    background-position: 50% 20% !important;
 }
 .classImage.ninja
 {
-    background-image: url('../images/class_art/katsu_hero.original.jpg'); 
+    background-image: url('../images/class_art/katsu_hero.original.jpg');
     background-position: 50% 10% !important;
 }
 .classImage.wizard
 {
-    background-image: url('../images/class_art/kano_old.original.jpg'); 
+    background-image: url('../images/class_art/kano_old.original.jpg');
     background-size: 150%;
     background-position: 50% 30% !important;
 }
 .classImage.mechanologist
 {
-    background-image: url('../images/class_art/mechanologist.jpg'); 
+    background-image: url('../images/class_art/mechanologist.jpg');
     background-position: 50% 30% !important;
 }
 .classImage.runeblade
 {
-    background-image: url('../images/class_art/vis19238.original.jpg'); 
+    background-image: url('../images/class_art/vis19238.original.jpg');
     background-position: 50% 20% !important;
 }
 .classImage.illusionist
 {
-    background-image: url('../images/class_art/prism.jpg'); 
+    background-image: url('../images/class_art/prism.jpg');
 }
 .classImage.ranger
 {
-    background-image: url('../images/class_art/azalea.original.jpg'); 
+    background-image: url('../images/class_art/azalea.original.jpg');
 }
 .classImage.assassin
 {
-    background-image: url('../images/class_art/out_art_uzuri.original.jpg'); 
+    background-image: url('../images/class_art/out_art_uzuri.original.jpg');
     background-position: 50% 30% !important;
 }
 .classImage.bard
 {
-    background-image: url('../images/class_art/melody.jpg'); 
+    background-image: url('../images/class_art/melody.jpg');
     background-position: 50% 20% !important;
 }
 .classImage.merchant
 {
-    background-image: url('../images/class_art/art_image_genis.original.jpg'); 
+    background-image: url('../images/class_art/art_image_genis.original.jpg');
     background-position: 50% 25% !important;
 }
 .classImage.shapeshifter
 {
-    background-image: url('../images/class_art/Shiyana.original.jpg'); 
+    background-image: url('../images/class_art/Shiyana.original.jpg');
     background-position: 50% 20% !important;
 }
 
