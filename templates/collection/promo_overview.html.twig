@@ -7,12 +7,12 @@
 	<div class="mx-auto" {{ stimulus_controller('filter printing popover') }}>
 		<div class="sticky-top bg-white pb-1" style="top: 57px; z-index: 1020;">
 			<!-- Toggle button (visible on small screens only) -->
-			<button 
-				class="btn btn-outline-secondary d-sm-none mt-3" 
-				type="button" 
-				data-bs-toggle="collapse" 
-				data-bs-target="#filterCollapse" 
-				aria-expanded="false" 
+			<button
+				class="btn btn-outline-secondary d-sm-none mt-3"
+				type="button"
+				data-bs-toggle="collapse"
+				data-bs-target="#filterCollapse"
+				aria-expanded="false"
 				aria-controls="filterCollapse"
 			>
 				<span>Filters</span>
@@ -45,8 +45,8 @@
 								{{ form_label(form.hide, null, {'label_attr': {'class': 'form-check-label'} }) }}
 
 								{% if not loggedIn %}
-									<i 
-										class="bi bi-info-circle text-muted" 
+									<i
+										class="bi bi-info-circle text-muted"
 										aria-label="Info"
 										tabindex="0"
 										role="button"
@@ -77,11 +77,11 @@
 		{% include 'collection/collector_view_table.html.twig' with {'promoView': true} %}
 
 	</div>
-	<button 
+	<button
 		{{ stimulus_controller('back-to-top') }}
-		data-action="click->back-to-top#scrollToTop" 
-		class="btn btn-secondary position-fixed" 
-		style="bottom: 20px; right: 20px; display: none; z-index:99" 
+		data-action="click->back-to-top#scrollToTop"
+		class="btn btn-secondary position-fixed"
+		style="bottom: 20px; right: 20px; display: none; z-index:99"
 		id="backToTopButton"
 	>
 		↑ Top
