@@ -1,8 +1,17 @@
+
+// Boostrap SASS + overrides
+// $table-bg: #E2CDBB;
+
+@import '../../vendor/twbs/bootstrap/scss/bootstrap';
+
 :root {
     --color-pitch-1: #c70e09;
     --color-pitch-2: #ffef00;
     --color-pitch-3: #0091d8;
     --tiny-font-size: 0.85rem;
+}
+.test-keep {
+    background-color: pink;
 }
 
 button[data-bs-toggle="collapse"].btn-outline-secondary {
@@ -351,11 +360,6 @@ button[aria-expanded="true"] i.bi-chevron-down {
     background-image: url('../images/class_art/Shiyana.original.jpg');
     background-position: 50% 20% !important;
 }
-
-// Boostrap SASS + overrides
-// $table-bg: #E2CDBB;
-
-@import '../../vendor/twbs/bootstrap/scss/bootstrap';
 
 /* The individual card icons */
 .card-icon {
