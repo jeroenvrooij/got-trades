@@ -4,6 +4,9 @@
     --color-pitch-3: #0091d8;
     --tiny-font-size: 0.85rem;
 }
+body {
+    padding-top: 60px;
+}
 .pitch-container {
     display: inline-flex;
     align-items: center; /* Align dots vertically */
