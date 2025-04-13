@@ -10,10 +10,12 @@
     --color-pitch-3: #0091d8;
     --tiny-font-size: 0.85rem;
 }
-.test-keep {
-    background-color: pink;
+body {
+    padding-top: 60px;
 }
-
+.navbar {
+    height: 57px;
+}
 button[data-bs-toggle="collapse"].btn-outline-secondary {
 	background-color: transparent !important;
 	color: var(--bs-secondary) !important;
