@@ -81,10 +81,6 @@ class UserCollectionManager
         $smallTypes = ['Demi-Hero', 'Hero', 'Equipment', 'Token', 'Weapon'];
         foreach ($card->getTypes() as $type) {
             if (in_array($type, $smallTypes)) {
-                if('Weapon' === $type && in_array('1H', $card->getTypes())) {
-                    // one hander weapons playset consists of 2
-                    return 2;
-                } 
                 return 1;
             }
         }

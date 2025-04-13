@@ -201,15 +201,6 @@ class CardPrintingRepository extends ServiceEntityRepository
                                     )
                                     OR 
                                     (
-                                        (   
-                                            -- for 1 hander weapons a playset consists of two copies
-                                            array_to_string(c.types, \',\') LIKE \'%1H%\' AND
-                                            array_to_string(c.types, \',\') LIKE \'%Weapon%\'
-                                        )
-                                        AND ucp.collectionAmount >= 2
-                                    )
-                                    OR 
-                                    (
                                         (
                                             -- default playset size is three
                                             array_to_string(c.types, \',\') NOT LIKE \'%Hero%\' AND
@@ -259,11 +250,6 @@ class CardPrintingRepository extends ServiceEntityRepository
                                         -- playsets of cards with the legendary keywords also just require one copy
                                         array_to_string(ucp_c.keywords, \',\') LIKE \'%Legendary%\' 
                                     THEN 1
-                                    WHEN 
-                                        -- for 1 hander weapons a playset consists of two copies
-                                        array_to_string(ucp_c.types, \',\') LIKE \'%1H%\' AND
-                                        array_to_string(ucp_c.types, \',\') LIKE \'%Weapon%\' 
-                                    THEN 2
                                     WHEN 
                                         -- default playset size is three
                                         array_to_string(ucp_c.types, \',\') NOT LIKE \'%Hero%\' AND
