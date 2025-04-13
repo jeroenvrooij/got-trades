@@ -2,37 +2,159 @@
 
 {% block breadcrumbs %}{% endblock %}
 {% block body %}
-<div class="container text-center text-secondary" style="padding: 50px;">
+<div class="text-center text-secondary pt-5" {{ stimulus_controller('popover') }}>
     <h1>That all you got?</h1>
 
-    <p style="margin-top: 30px;">
-        This is a fanmade tool to keep track of collected cards and incomplete playsets. <br />
-        Other players and collectors may create an account so they can also use it's functionalities.
+    <p class="mx-auto mt-4" style="max-width: 960px;">
+        A legendary Flesh and Blood collection isn't built by luck in cracking packs — it's crafted with strategy. <br />
+This fanmade tool helps you forge your perfect collection, showing you what cards you have collected, which playsets need completion, and where your arsenal still has gaps to fill.
     </p>
-
     {# <p>Start by searching for cards or:</p> #}
-    <div class="container text-center">
+    {# https://storage.googleapis.com/fabmaster/cardfaces/2022-UPR/UPR189.png #}
+
+    <section class="features-section">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-6 col-lg-4 d-flex justify-content-center">
+                <div class="feature fixed-feature-box d-flex flex-column p-4 bg-white rounded shadow-sm text-center">
+                    <div class="feature-top mb-2">
+                        <i class="bi bi-person-circle feature-icon text-warning"></i>
+                        <h4>Create an account</h4>
+                    </div>
+                    <div class="feature-body mb-2">
+                        <p>Once you have an account and are logged in you can start adding cards to your online collection.</p>
+                    </div>
+                    <div class="feature-footer">
+                        <button type="button" class="btn btn-warning" disabled>Sign up</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 d-flex justify-content-center">
+                <div class="feature fixed-feature-box d-flex flex-column p-4 bg-white rounded shadow-sm text-center">
+                    <div class="feature-top mb-2">
+                        <i class="bi bi-collection feature-icon text-warning"></i>
+                        <h4>Track Your Collection</h4>
+                    </div>
+                    <div class="feature-body mb-2">
+                        <p>View all cards from a specific <a href="{{ path('app_card_setoverviewpage') }}" class="link-warning link-offset-2 link-underline-opacity-50 link-underline-opacity-100-hover">booster set</a>, dive into a <a href="{{ path('app_card_classoverviewpage') }}" class="link-warning link-offset-2 link-underline-opacity-50 link-underline-opacity-100-hover">class</a> or hunt down <a href="{{ path('app_collection_managepromocollection') }}" class="link-warning link-offset-2 link-underline-opacity-50 link-underline-opacity-100-hover">promos</a>. Your collection, organized the way you collect.</p>
+                    </div>
+                    <div class="feature-footer"></div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 d-flex justify-content-center">
+                <div class="feature fixed-feature-box d-flex flex-column p-4 bg-white rounded shadow-sm text-center">
+                    <div class="feature-top mb-2">
+                        <i class="bi bi-file-check feature-icon text-warning"></i>
+                        <h4>Complete Your Playsets</h4>
+                    </div>
+                    <div class="feature-body mb-2">
+                        <p>
+                            Easily spot incomplete playsets by hiding complete sets. <br />
+                            Switch between 'player view'
+                            <i class="bi bi-info-circle text-warning"
+                               aria-label="Info"
+                               tabindex="0"
+                               role="button"
+                               data-bs-toggle="popover"
+                               data-bs-trigger="hover focus"
+                               data-bs-placement="bottom"
+                               data-bs-html="true"
+                               title="Player view"
+                               data-bs-content="<p>A playset is considered complete when you have collected three copies within the same set, regardless of the printing.</p><p>Eg.: 2 NF Sink Below (red) + 1 RF Sink Below (red) is a complete playset.</p>"
+                               style="cursor: pointer;"></i>
+                            and 'collector view'
+                            <i class="bi bi-info-circle text-warning"
+                               aria-label="Info"
+                               tabindex="0"
+                               role="button"
+                               data-bs-toggle="popover"
+                               data-bs-trigger="hover focus"
+                               data-bs-placement="bottom"
+                               title="Collector view"
+                               data-bs-html="true"
+                               data-bs-content="<p>Each printing of a card is considered a separate playset.</p><p>Eg.: Sink Below (red) has 4 separate playsets in WTR: Alpha NF, Alpha RF, Unlimited NF and Unlimited RF.</p>"
+                               style="cursor: pointer;"></i>
+                        </p>
+                    </div>
+                    <div class="feature-footer"></div>
+                </div>
+            </div>
+
+            {# <div class="col-md-6 col-lg-4 d-flex justify-content-center">
+                <div class="feature fixed-feature-box d-flex flex-column p-4 bg-white rounded shadow-sm text-center">
+                    <div class="feature-top mb-2">
+                        <i class="bi bi-p-circle-fill feature-icon text-warning"></i>
+                        <h4>View All Promos</h4>
+                    </div>
+                    <div class="feature-body mb-2">
+                        <p>Stay up to date with all the promo cards, making sure you never miss a rare or limited-time offering.</p>
+                    </div>
+                    <div class="feature-footer"></div>
+                </div>
+            </div> #}
+        </div>
+    </div>
+</section>
+
+<style>
+    .features-section {
+        padding: 40px 20px;
+    }
+
+    .feature-icon {
+        font-size: 50px;
+        margin-bottom: 10px;
+    }
+
+    .fixed-feature-box {
+        width: 340px;
+        height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: center;
+    }
+
+    .feature-top {
+        flex-shrink: 0;
+    }
+
+    .feature-body {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 5px;
+    }
+
+    .feature-body p {
+        margin: 0;
+    }
+
+    .feature-footer {
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 576px) {
+        .fixed-feature-box {
+            width: 100%;
+            height: auto;
+        }
+
+        .feature-icon {
+            font-size: 40px;
+        }
+    }
+</style>
+
+
+
+       
         {# <div class="row align-items-center">
-            <div class="col d-flex justify-content-center align-items-center">
-            <a href="{{ path('app_collection_managecollectionbyset', {setId: "HNT"}) }}"  data-caption="Manage by set" class="setImage my-3 hnt d-flex justify-content-center align-items-center">
-                <img src="{{ asset('images/set_logos/the_hunted_logo.original.png') }}">
-            </a>
-            </div>
-            <div class="col d-flex justify-content-center align-items-center">
-            <a href="{{ path('app_collection_managecollectionbyset', {setId: "ROS"}) }}" data-caption="Manage by class" class="setImage my-3 ros d-flex justify-content-center align-items-center">
-                <img src="{{ asset('images/set_logos/logo_rosetta_full.original.png') }}">
-            </a>
-            </div>
-            <div class="col d-flex justify-content-center align-items-center">
-            <a href="{{ path('app_collection_managecollectionbyset', {setId: "MST"}) }}" data-caption="Manage promos" class="setImage my-3 mst d-flex justify-content-center align-items-center">
-                <img src="{{ asset('images/set_logos/logo_mst.original.png') }}">
-            </a>
-            </div>
-        </div> #}
-        <div class="row align-items-center">
             <div class="col d-flex justify-content-center align-items-center gy-4">
                 <div class="card text-secondary" style="width: 18rem; height: 13rem;">
-                    {# <img src="{{ asset('images/that_all_you_got.png')}}" class="card-img-top" alt="..."> #}
                     <h5 class="card-header">By set</h5>
                     <div class="card-body">
                         <p class="card-text">Manage your collection by browsing cards from a specific booster set.</p>
@@ -44,7 +166,6 @@
             </div>
             <div class="col d-flex justify-content-center align-items-center gy-4">
                 <div class="card text-secondary" style="width: 18rem; height: 13rem;">
-                    {# <img src="{{ asset('images/that_all_you_got.png')}}" class="card-img-top" alt="..."> #}
                     <h5 class="card-header">By class</h5>
                     <div class="card-body">
                         <p class="card-text">Manage your collection by browsing cards from a specific class.</p>
@@ -56,7 +177,6 @@
             </div>
             <div class="col d-flex justify-content-center align-items-center gy-4">
                 <div class="card text-secondary" style="width: 18rem; height: 13rem;">
-                    {# <img src="{{ asset('images/that_all_you_got.png')}}" class="card-img-top" alt="..."> #}
                     <h5 class="card-header">Promos</h5>
                     <div class="card-body">
                         <p class="card-text">Browse all promos and mark your treasures!</p>
@@ -67,7 +187,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> #}
 
 </div>
 {% endblock %} 
