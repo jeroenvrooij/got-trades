@@ -7,6 +7,37 @@
 body {
     padding-top: 60px;
 }
+  
+button[data-bs-toggle="collapse"].btn-outline-secondary {
+	background-color: transparent !important;
+	color: var(--bs-secondary) !important;
+	border-color: var(--bs-secondary) !important;
+}
+
+button[data-bs-toggle="collapse"].btn-outline-secondary:focus,
+button[data-bs-toggle="collapse"].btn-outline-secondary:active {
+	box-shadow: none;
+	background-color: transparent !important;
+	color: var(--bs-secondary) !important;
+}
+/* When the collapse is hidden (button collapsed), show chevron-down */
+button[aria-expanded="false"] i.bi-chevron-right {
+    display: inline-block;
+}
+
+button[aria-expanded="false"] i.bi-chevron-down {
+    display: none;
+}
+
+/* When the collapse is shown (button expanded), show chevron-up */
+button[aria-expanded="true"] i.bi-chevron-right {
+    display: none;
+}
+
+button[aria-expanded="true"] i.bi-chevron-down {
+    display: inline-block;
+}
+
 .navbar {
     height: 57px;
 }
