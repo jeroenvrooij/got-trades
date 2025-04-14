@@ -22,7 +22,7 @@ class CardPrintingRepository extends ServiceEntityRepository
     private Security $security;
 
     public function __construct(
-        ManagerRegistry $registry, 
+        ManagerRegistry $registry,
         CardFaceAssociationRepository $cardFaceAssociationRepository,
         UserCardPrintingsRepository $userCardPrintingsRepository,
         Security $security,
@@ -37,11 +37,11 @@ class CardPrintingRepository extends ServiceEntityRepository
     * @return CardPrinting[] Returns an array of CardPrinting objects
     */
     public function findBySet(
-        Set $set, 
-        ?bool $hideOwnedCards = false, 
+        Set $set,
+        ?bool $hideOwnedCards = false,
         ?bool $collectorView = false,
-        ?string $foiling = '', 
-        ?string $cardName = '', 
+        ?string $foiling = '',
+        ?string $cardName = '',
     ): array
     {
         $qb = $this->buildCoreQuery($hideOwnedCards, $collectorView, $foiling, $cardName);
@@ -54,7 +54,7 @@ class CardPrintingRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
             ;
-            
+
         return $cards;
     }
 
@@ -62,11 +62,11 @@ class CardPrintingRepository extends ServiceEntityRepository
     * @return CardPrinting[] Returns an array of CardPrinting objects
     */
     public function findByClass(
-        ?string $className, 
-        ?bool $hideOwnedCards = false, 
+        ?string $className,
+        ?bool $hideOwnedCards = false,
         ?bool $collectorView = false,
-        ?string $foiling = '', 
-        ?string $cardName = '', 
+        ?string $foiling = '',
+        ?string $cardName = '',
     ): array
     {
         $qb = $this->buildCoreQuery($hideOwnedCards, $collectorView, $foiling, $cardName);
@@ -83,7 +83,7 @@ class CardPrintingRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
             ;
-            
+
         return $cards;
     }
 
@@ -91,9 +91,9 @@ class CardPrintingRepository extends ServiceEntityRepository
     * @return CardPrinting[] Returns an array of CardPrinting objects
     */
     public function findPromos(
-        ?bool $hideOwnedCards = false, 
-        ?string $foiling = '', 
-        ?string $cardName = '', 
+        ?bool $hideOwnedCards = false,
+        ?string $foiling = '',
+        ?string $cardName = '',
     ): array
     {
         $qb = $this->buildCoreQuery($hideOwnedCards, true, $foiling, $cardName);
@@ -107,7 +107,7 @@ class CardPrintingRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
             ;
-            
+
         return $cards;
     }
 
@@ -115,10 +115,10 @@ class CardPrintingRepository extends ServiceEntityRepository
      * Builds the QueryBuilder object with the core query for fetching card printings.
      */
     private function buildCoreQuery(
-        ?bool $hideOwnedCards = false, 
+        ?bool $hideOwnedCards = false,
         ?bool $collectorView = false,
-        ?string $foiling = '', 
-        ?string $cardName = '', 
+        ?string $foiling = '',
+        ?string $cardName = '',
     ): QueryBuilder
     {
         $qb = $this->createQueryBuilder('cp');
@@ -140,10 +140,10 @@ class CardPrintingRepository extends ServiceEntityRepository
                     ),
                     /*
                     * Remove back printings, if front and back are the same card. Eg both UPR006
-                    * 
+                    *
                     * Match on card id and not card unique id so that a double sided cards with two different
                     * cards on it is not filtered. Eg Storm of Sandikai (UPR003) on front and Fai (UPR045) on back.
-                    * 
+                    *
                     */
                     $qb->expr()->not(
                         $qb->expr()->exists(
@@ -192,14 +192,24 @@ class CardPrintingRepository extends ServiceEntityRepository
                                         (
                                             -- for some type of cards a playset is completed is you have one copy
                                             array_to_string(c.types, \',\') LIKE \'%Hero%\' OR
-                                            array_to_string(c.types, \',\') LIKE \'%Equipment%\' OR
+                                            (array_to_string(c.types, \',\') LIKE \'%Equipment%\' AND array_to_string(c.keywords, \',\') NOT LIKE \'%Transform%\') OR
                                             array_to_string(c.types, \',\') LIKE \'%Token%\' OR
                                             array_to_string(c.types, \',\') LIKE \'%Weapon%\' AND
                                             array_to_string(c.types, \',\') LIKE \'%2H%\'
                                         )
-                                        AND ucp.collectionAmount >=1
+                                        AND ucp.collectionAmount >= 1
                                     )
-                                    OR 
+                                    OR
+                                    (
+                                        (
+                                            -- Equipment cards that can transform are a playset of three that go in the deck
+                                            array_to_string(c.types, \',\') LIKE \'%Equipment%\' AND
+                                            array_to_string(c.keywords, \',\') LIKE \'%Transform%\'
+                                        )
+                                        AND ucp.collectionAmount >= 3
+                                    )
+
+                                    OR
                                     (
                                         (
                                             -- default playset size is three
@@ -210,10 +220,10 @@ class CardPrintingRepository extends ServiceEntityRepository
                                         )
                                         AND ucp.collectionAmount >= 3
                                     )
-                                    OR 
+                                    OR
                                     (
                                         -- playsets of cards with the legendary keywords also just require one copy
-                                        array_to_string(c.keywords, \',\') LIKE \'%Legendary%\' AND 
+                                        array_to_string(c.keywords, \',\') LIKE \'%Legendary%\' AND
                                         ucp.collectionAmount >= 1
                                     )
                                 ')
@@ -233,30 +243,35 @@ class CardPrintingRepository extends ServiceEntityRepository
                                 ->groupBy('ucp_c.uniqueId')
                                 ->where('ucp_c = c')
                                 ->andWhere('ucp.user = :userId')
-                                // only cards from within the same set should be filtered out 
+                                // only cards from within the same set should be filtered out
                                 ->andWhere('ucp_cp.cardId = cp.cardId')
                                 ->having('
                                     SUM(ucp.collectionAmount) >=
                                     CASE
-                                    WHEN 
+                                    WHEN
+                                        -- Equipment cards that can transform are a playset of three that go in the deck
+                                        array_to_string(ucp_c.types, \',\') LIKE \'%Equipment%\' AND
+                                        array_to_string(ucp_c.keywords, \',\') LIKE \'%Transform%\'
+                                    THEN 3
+                                    WHEN
                                         -- for some type of cards a playset is completed is you have one copy
                                         array_to_string(ucp_c.types, \',\') LIKE \'%Hero%\' OR
                                         array_to_string(ucp_c.types, \',\') LIKE \'%Equipment%\' OR
                                         array_to_string(ucp_c.types, \',\') LIKE \'%Token%\' OR
                                         array_to_string(ucp_c.types, \',\') LIKE \'%Weapon%\' AND
-                                        array_to_string(ucp_c.types, \',\') LIKE \'%2H%\' 
+                                        array_to_string(ucp_c.types, \',\') LIKE \'%2H%\'
                                     THEN 1
-                                    WHEN 
+                                    WHEN
                                         -- playsets of cards with the legendary keywords also just require one copy
-                                        array_to_string(ucp_c.keywords, \',\') LIKE \'%Legendary%\' 
+                                        array_to_string(ucp_c.keywords, \',\') LIKE \'%Legendary%\'
                                     THEN 1
-                                    WHEN 
+                                    WHEN
                                         -- default playset size is three
                                         array_to_string(ucp_c.types, \',\') NOT LIKE \'%Hero%\' AND
                                         array_to_string(ucp_c.types, \',\') NOT LIKE \'%Equipment%\' AND
                                         array_to_string(ucp_c.types, \',\') NOT LIKE \'%Token%\' AND
                                         array_to_string(ucp_c.types, \',\') NOT LIKE \'%Weapon%\'AND
-                                        array_to_string(ucp_c.keywords, \',\') NOT LIKE \'%Legendary%\' 
+                                        array_to_string(ucp_c.keywords, \',\') NOT LIKE \'%Legendary%\'
                                     THEN 3
                                     ELSE 0
                                     END
