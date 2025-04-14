@@ -11,8 +11,3 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.min.css';
 import './styles/app.scss';
 window.bootstrap = bootstrap;
-
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
-
-
-  
