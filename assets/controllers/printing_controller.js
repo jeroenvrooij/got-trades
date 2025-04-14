@@ -1,18 +1,18 @@
 import { Controller } from "@hotwired/stimulus";
 
-  
+
 export default class extends Controller {
     static targets = ["amountInput", "decrementButton", "incrementButton", "playsetIconsContainer", 'filterForm', 'playerviewRow', 'toggleAllRowsElement'];
 
     // Store array of timeout, each card will have their own
-    timeouts = {}; 
+    timeouts = {};
 
     connect() {
         this.amountInputTargets.forEach(input => {
           // Store the original value of each input
           input.dataset.originalValue = input.value;
         });
-        
+
         if (!window.requests) {
             window.requests = [];
         }
@@ -65,15 +65,18 @@ export default class extends Controller {
     openRow(row) {
         row.hidden = false;
         const icon = this.element.querySelector('[data-printing-row-param="' + row.id + '"]');
-       
+        icon.classList.remove("bi-chevron-right");
+        icon.classList.add("bi-chevron-down");
+
         const parentRow = icon.closest("tr");
         parentRow.style.fontStyle = "italic";
 
+        // if the row was opened, store it in window.openRows so we can keep it open (after form is submitted)
         if (window.openRows) {
             window.openRows.push(row.id);
         }
     }
-    
+
     closeRow(row, keepOpen = false) {
         row.hidden = true;
         const icon = this.element.querySelector('[data-printing-row-param="' + row.id + '"]');
@@ -82,40 +85,29 @@ export default class extends Controller {
 
         const parentRow = icon.closest("tr");
         parentRow.style.fontStyle = "normal";
-        
+
+        // if the row was closed, remove it from window.openRows
         if (window.openRows && !keepOpen) {
             window.openRows.splice(window.openRows.indexOf(row.id), 1);
         }
     }
 
     toggleRow(event) {
-        const icon = event.target;
-
-        // Toggle the icon
-        if (icon.classList.contains("bi-chevron-right")) {
-            icon.classList.remove("bi-chevron-right");
-            icon.classList.add("bi-chevron-down");
-        } else {
-            icon.classList.remove("bi-chevron-down");
-            icon.classList.add("bi-chevron-right");
-        }
-
-        // Toggle the row
         const row =  document.getElementById(event.params.row);
-        
-        // if the row was opened, store it in window.openRows so we can keep it open (after form is submitted)
+
         if (row.hidden) {
             this.openRow(row);
         } else {
             this.closeRow(row);
         }
     }
+
     incrementAmount(event) {
         const inputGroup = event.target.closest(".input-group");
 
         // Find the input element within this container
         const inputField = inputGroup.querySelector('[data-printing-target="amountInput"]');
-    
+
         let currentValue = parseInt(inputField.value);
         inputField.value = currentValue + 1;
         this.updateButtonState(event);
@@ -138,11 +130,11 @@ export default class extends Controller {
             inputField.value = currentValue - 1;
         }
         this.updateButtonState(event);
-        
+
         // Debounce the request: clear any existing timer and set a new one
         this.debounceUpdate(event, inputField);
     }
-    
+
     updateButtonState(event) {
         const inputGroup = event.target.closest(".input-group");
 
@@ -152,7 +144,7 @@ export default class extends Controller {
         const incrementField = inputGroup.querySelector('[data-printing-target="incrementButton"]');
 
         let value = parseInt(inputField.value, 10);
-        
+
         // Disable decrement if value is 0
         decrementField.disabled = value <= 0;
 
@@ -177,7 +169,7 @@ export default class extends Controller {
         }
 
         // Disable the select element while waiting
-        this.updateFilterState();   
+        this.updateFilterState();
 
         // If there is a pending request for this unique quantityId, clear it
         if (this.timeouts[quantityId]) {
@@ -191,10 +183,10 @@ export default class extends Controller {
     }
 
     updateAmount(event, inputField) {
-        const id = event.params.id; 
+        const id = event.params.id;
         const cardName = event.params.cardName;
         const amount = inputField.value;
-        
+
         // If the quantity is the same as the original, don't make the request
         if (parseInt(amount) === parseInt(inputField.dataset.originalValue)) {
             return;
@@ -217,7 +209,7 @@ export default class extends Controller {
                 if (null == totalAmount) {
                     totalAmount = amount;
                 }
-        
+
                 this.showToast("Success", `You now own ${cardName} ${totalAmount} times`, "success");
             } else {
                 this.showToast("Error", "Failed to update quantity!", "danger");
@@ -229,7 +221,7 @@ export default class extends Controller {
         .finally(() => {
             // this request was handled, so remove it from the pending requests
             window.requests.splice(window.requests.indexOf(id), 1);
-            
+
             // update the playset icons and re-enable the filters
             this.updatePlaysetIcons(event, amount);
             this.updateFilterState();
@@ -265,7 +257,7 @@ export default class extends Controller {
         if (playsetIconsContainer) {
            totalAmount = this.calculateTotalAmountBasedOnEvent(event);
         } else {
-            const inputGroup = event.target.closest("tr"); 
+            const inputGroup = event.target.closest("tr");
             playsetIconsContainer = inputGroup.querySelector('[data-printing-target="playsetIconsContainer"]');
         }
 
@@ -315,7 +307,7 @@ export default class extends Controller {
         `;
 
         toastContainer.insertAdjacentHTML("beforeend", toastHtml);
-        
+
         // Initialize Bootstrap toast
         const toastElement = document.getElementById(toastId);
         const toast = bootstrap.Toast.getOrCreateInstance(toastElement, { delay: 3000 }); // Auto-hide after 3s
