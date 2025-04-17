@@ -7,6 +7,7 @@ use App\Entity\Set;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class CardFinder
@@ -17,27 +18,27 @@ class CardFinder
         EntityManagerInterface $entityManager,
         private Security $security,
     ) {
-        $this->entityManager = $entityManager;    
+        $this->entityManager = $entityManager;
     }
 
     /**
      * Finds all printings within a certain set and returns them grouped by unique cards
-     * 
+     *
      * @param Set $set
-     * 
+     *
      * @return ArrayCollection
      */
     public function findCardsBySet(
-        ?Set $set, 
-        ?bool $hideOwnedCards = false, 
+        ?Set $set,
+        ?bool $hideOwnedCards = false,
         ?bool $collectorView = false,
-        ?string $foiling = '', 
+        ?string $foiling = '',
         ?string $cardName = '',
     ) {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
-        
+
         $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findBySet($set, $hideOwnedCards, $collectorView, $foiling, $cardName);
 
         return $this->buildPrintingTree($cardPrintings);
@@ -45,48 +46,60 @@ class CardFinder
 
     /**
      * Finds all printings belonging to a certain class and returns them grouped by unique cards
-     * 
+     *
      * @param string $className
-     * 
+     *
      * @return ArrayCollection
      */
     public function findCardsByClass(
-        ?string $className, 
-        ?bool $hideOwnedCards = false, 
+        ?string $className,
+        ?bool $hideOwnedCards = false,
         ?bool $collectorView = false,
-        ?string $foiling = '', 
+        ?string $foiling = '',
         ?string $cardName = '',
     ) {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
-        
+
         $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findByClass($className, $hideOwnedCards, $collectorView, $foiling, $cardName);
-        
+
         $cardPrintings = $this->buildPrintingTree($cardPrintings);
         $printingsOrderedBySet = $this->orderPrintingTreeBySet($cardPrintings);
 
         return $printingsOrderedBySet;
     }
-     
+
     /**
-     * Finds all printings belonging to a certain class and returns them grouped by unique cards
-     * 
+     * Finds all printings belonging to a certain class
+     *
      * @param string $className
-     * 
-     * @return ArrayCollection
+     *
+     * @return Paginator
      */
-    public function findPromos(
-        ?bool $hideOwnedCards = false, 
-        ?string $foiling = '', 
+    public function findPaginatedPromos(
+        ?int $offset = 0,
+        ?bool $hideOwnedCards = false,
+        ?string $foiling = '',
         ?string $cardName = '',
-    ) {
+    ): Paginator
+    {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
-        
-        $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findPromos($hideOwnedCards, $foiling, $cardName);
-        
+
+        return $this->entityManager->getRepository(CardPrinting::class)->findPaginatedPromos($offset, $hideOwnedCards, $foiling, $cardName);
+    }
+
+    /**
+     * Accepts a Paginator containing cardPrintings and returns them grouped by unique cards
+     *
+     * @param Paginator $cardPrintings
+     *
+     * @return ArrayCollection
+     */
+    public function hydrateResults(Paginator $cardPrintings): ArrayCollection
+    {
         $cardPrintings = $this->buildPrintingTree($cardPrintings);
         $printingsOrderedBySet = $this->orderPrintingTreeBySet($cardPrintings);
 
@@ -95,7 +108,7 @@ class CardFinder
 
     /**
      * Takes an array of card printings and build a tree structured like:
-     * 
+     *
      * [%SET_ID%] => [
      *  [%CARD_ID%] => [
      *          'card' => App\Entity\Card,
@@ -103,7 +116,7 @@ class CardFinder
      *  ]
      * ]
      */
-    private function buildPrintingTree(array $cardPrintings): ArrayCollection
+    private function buildPrintingTree($cardPrintings): ArrayCollection
     {
         $cards = new ArrayCollection();
         foreach ($cardPrintings as $printing) {
@@ -122,7 +135,7 @@ class CardFinder
     }
 
     /**
-     * Orders the tree, moving booster sets up in order the came out. All other sets, 
+     * Orders the tree, moving booster sets up in order the came out. All other sets,
      * like armory decks will be added last.
      */
     private function orderPrintingTreeBySet(?ArrayCollection $cardPrintings): ArrayCollection
@@ -146,7 +159,7 @@ class CardFinder
             'Welcome to Rathe',
         ];
         $printingsOrderedBySet = new ArrayCollection();
-        
+
         foreach ($desiredSetOrder as $key) {
             if (null !== $cardPrintings->get($key)) {
                 $printingsOrderedBySet->set($key, $cardPrintings->get($key));

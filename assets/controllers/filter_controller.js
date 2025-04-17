@@ -25,7 +25,34 @@ export default class extends Controller {
             this.foilingFilterTarget.selectedIndex = 0;
             foilingFilterDiv.hidden = true;
         }
-        this.filterFormTarget.requestSubmit();
+        this.scrollToTopThenSubmitForm();
+    }
+
+    scrollToTopThenSubmitForm() {
+        const form = this.filterFormTarget
+
+        const onScroll = () => {
+            if (window.scrollY === 0) {
+                window.removeEventListener('scroll', onScroll)
+                form.requestSubmit()
+            }
+        }
+
+        // Add listener first
+        window.addEventListener('scroll', onScroll)
+
+        // Trigger scroll
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
+
+        // Fallback: in case scroll event doesn't fire (e.g., already at top)
+        if (window.scrollY === 0) {
+            window.removeEventListener('scroll', onScroll)
+
+            form.requestSubmit()
+        }
     }
 
     debounce(func, delay) {

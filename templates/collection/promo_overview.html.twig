@@ -4,7 +4,7 @@
 	<div class="text-center">
 		<h1 class="text-secondary">Promo collection</h1>
 	</div>
-	<div class="mx-auto" {{ stimulus_controller('filter printing popover') }}>
+	<div class="mx-auto" {{ stimulus_controller('filter printing popover infinitescroll') }}>
 		<div class="sticky-top bg-white pb-1" style="top: 57px; z-index: 1020;">
 			<!-- Toggle button (visible on small screens only) -->
 			<button
@@ -21,7 +21,11 @@
 			</button>
 
 			<div class="collapse d-sm-block pt-3" id="filterCollapse">
-				{{ form_start(form, { attr: {'data-filter-target': 'filterForm', 'data-printing-target': 'filterForm' } }) }}
+				{{ form_start(form, { attr: {
+						'data-filter-target': 'filterForm',
+						'data-infinitescroll-target': 'filterForm',
+						'data-printing-target': 'filterForm',
+				} }) }}
 
 				<div class="my-custom-class-for-errors">
 					{{ form_errors(form) }}
@@ -67,16 +71,27 @@
 							</div>
 						</div>
 
-
 						{{ form_rest(form) }}
 						{{ form_end(form) }}
 					</div>
 				</div>
 			</div>
 		</div>
+
 		{% include 'collection/collector_view_table.html.twig' with {'promoView': true} %}
 
-	</div>
+	<div
+        data-infinitescroll-target="infiniteScrollSpinner"
+        class="text-center mt-3"
+		{% if nextOffset >= cardsPaginator|length %}
+			style="display: none"
+		{% endif %}
+    >
+        <div class="spinner-border text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
 	<button
 		{{ stimulus_controller('back-to-top') }}
 		data-action="click->back-to-top#scrollToTop"
@@ -93,6 +108,14 @@
 	<turbo-stream action="replace" targets="#printing_table">
 		<template>
 				{% include 'collection/collector_view_table.html.twig' with {'promoView': true} %}
+		</template>
+	</turbo-stream>
+{% endblock %}
+
+{% block printing_card_rows %}
+	<turbo-stream action="append" targets="#card_printing_table_content">
+		<template>
+			{% include 'collection/collector_view_table_content.html.twig' with {'promoView': true} %}
 		</template>
 	</turbo-stream>
 {% endblock %}

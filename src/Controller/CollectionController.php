@@ -2,9 +2,11 @@
 // src/Controller/PrintingController.php
 namespace App\Controller;
 
+use __PHP_Incomplete_Class;
 use App\Entity\Set;
 use App\Entity\UserCardPrintings;
 use App\Form\CardFilterFormType;
+use App\Repository\CardPrintingRepository;
 use App\Service\ArtVariationsHelper;
 use App\Service\CardFinder;
 use App\Service\EditionHelper;
@@ -62,7 +64,7 @@ class CollectionController extends AbstractController
         $collectorView = false;
         $cardName = '';
         $foiling = '';
-        
+
         $form = $this->createForm(CardFilterFormType::class);
         $form->handleRequest($request);
 
@@ -84,7 +86,7 @@ class CollectionController extends AbstractController
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-                
+
                 $cards = $this->cardFinder->findCardsBySet($set, $hideOwnedCards, $collectorView, $foiling, $cardName);
 
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
@@ -107,7 +109,7 @@ class CollectionController extends AbstractController
         }
 
         $cards = $this->cardFinder->findCardsBySet($set, $hideOwnedCards, $collectorView, $foiling, $cardName);
-        
+
         return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
             'foilingHelper' => $this->foilingHelper,
@@ -144,7 +146,7 @@ class CollectionController extends AbstractController
             'shapeshifter',
             'warrior',
             'wizard',
-        ]; 
+        ];
 
         if (!in_array($className, $allowedClasses, true)) {
             throw $this->createNotFoundException("Invalid class: $className");
@@ -152,7 +154,7 @@ class CollectionController extends AbstractController
 
         $form = $this->createForm(CardFilterFormType::class);
         $form->handleRequest($request);
-        
+
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
         if (null !== $this->getUser()) {
@@ -172,7 +174,7 @@ class CollectionController extends AbstractController
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
                 $cards = $this->cardFinder->findCardsByClass($className, $hideOwnedCards, $collectorView, $foiling, $cardName);
-                
+
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
                     'foilingHelper' => $this->foilingHelper,
@@ -193,7 +195,7 @@ class CollectionController extends AbstractController
         }
 
         $cards = $this->cardFinder->findCardsByClass($className);
-                
+
         return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
             'foilingHelper' => $this->foilingHelper,
@@ -208,13 +210,56 @@ class CollectionController extends AbstractController
             'pageTitle' => ucfirst($className),
         ]);
     }
+
+    #[Route('/fetch-promo-rows-by-offset')]
+    public function fetchPromoRowsByOffset(
+        Request $request,
+    ) {
+        // Create the form and handle the GET request parameters
+        $form = $this->createForm(CardFilterFormType::class);
+
+        $formData = $request->query->all();
+        // Since this is a GET request, we manually set the form data from the request
+        $form->submit($formData['card_filter_form'], false);  // false = don't clear missing fields
+
+        // // Retrieve the filter form data
+        $cardName = $form->get('cardName')->getData();
+        $foiling = $form->get('foiling')->getData();
+        $hideOwnedCards = $form->get('hide')->getData();
+        $offset = $request->query->getInt('offset', 0);
+
+        $cardsPaginator = $this->cardFinder->findPaginatedPromos($offset, $hideOwnedCards, $foiling, $cardName);
+        $cards = $this->cardFinder->hydrateResults($cardsPaginator);
+
+        $collectedCards = new ArrayCollection();
+        $collectedPrintings = new ArrayCollection();
+        if (null !== $this->getUser()) {
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, null, true);
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, null, true);
+        }
+        $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+        return $this->renderBlock('collection/promo_overview.html.twig', 'printing_card_rows', [
+            'editionHelper' => $this->editionHelper,
+            'foilingHelper' => $this->foilingHelper,
+            'rarityHelper' => $this->rarityHelper,
+            'artVariationsHelper' => $this->artVariationsHelper,
+            'userCollectionManager' => $this->userCollectionManager,
+            'cardPrintingsTree' => $cards,
+            'userCollectedCards' => $collectedCards,
+            'userCollectedPrintings' => $collectedPrintings,
+            'cardsPaginator' => $cardsPaginator,
+            'nextOffset' => min(count($cardsPaginator), $offset + CardPrintingRepository::CARDS_PER_PAGE),
+        ]);
+    }
+
     #[Route('/manage-promo-collection')]
     public function managePromoCollection(
         Request $request,
     ): Response {
         $form = $this->createForm(CardFilterFormType::class);
         $form->handleRequest($request);
-        
+
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
         if (null !== $this->getUser()) {
@@ -232,8 +277,10 @@ class CollectionController extends AbstractController
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-                $cards = $this->cardFinder->findPromos($hideOwnedCards, $foiling, $cardName);
-                
+
+                $cardsPaginator = $this->cardFinder->findPaginatedPromos(0, $hideOwnedCards, $foiling, $cardName);
+                $cards = $this->cardFinder->hydrateResults($cardsPaginator);
+
                 return $this->renderBlock('collection/promo_overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
                     'foilingHelper' => $this->foilingHelper,
@@ -243,6 +290,8 @@ class CollectionController extends AbstractController
                     'cardPrintingsTree' => $cards,
                     'userCollectedCards' => $collectedCards,
                     'userCollectedPrintings' => $collectedPrintings,
+                    'cardsPaginator' => $cardsPaginator,
+                    'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
                 ]);
             }
 
@@ -251,8 +300,9 @@ class CollectionController extends AbstractController
             return $this->redirectToRoute('app_collection_managepromocollection', [], Response::HTTP_SEE_OTHER);
         }
 
-        $cards = $this->cardFinder->findPromos();
-                
+        $cardsPaginator = $this->cardFinder->findPaginatedPromos();
+        $cards = $this->cardFinder->hydrateResults($cardsPaginator);
+
         return $this->render('collection/promo_overview.html.twig', [
             'editionHelper' => $this->editionHelper,
             'foilingHelper' => $this->foilingHelper,
@@ -263,6 +313,8 @@ class CollectionController extends AbstractController
             'userCollectedCards' => $collectedCards,
             'userCollectedPrintings' => $collectedPrintings,
             'form' => $form,
+            'cardsPaginator' => $cardsPaginator,
+            'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
         ]);
     }
 
@@ -273,9 +325,9 @@ class CollectionController extends AbstractController
         EntityManagerInterface $entityManager,
     ): Response {
         $data = json_decode($request->getContent(), true);
-        
+
         $amount = $data['amount'] ?? null;
-        
+
         if ($amount !== null) {
             $cardPrintingId = $data['id'];
             $userCardPrintings = $entityManager->getRepository(UserCardPrintings::class)->find([

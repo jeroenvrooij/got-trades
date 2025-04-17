@@ -7,6 +7,7 @@ use App\Entity\Set;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -15,6 +16,9 @@ use Symfony\Bundle\SecurityBundle\Security;
  */
 class CardPrintingRepository extends ServiceEntityRepository
 {
+
+    public const CARDS_PER_PAGE = 20;
+
     private CardFaceAssociationRepository $cardFaceAssociationRepository;
 
     private UserCardPrintingsRepository $userCardPrintingsRepository;
@@ -88,27 +92,29 @@ class CardPrintingRepository extends ServiceEntityRepository
     }
 
     /**
-    * @return CardPrinting[] Returns an array of CardPrinting objects
+    * @return Paginator Paginator containing CardPrinting objects
     */
-    public function findPromos(
+    public function findPaginatedPromos(
+        ?int $offset = 0,
         ?bool $hideOwnedCards = false,
         ?string $foiling = '',
         ?string $cardName = '',
-    ): array
+    ): Paginator
     {
         $qb = $this->buildCoreQuery($hideOwnedCards, true, $foiling, $cardName);
 
         $qb
             ->andWhere('cp.rarity = :promo')
             ->setParameter('promo', 'P')
+            ->setMaxResults(self::CARDS_PER_PAGE)
+            ->setFirstResult($offset)
         ;
 
-        $cards = $qb
+        $cardsQuery = $qb
             ->getQuery()
-            ->getResult()
             ;
 
-        return $cards;
+        return new Paginator($cardsQuery);
     }
 
     /**
