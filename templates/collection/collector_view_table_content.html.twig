@@ -8,11 +8,21 @@
 ] %}
 
 {% for setName, sets in cardPrintingsTree %}
-    {% if cardPrintingsTree|length > 1 %}
+    {# {% if cardPrintingsTree|length > 1 %} #}
+    {% if (renderedSets is defined and setName not in renderedSets) or (renderedSets is not defined) %}
         <tr class="table-active text-center">
-            <th colspan='7'>{{ setName }}</th>
+            <th colspan='7'>
+                {{ setName }}
+                <div class="visually-hidden"
+                    data-infinitescroll-target="renderedSetsContainer"
+                    data-rendered-sets="{{ setName }}"
+                ></div>
+            </th>
         </tr>
     {% endif %}
+
+
+    {# {% endif %} #}
 
     {% for printingId, printings in sets %}
         {% for printing in printings.printings %}

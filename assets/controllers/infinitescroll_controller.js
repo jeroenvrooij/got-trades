@@ -1,7 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ["infiniteScrollSpinner", "paginationInfoContainer", "filterForm"]
+    static targets = ["infiniteScrollSpinner", "paginationInfoContainer", "filterForm", "renderedSetsContainer"]
+
+    renderedSets = [];
 
     connect() {
         this.readyToLoad = true; // 👈 Flag to prevent unwanted triggering
@@ -34,7 +36,13 @@ export default class extends Controller {
         const formData = new FormData(this.filterFormTarget)
         const params = new URLSearchParams(formData)
 
+        this.renderedSetsContainerTargets.forEach(div => {
+            if (!this.renderedSets.includes(div.dataset.renderedSets)) {
+                this.renderedSets.push(div.dataset.renderedSets)
+            }
+        })
         params.set('offset', offset)
+        params.set('renderedSet', this.renderedSets)
         url.search = params.toString()
 
         const nextOffset = offset + 20;

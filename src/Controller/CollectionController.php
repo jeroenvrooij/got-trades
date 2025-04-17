@@ -227,6 +227,7 @@ class CollectionController extends AbstractController
         $foiling = $form->get('foiling')->getData();
         $hideOwnedCards = $form->get('hide')->getData();
         $offset = $request->query->getInt('offset', 0);
+        $renderedSets = $request->query->get('renderedSet');
 
         $cardsPaginator = $this->cardFinder->findPaginatedPromos($offset, $hideOwnedCards, $foiling, $cardName);
         $cards = $this->cardFinder->hydrateResults($cardsPaginator);
@@ -237,6 +238,7 @@ class CollectionController extends AbstractController
             $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, null, true);
             $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, null, true);
         }
+
         $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
         return $this->renderBlock('collection/promo_overview.html.twig', 'printing_card_rows', [
@@ -250,6 +252,7 @@ class CollectionController extends AbstractController
             'userCollectedPrintings' => $collectedPrintings,
             'cardsPaginator' => $cardsPaginator,
             'nextOffset' => min(count($cardsPaginator), $offset + CardPrintingRepository::CARDS_PER_PAGE),
+            'renderedSets' => $renderedSets,
         ]);
     }
 
