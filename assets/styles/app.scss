@@ -16,6 +16,14 @@ body {
 .navbar {
     height: 57px;
 }
+
+.table-hover tbody tr.no-hover:hover,
+.table-hover tbody tr.no-hover:hover td {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+
 button[data-bs-toggle="collapse"].btn-outline-secondary {
 	background-color: transparent !important;
 	color: var(--bs-secondary) !important;
@@ -175,7 +183,6 @@ button[aria-expanded="true"] i.bi-chevron-down {
     z-index: 1; /* Third card at the bottom */
 }
 
-
 .classImage,
 .setImage {
     background-position: 50% 50%; /* Adjust which part is visible */
@@ -299,7 +306,6 @@ button[aria-expanded="true"] i.bi-chevron-down {
     background-image: url('../images/class_art/talishar_cropped.png');
     background-position: 50% 50% !important;
 }
-
 .classImage.warrior
 {
     background-image: url('../images/class_art/dorinthea_hero.original.jpg');

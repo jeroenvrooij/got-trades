@@ -7,24 +7,22 @@
     'Tales of Aria',
 ] %}
 <div id="printing_table" class="table-responsive">
-
     <div
+        class="visually-hidden"
         data-infinitescroll-target="paginationInfoContainer"
         data-next-offset="{{ nextOffset }}"
         data-total-results="{{ cardsPaginator|length }}"
-        data-fetch-more-url="{{ absolute_url(path('app_collection_fetchpromorowsbyoffset')) }}"
-    >
-        {% if cardsPaginator|length > 0 %}<h6 class="text-body-secondary">Cards found: {{ cardsPaginator|length}}</h6>{% endif %}
+        data-fetch-more-url="{{ absolute_url(path('app_collection_fetchpromorowsbyoffset')) }}">
     </div>
-
     <table class="table table-hover table-sm card-printing align-middle">
         <thead>
+
             <tr>
                 <th scope="col" style="width: 40px;"></th>
                 <th scope="col" style="width: 80px;">Code</th>
                 <th scope="col" style="width: 20px;"></th>
                 <th scope="col" style="min-width: 250px">Name</th>
-                <th scope="col" style="width: 420px;" class="d-none d-lg-table-cell">Foiling</th>
+                <th scope="col" style="width: 320px;" class="d-none d-lg-table-cell">Foiling</th>
                 <th scope="col" style="min-width: 60px;" class="d-lg-none"></th>
                 {% set setId = cardPrintingsTree|keys|first %}
                 {% if (setId in editionSets or cardPrintingsTree|length > 1) and promoView is not defined %}
@@ -37,10 +35,15 @@
         </thead>
         <tbody id="card_printing_table_content">
             {% if cardPrintingsTree|length == 0 %}
-                <tr>
-                    <td colspan='7' class="text-center">No cards found</td>
+                <tr class="no-hover">
+                    <td colspan='7' class="text-center text-body-secondary">No cards found</td>
                 </tr>
             {% else %}
+                <tr class="no-hover">
+                    <td colspan='7' class="text-center text-body-secondary">
+                        Cards found: {{ cardsPaginator|length}}
+                    </td>
+                </tr>
                 {% include 'collection/collector_view_table_content.html.twig' %}
             {% endif %}
 
