@@ -63,15 +63,16 @@ class CardPrintingRepository extends ServiceEntityRepository
     }
 
     /**
-    * @return CardPrinting[] Returns an array of CardPrinting objects
+    * @return Paginator Returns an array of CardPrinting objects
     */
-    public function findByClass(
+    public function findPaginatedByClass(
         ?string $className,
+        ?int $offset = 0,
         ?bool $hideOwnedCards = false,
         ?bool $collectorView = false,
         ?string $foiling = '',
         ?string $cardName = '',
-    ): array
+    ): Paginator
     {
         $qb = $this->buildCoreQuery($hideOwnedCards, $collectorView, $foiling, $cardName);
 
@@ -81,14 +82,15 @@ class CardPrintingRepository extends ServiceEntityRepository
             ->setParameter('className', ucfirst($className))
             ->andWhere('cp.rarity != :promo')
             ->setParameter('promo', 'P')
+            ->setMaxResults(self::CARDS_PER_PAGE)
+            ->setFirstResult($offset)
         ;
 
-        $cards = $qb
+        $cardsQuery = $qb
             ->getQuery()
-            ->getResult()
             ;
 
-        return $cards;
+        return new Paginator($cardsQuery);
     }
 
     /**

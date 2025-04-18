@@ -15,7 +15,7 @@
 	<div class="text-center">
 		<h1 class="text-secondary">{{ pageTitle }}</h1>
 	</div>
-	<div {{ stimulus_controller('filter printing popover') }} class="mx-auto" style="max-width: 1140px;">
+	<div {{ stimulus_controller('filter printing popover infinitescroll') }} class="mx-auto" style="max-width: 1140px;">
 		<div class="sticky-top bg-white pb-1" style="top: 57px; z-index: 1020;">
 			<!-- Toggle button (visible on small screens only) -->
 			<button
@@ -32,7 +32,11 @@
 			</button>
 
 			<div class="collapse d-sm-block pt-3" id="filterCollapse">
-				{{ form_start(form, { attr: {'data-filter-target': 'filterForm', 'data-printing-target': 'filterForm' } }) }}
+				{{ form_start(form, { attr: {
+					'data-filter-target': 'filterForm',
+					'data-infinitescroll-target': 'filterForm',
+					'data-printing-target': 'filterForm'
+				} }) }}
 
 				<div class="my-custom-class-for-errors">
 					{{ form_errors(form) }}
@@ -91,17 +95,29 @@
 			{% include 'collection/player_view_table.html.twig' %}
 		{% endif %}
 
-	</div>
-	<button
-		{{ stimulus_controller('back-to-top') }}
-		data-action="click->back-to-top#scrollToTop"
-		class="btn btn-secondary position-fixed"
-		style="bottom: 20px; right: 20px; display: none; z-index:99"
-		id="backToTopButton"
-	>
-		↑ Top
-	</button>
+		<div
+			data-infinitescroll-target="infiniteScrollSpinner"
+			class="text-center mt-3"
+			{% if nextOffset >= cardsPaginator|length %}
+				style="display: none"
+			{% endif %}
+		>
+			<div class="spinner-border text-secondary" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
 
+		<button
+			{{ stimulus_controller('back-to-top') }}
+			data-action="click->back-to-top#scrollToTop"
+			class="btn btn-secondary position-fixed"
+			style="bottom: 20px; right: 20px; display: none; z-index:99"
+			id="backToTopButton"
+		>
+			↑ Top
+		</button>
+
+	</div>
 {% endblock %}
 
 {% block printing_table %}
@@ -111,6 +127,18 @@
 				{% include 'collection/collector_view_table.html.twig' %}
 			{% else %}
 				{% include 'collection/player_view_table.html.twig' %}
+			{% endif %}
+		</template>
+	</turbo-stream>
+{% endblock %}
+
+{% block printing_card_rows %}
+	<turbo-stream action="append" targets="#card_printing_table_content">
+		<template>
+			{% if collectorView %}
+				{% include 'collection/collector_view_table_content.html.twig' %}
+			{% else %}
+				{# {% include 'collection/player_view_table.html.twig' %} #}
 			{% endif %}
 		</template>
 	</turbo-stream>

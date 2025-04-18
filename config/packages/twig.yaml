@@ -1,6 +1,11 @@
 twig:
     file_name_pattern: '*.twig'
 
+    globals:
+        collectionPageType_CLASS: '%collectionPageType_CLASS%'
+        collectionPageType_SET: '%collectionPageType_SET%'
+        collectionPageType_PROMO: '%collectionPageType_PROMO%'
+
 when@test:
     twig:
         strict_variables: true

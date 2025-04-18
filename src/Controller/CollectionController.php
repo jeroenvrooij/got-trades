@@ -17,6 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -128,7 +129,8 @@ class CollectionController extends AbstractController
     #[Route('/manage-collection-by-class/{className}')]
     public function manageCollectionByClass(
         Request $request,
-        ?string $className
+        ParameterBagInterface $params,
+        ?string $className,
     ): Response {
         $allowedClasses = [
             'adjudicator',
@@ -173,7 +175,9 @@ class CollectionController extends AbstractController
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-                $cards = $this->cardFinder->findCardsByClass($className, $hideOwnedCards, $collectorView, $foiling, $cardName);
+
+                $cardsPaginator = $this->cardFinder->findPaginatedCardsByClass($className, 0, $hideOwnedCards, $collectorView, $foiling, $cardName);
+                $cards = $this->cardFinder->hydrateResults($cardsPaginator);
 
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -186,6 +190,9 @@ class CollectionController extends AbstractController
                     'userCollectedPrintings' => $collectedPrintings,
                     'collectorView' => $collectorView,
                     'pageTitle' => ucfirst($className),
+                    'pageType' => $params->get('collectionPageType_CLASS'),
+                    'cardsPaginator' => $cardsPaginator,
+                    'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
                 ]);
             }
 
@@ -194,7 +201,8 @@ class CollectionController extends AbstractController
             return $this->redirectToRoute('app_collection_managecollectionbyset', ['className', $className], Response::HTTP_SEE_OTHER);
         }
 
-        $cards = $this->cardFinder->findCardsByClass($className);
+        $cardsPaginator = $this->cardFinder->findPaginatedCardsByClass($className);
+        $cards = $this->cardFinder->hydrateResults($cardsPaginator);
 
         return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
@@ -208,12 +216,66 @@ class CollectionController extends AbstractController
             'form' => $form,
             'collectorView' => false,
             'pageTitle' => ucfirst($className),
+            'pageType' => $params->get('collectionPageType_CLASS'),
+            'cardsPaginator' => $cardsPaginator,
+            'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
+        ]);
+    }
+
+    #[Route('/fetch-card-rows-by-offset/{className}')]
+    public function fetchCardRowsByOffset(
+        Request $request,
+        ParameterBagInterface $params,
+        string $className,
+    ) {
+        // Create the form and handle the GET request parameters
+        $form = $this->createForm(CardFilterFormType::class);
+
+        $formData = $request->query->all();
+        // Since this is a GET request, we manually set the form data from the request
+        $form->submit($formData['card_filter_form'], false);  // false = don't clear missing fields
+
+        // // Retrieve the filter form data
+        $cardName = $form->get('cardName')->getData();
+        $foiling = $form->get('foiling')->getData();
+        $hideOwnedCards = $form->get('hide')->getData();
+        $collectorView = $form->get('collectorView')->getData();
+        $offset = $request->query->getInt('offset', 0);
+        $renderedSets = $request->query->get('renderedSet');
+
+        $cardsPaginator = $this->cardFinder->findPaginatedCardsByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+        $cards = $this->cardFinder->hydrateResults($cardsPaginator);
+
+        $collectedCards = new ArrayCollection();
+        $collectedPrintings = new ArrayCollection();
+        if (null !== $this->getUser()) {
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, null, true);
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, null, true);
+        }
+
+        $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+        return $this->renderBlock('collection/overview.html.twig', 'printing_card_rows', [
+            'editionHelper' => $this->editionHelper,
+            'foilingHelper' => $this->foilingHelper,
+            'rarityHelper' => $this->rarityHelper,
+            'artVariationsHelper' => $this->artVariationsHelper,
+            'userCollectionManager' => $this->userCollectionManager,
+            'cardPrintingsTree' => $cards,
+            'userCollectedCards' => $collectedCards,
+            'userCollectedPrintings' => $collectedPrintings,
+            'collectorView' => $collectorView,
+            'cardsPaginator' => $cardsPaginator,
+            'nextOffset' => min(count($cardsPaginator), $offset + CardPrintingRepository::CARDS_PER_PAGE),
+            'renderedSets' => $renderedSets,
+            'pageType' => $params->get('collectionPageType_CLASS'),
         ]);
     }
 
     #[Route('/fetch-promo-rows-by-offset')]
     public function fetchPromoRowsByOffset(
         Request $request,
+        ParameterBagInterface $params,
     ) {
         // Create the form and handle the GET request parameters
         $form = $this->createForm(CardFilterFormType::class);
@@ -253,12 +315,14 @@ class CollectionController extends AbstractController
             'cardsPaginator' => $cardsPaginator,
             'nextOffset' => min(count($cardsPaginator), $offset + CardPrintingRepository::CARDS_PER_PAGE),
             'renderedSets' => $renderedSets,
+            'pageType' => $params->get('collectionPageType_PROMO'),
         ]);
     }
 
     #[Route('/manage-promo-collection')]
     public function managePromoCollection(
         Request $request,
+        ParameterBagInterface $params,
     ): Response {
         $form = $this->createForm(CardFilterFormType::class);
         $form->handleRequest($request);
@@ -293,6 +357,7 @@ class CollectionController extends AbstractController
                     'cardPrintingsTree' => $cards,
                     'userCollectedCards' => $collectedCards,
                     'userCollectedPrintings' => $collectedPrintings,
+                    'pageType' => $params->get('collectionPageType_PROMO'),
                     'cardsPaginator' => $cardsPaginator,
                     'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
                 ]);
@@ -316,6 +381,7 @@ class CollectionController extends AbstractController
             'userCollectedCards' => $collectedCards,
             'userCollectedPrintings' => $collectedPrintings,
             'form' => $form,
+            'pageType' => $params->get('collectionPageType_PROMO'),
             'cardsPaginator' => $cardsPaginator,
             'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
         ]);

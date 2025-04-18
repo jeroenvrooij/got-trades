@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    collectionPageType_CLASS: 'CLASS_COLLECTION'
+    collectionPageType_SET: 'SET_COLLECTION'
+    collectionPageType_PROMO: 'PROMO_COLLECTION'
 
 services:
     # default configuration for services in *this* file

@@ -80,28 +80,29 @@
 
 		{% include 'collection/collector_view_table.html.twig' with {'promoView': true} %}
 
-	<div
-        data-infinitescroll-target="infiniteScrollSpinner"
-        class="text-center mt-3"
-		{% if nextOffset >= cardsPaginator|length %}
-			style="display: none"
-		{% endif %}
-    >
-        <div class="spinner-border text-secondary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
+		<div
+			data-infinitescroll-target="infiniteScrollSpinner"
+			class="text-center mt-3"
+			{% if nextOffset >= cardsPaginator|length %}
+				style="display: none"
+			{% endif %}
+		>
+			<div class="spinner-border text-secondary" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
+
+		<button
+			{{ stimulus_controller('back-to-top') }}
+			data-action="click->back-to-top#scrollToTop"
+			class="btn btn-secondary position-fixed"
+			style="bottom: 20px; right: 20px; display: none; z-index:99"
+			id="backToTopButton"
+		>
+			↑ Top
+		</button>
+
     </div>
-
-	<button
-		{{ stimulus_controller('back-to-top') }}
-		data-action="click->back-to-top#scrollToTop"
-		class="btn btn-secondary position-fixed"
-		style="bottom: 20px; right: 20px; display: none; z-index:99"
-		id="backToTopButton"
-	>
-		↑ Top
-	</button>
-
 {% endblock %}
 
 {% block printing_table %}

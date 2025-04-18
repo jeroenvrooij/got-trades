@@ -49,25 +49,22 @@ class CardFinder
      *
      * @param string $className
      *
-     * @return ArrayCollection
+     * @return Paginator
      */
-    public function findCardsByClass(
+    public function findPaginatedCardsByClass(
         ?string $className,
+        ?int $offset = 0,
         ?bool $hideOwnedCards = false,
         ?bool $collectorView = false,
         ?string $foiling = '',
         ?string $cardName = '',
-    ) {
+    ): Paginator
+    {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
 
-        $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findByClass($className, $hideOwnedCards, $collectorView, $foiling, $cardName);
-
-        $cardPrintings = $this->buildPrintingTree($cardPrintings);
-        $printingsOrderedBySet = $this->orderPrintingTreeBySet($cardPrintings);
-
-        return $printingsOrderedBySet;
+        return $this->entityManager->getRepository(CardPrinting::class)->findPaginatedByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
     }
 
     /**
