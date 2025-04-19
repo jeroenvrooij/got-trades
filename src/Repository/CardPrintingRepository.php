@@ -165,7 +165,36 @@ class CardPrintingRepository extends ServiceEntityRepository
                         )
                     )
                 )
-            )
+        );
+
+        // 🧩 Add custom ordering logic
+        $desiredSetOrder = [
+            'The Hunted',
+            'Rosetta',
+            'Part the Mistveil',
+            'Heavy Hitters',
+            'Bright Lights',
+            'Dusk till Dawn',
+            'Outsiders',
+            'Dynasty',
+            'History Pack 1',
+            'Uprising',
+            'Everfest',
+            'Tales of Aria',
+            'Monarch',
+            'Crucible of War',
+            'Arcane Rising',
+            'Welcome to Rathe',
+        ];
+
+        $orderCase = 'CASE s.name ';
+        foreach ($desiredSetOrder as $index => $setName) {
+            $orderCase .= sprintf("WHEN '%s' THEN %d ", addslashes($setName), $index);
+        }
+        $orderCase .= 'ELSE 999 END';
+        $qb
+            ->addSelect("($orderCase) AS HIDDEN setOrder")
+            ->addOrderBy('setOrder', 'ASC')
             ->addOrderBy('cp.cardId', 'ASC')
             ->addOrderBy('cp.edition', 'DESC')
             ->addOrderBy('cp.foiling', 'DESC')

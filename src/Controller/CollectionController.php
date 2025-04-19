@@ -177,7 +177,7 @@ class CollectionController extends AbstractController
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
                 $cardsPaginator = $this->cardFinder->findPaginatedCardsByClass($className, 0, $hideOwnedCards, $collectorView, $foiling, $cardName);
-                $cards = $this->cardFinder->hydrateResults($cardsPaginator);
+                $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
 
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -202,7 +202,7 @@ class CollectionController extends AbstractController
         }
 
         $cardsPaginator = $this->cardFinder->findPaginatedCardsByClass($className);
-        $cards = $this->cardFinder->hydrateResults($cardsPaginator);
+        $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
 
         return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
@@ -244,7 +244,7 @@ class CollectionController extends AbstractController
         $renderedSets = $request->query->get('renderedSet');
 
         $cardsPaginator = $this->cardFinder->findPaginatedCardsByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
-        $cards = $this->cardFinder->hydrateResults($cardsPaginator);
+        $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
 
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
@@ -292,7 +292,7 @@ class CollectionController extends AbstractController
         $renderedSets = $request->query->get('renderedSet');
 
         $cardsPaginator = $this->cardFinder->findPaginatedPromos($offset, $hideOwnedCards, $foiling, $cardName);
-        $cards = $this->cardFinder->hydrateResults($cardsPaginator);
+        $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
 
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
@@ -346,7 +346,7 @@ class CollectionController extends AbstractController
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
                 $cardsPaginator = $this->cardFinder->findPaginatedPromos(0, $hideOwnedCards, $foiling, $cardName);
-                $cards = $this->cardFinder->hydrateResults($cardsPaginator);
+                $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
 
                 return $this->renderBlock('collection/promo_overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -369,7 +369,7 @@ class CollectionController extends AbstractController
         }
 
         $cardsPaginator = $this->cardFinder->findPaginatedPromos();
-        $cards = $this->cardFinder->hydrateResults($cardsPaginator);
+        $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
 
         return $this->render('collection/promo_overview.html.twig', [
             'editionHelper' => $this->editionHelper,

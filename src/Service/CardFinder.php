@@ -89,22 +89,7 @@ class CardFinder
     }
 
     /**
-     * Accepts a Paginator containing cardPrintings and returns them grouped by unique cards
-     *
-     * @param Paginator $cardPrintings
-     *
-     * @return ArrayCollection
-     */
-    public function hydrateResults(Paginator $cardPrintings): ArrayCollection
-    {
-        $cardPrintings = $this->buildPrintingTree($cardPrintings);
-        $printingsOrderedBySet = $this->orderPrintingTreeBySet($cardPrintings);
-
-        return $printingsOrderedBySet;
-    }
-
-    /**
-     * Takes an array of card printings and build a tree structured like:
+     * Takes an Paginator containing card printings and build an ArrayCollection tree structured like:
      *
      * [%SET_ID%] => [
      *  [%CARD_ID%] => [
@@ -113,10 +98,11 @@ class CardFinder
      *  ]
      * ]
      */
-    private function buildPrintingTree($cardPrintings): ArrayCollection
+    public function buildPrintingTree(Paginator $cardPrintings): ArrayCollection
     {
         $cards = new ArrayCollection();
-        foreach ($cardPrintings as $printing) {
+        foreach ($cardPrintings as $printing)
+        {
             if(!$cards->get($printing->getSet()->getName())) {
                 $cards->set($printing->getSet()->getName(), new ArrayCollection());
             }
@@ -129,47 +115,5 @@ class CardFinder
         }
 
         return $cards;
-    }
-
-    /**
-     * Orders the tree, moving booster sets up in order the came out. All other sets,
-     * like armory decks will be added last.
-     */
-    private function orderPrintingTreeBySet(?ArrayCollection $cardPrintings): ArrayCollection
-    {
-         $desiredSetOrder = [
-            'The Hunted',
-            'Rosetta',
-            'Part the Mistveil',
-            'Heavy Hitters',
-            'Bright Lights',
-            'Dusk till Dawn',
-            'Outsiders',
-            'Dynasty',
-            'History Pack 1',
-            'Uprising',
-            'Everfest',
-            'Tales of Aria',
-            'Monarch',
-            'Crucible of War',
-            'Arcane Rising',
-            'Welcome to Rathe',
-        ];
-        $printingsOrderedBySet = new ArrayCollection();
-
-        foreach ($desiredSetOrder as $key) {
-            if (null !== $cardPrintings->get($key)) {
-                $printingsOrderedBySet->set($key, $cardPrintings->get($key));
-            }
-        }
-
-        // Add all elements that where not ordered
-        foreach ($cardPrintings as $setKey => $setContents) {
-            if (null === $printingsOrderedBySet->get($setKey)) {
-                $printingsOrderedBySet->set($setKey, $setContents);
-            }
-        }
-
-        return $printingsOrderedBySet;
     }
 }
