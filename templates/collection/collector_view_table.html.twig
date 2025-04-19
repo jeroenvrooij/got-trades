@@ -13,26 +13,35 @@
         data-next-offset="{{ nextOffset }}"
         data-total-results="{{ cardsPaginator|length }}"
         {% if pageType == collectionPageType_CLASS %}
-            {# data-fetch-more-url="{{ absolute_url(path('app_collection_fetchcardrowsbyoffset')) }}"> #}
             data-fetch-more-url="{{
                 absolute_url(
                     path(
-                        name: 'app_collection_fetchcardrowsbyoffset',
+                        name: 'app_collection_fetchcollectionviewrowsbyoffset',
                         parameters = { className: app.request.attributes.get('_route_params')['className'] }
                     )
                 )
-            }}">
+            }}"
+        {% elseif pageType == collectionPageType_SET %}
+            data-fetch-more-url="{{
+                absolute_url(
+                    path(
+                        name: 'app_collection_fetchcollectionviewrowsbyoffset',
+                        parameters = { setId: app.request.attributes.get('_route_params')['setId'] }
+                    )
+                )
+            }}"
         {% elseif pageType == collectionPageType_PROMO %}
-            data-fetch-more-url="{{ absolute_url(path('app_collection_fetchpromorowsbyoffset')) }}">
+            data-fetch-more-url="{{ absolute_url(path('app_collection_fetchpromorowsbyoffset')) }}"
         {% endif %}
+    >
     </div>
     <table class="table table-hover table-sm card-printing align-middle">
         <thead>
 
             <tr>
-                <th scope="col" style="width: 40px;"></th>
+                <th scope="col" style="width: 48px;"></th>
                 <th scope="col" style="width: 80px;">Code</th>
-                <th scope="col" style="width: 20px;"></th>
+                <th scope="col" style="width: 22px;"></th>
                 <th scope="col" style="min-width: 250px">Name</th>
                 <th scope="col" style="width: 320px;" class="d-none d-lg-table-cell">Foiling</th>
                 <th scope="col" style="min-width: 60px;" class="d-lg-none"></th>

@@ -32,9 +32,14 @@ export default class extends Controller {
 
         const url = new URL(this.paginationInfoContainerTarget.dataset.fetchMoreUrl)
         const offset = parseInt(this.paginationInfoContainerTarget.dataset.nextOffset, 10)
+        // Start with the existing query params from the URL
+        const params = new URLSearchParams(url.search)
 
+        // Add form values
         const formData = new FormData(this.filterFormTarget)
-        const params = new URLSearchParams(formData)
+        for (const [key, value] of formData.entries()) {
+            params.set(key, value)
+        }
 
         this.renderedSetsContainerTargets.forEach(div => {
             if (!this.renderedSets.includes(div.dataset.renderedSets)) {

@@ -2,7 +2,6 @@
 // src/Controller/PrintingController.php
 namespace App\Controller;
 
-use __PHP_Incomplete_Class;
 use App\Entity\Set;
 use App\Entity\UserCardPrintings;
 use App\Form\CardFilterFormType;
@@ -59,13 +58,9 @@ class CollectionController extends AbstractController
     public function manageCollectionBySet(
         Request $request,
         #[MapEntity(mapping: ['setId' => 'id'], message: 'Set could not be found')]
-        Set $set
+        Set $set,
+        ParameterBagInterface $params,
     ): Response {
-        $hideOwnedCards = false;
-        $collectorView = false;
-        $cardName = '';
-        $foiling = '';
-
         $form = $this->createForm(CardFilterFormType::class);
         $form->handleRequest($request);
 
@@ -88,7 +83,8 @@ class CollectionController extends AbstractController
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                $cards = $this->cardFinder->findCardsBySet($set, $hideOwnedCards, $collectorView, $foiling, $cardName);
+                $cardsPaginator = $this->cardFinder->findPaginatedCardsBySet($set, 0, $hideOwnedCards, $collectorView, $foiling, $cardName);
+                $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
 
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -101,6 +97,9 @@ class CollectionController extends AbstractController
                     'userCollectedPrintings' => $collectedPrintings,
                     'collectorView' => $collectorView,
                     'pageTitle' => $set->getName(),
+                    'pageType' => $params->get('collectionPageType_SET'),
+                    'cardsPaginator' => $cardsPaginator,
+                    'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
                 ]);
             }
 
@@ -109,7 +108,8 @@ class CollectionController extends AbstractController
             return $this->redirectToRoute('app_collection_managecollectionbyset', ['setId', $set->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        $cards = $this->cardFinder->findCardsBySet($set, $hideOwnedCards, $collectorView, $foiling, $cardName);
+        $cardsPaginator = $this->cardFinder->findPaginatedCardsBySet($set);
+        $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
 
         return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
@@ -121,8 +121,11 @@ class CollectionController extends AbstractController
             'userCollectedCards' => $collectedCards,
             'userCollectedPrintings' => $collectedPrintings,
             'form' => $form,
-            'collectorView' => $collectorView,
+            'collectorView' => false,
             'pageTitle' => $set->getName(),
+            'pageType' => $params->get('collectionPageType_SET'),
+            'cardsPaginator' => $cardsPaginator,
+            'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
         ]);
     }
 
@@ -132,25 +135,7 @@ class CollectionController extends AbstractController
         ParameterBagInterface $params,
         ?string $className,
     ): Response {
-        $allowedClasses = [
-            'adjudicator',
-            'assassin',
-            'bard',
-            'brute',
-            'generic',
-            'guardian',
-            'illusionist',
-            'mechanologist',
-            'merchant',
-            'ninja',
-            'ranger',
-            'runeblade',
-            'shapeshifter',
-            'warrior',
-            'wizard',
-        ];
-
-        if (!in_array($className, $allowedClasses, true)) {
+        if (null === $className || false === $this->isClassNameValid($className)) {
             throw $this->createNotFoundException("Invalid class: $className");
         }
 
@@ -222,12 +207,18 @@ class CollectionController extends AbstractController
         ]);
     }
 
-    #[Route('/fetch-card-rows-by-offset/{className}')]
-    public function fetchCardRowsByOffset(
+    #[Route('/fetch-collection-view-rows-by-offset')]
+    public function fetchCollectionViewRowsByOffset(
         Request $request,
         ParameterBagInterface $params,
-        string $className,
+        EntityManagerInterface $entityManager,
     ) {
+        $className = $request->query->get('className');
+        $setId = $request->query->get('setId');
+        if (null === $className && null === $setId) {
+            throw $this->createNotFoundException("Provide either a class name or a set id.");
+        }
+
         // Create the form and handle the GET request parameters
         $form = $this->createForm(CardFilterFormType::class);
 
@@ -243,7 +234,23 @@ class CollectionController extends AbstractController
         $offset = $request->query->getInt('offset', 0);
         $renderedSets = $request->query->get('renderedSet');
 
-        $cardsPaginator = $this->cardFinder->findPaginatedCardsByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+        if (null !== $className) {
+            if (!$this->isClassNameValid($className)) {
+                throw $this->createNotFoundException("Invalid class: $className");
+            }
+            $cardsPaginator = $this->cardFinder->findPaginatedCardsByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+            $pageType = $params->get('collectionPageType_CLASS');
+        }
+
+        if (null !== $setId) {
+            $set = $entityManager->getRepository(Set::class)->find($setId);
+
+            if (!$set) {
+                throw $this->createNotFoundException("Invalid set: $setId");
+            }
+            $cardsPaginator = $this->cardFinder->findPaginatedCardsBySet($set, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+            $pageType = $params->get('collectionPageType_SET');
+        }
         $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
 
         $collectedCards = new ArrayCollection();
@@ -268,8 +275,34 @@ class CollectionController extends AbstractController
             'cardsPaginator' => $cardsPaginator,
             'nextOffset' => min(count($cardsPaginator), $offset + CardPrintingRepository::CARDS_PER_PAGE),
             'renderedSets' => $renderedSets,
-            'pageType' => $params->get('collectionPageType_CLASS'),
+            'pageType' => $pageType,
         ]);
+    }
+
+    /**
+     * Only FaB classes are allowed
+     */
+    private function isClassNameValid(string $className)
+    {
+        $allowedClasses = [
+            'adjudicator',
+            'assassin',
+            'bard',
+            'brute',
+            'generic',
+            'guardian',
+            'illusionist',
+            'mechanologist',
+            'merchant',
+            'ninja',
+            'ranger',
+            'runeblade',
+            'shapeshifter',
+            'warrior',
+            'wizard',
+        ];
+
+        return in_array($className, $allowedClasses, true);
     }
 
     #[Route('/fetch-promo-rows-by-offset')]

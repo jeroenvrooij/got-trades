@@ -16,7 +16,6 @@ use Symfony\Bundle\SecurityBundle\Security;
  */
 class CardPrintingRepository extends ServiceEntityRepository
 {
-
     public const CARDS_PER_PAGE = 20;
 
     private CardFaceAssociationRepository $cardFaceAssociationRepository;
@@ -38,32 +37,31 @@ class CardPrintingRepository extends ServiceEntityRepository
     }
 
     /**
-    * @return CardPrinting[] Returns an array of CardPrinting objects
+    * @return Paginator Returns a Paginator containting CardPrinting objects
     */
-    public function findBySet(
+    public function findPaginatedBySet(
         Set $set,
+        int $offset = 0,
         ?bool $hideOwnedCards = false,
         ?bool $collectorView = false,
         ?string $foiling = '',
         ?string $cardName = '',
-    ): array
+    ): Paginator
     {
         $qb = $this->buildCoreQuery($hideOwnedCards, $collectorView, $foiling, $cardName);
 
         $qb
             ->andWhere('s.id = :setId')
-            ->setParameter('setId', $set->getId());
+            ->setParameter('setId', $set->getId())
+            ->setMaxResults(self::CARDS_PER_PAGE)
+            ->setFirstResult($offset)
+        ;
 
-        $cards = $qb
-            ->getQuery()
-            ->getResult()
-            ;
-
-        return $cards;
+        return new Paginator($qb->getQuery());
     }
 
     /**
-    * @return Paginator Returns an array of CardPrinting objects
+    * @return Paginator Returns a Paginator containing CardPrinting objects
     */
     public function findPaginatedByClass(
         ?string $className,
@@ -86,11 +84,7 @@ class CardPrintingRepository extends ServiceEntityRepository
             ->setFirstResult($offset)
         ;
 
-        $cardsQuery = $qb
-            ->getQuery()
-            ;
-
-        return new Paginator($cardsQuery);
+        return new Paginator($qb->getQuery());
     }
 
     /**

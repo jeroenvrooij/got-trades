@@ -22,30 +22,30 @@ class CardFinder
     }
 
     /**
-     * Finds all printings within a certain set and returns them grouped by unique cards
+     * Finds all printings within a certain set and returns the first batch (using Paginator
      *
      * @param Set $set
      *
-     * @return ArrayCollection
+     * @return Paginator
      */
-    public function findCardsBySet(
+    public function findPaginatedCardsBySet(
         ?Set $set,
+        int $offset = 0,
         ?bool $hideOwnedCards = false,
         ?bool $collectorView = false,
         ?string $foiling = '',
         ?string $cardName = '',
-    ) {
+    ): Paginator
+    {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
 
-        $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findBySet($set, $hideOwnedCards, $collectorView, $foiling, $cardName);
-
-        return $this->buildPrintingTree($cardPrintings);
+        return $this->entityManager->getRepository(CardPrinting::class)->findPaginatedBySet($set, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
     }
 
     /**
-     * Finds all printings belonging to a certain class and returns them grouped by unique cards
+     * Finds all printings belonging to a certain class and returns the first batch (using Paginator)
      *
      * @param string $className
      *
