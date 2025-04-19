@@ -225,8 +225,7 @@ class CardPrintingRepository extends ServiceEntityRepository
                                             array_to_string(c.types, \',\') LIKE \'%Hero%\' OR
                                             (array_to_string(c.types, \',\') LIKE \'%Equipment%\' AND array_to_string(c.keywords, \',\') NOT LIKE \'%Transform%\') OR
                                             array_to_string(c.types, \',\') LIKE \'%Token%\' OR
-                                            array_to_string(c.types, \',\') LIKE \'%Weapon%\' AND
-                                            array_to_string(c.types, \',\') LIKE \'%2H%\'
+                                            array_to_string(c.types, \',\') LIKE \'%Weapon%\'
                                         )
                                         AND ucp.collectionAmount >= 1
                                     )
@@ -239,7 +238,6 @@ class CardPrintingRepository extends ServiceEntityRepository
                                         )
                                         AND ucp.collectionAmount >= 3
                                     )
-
                                     OR
                                     (
                                         (
@@ -289,8 +287,7 @@ class CardPrintingRepository extends ServiceEntityRepository
                                         array_to_string(ucp_c.types, \',\') LIKE \'%Hero%\' OR
                                         array_to_string(ucp_c.types, \',\') LIKE \'%Equipment%\' OR
                                         array_to_string(ucp_c.types, \',\') LIKE \'%Token%\' OR
-                                        array_to_string(ucp_c.types, \',\') LIKE \'%Weapon%\' AND
-                                        array_to_string(ucp_c.types, \',\') LIKE \'%2H%\'
+                                        array_to_string(ucp_c.types, \',\') LIKE \'%Weapon%\'
                                     THEN 1
                                     WHEN
                                         -- playsets of cards with the legendary keywords also just require one copy
@@ -304,7 +301,7 @@ class CardPrintingRepository extends ServiceEntityRepository
                                         array_to_string(ucp_c.types, \',\') NOT LIKE \'%Weapon%\'AND
                                         array_to_string(ucp_c.keywords, \',\') NOT LIKE \'%Legendary%\'
                                     THEN 3
-                                    ELSE 0
+                                    ELSE 3
                                     END
                                 ')
                                 ->getDQL()
