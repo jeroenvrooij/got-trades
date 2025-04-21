@@ -106,7 +106,6 @@ class CardFinder
             $paginatedCardIds = [];
             foreach ($paginator as $printing) {
                 if (!in_array($printing->getCardId(), $paginatedCardIds)) {
-                    dump($printing->getSet()->getId());
                     $paginatedCardIds[] = $printing->getCardId();
                 }
             }
