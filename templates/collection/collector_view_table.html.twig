@@ -1,4 +1,3 @@
-
 {% set editionSets = [
     'Welcome to Rathe',
     'Arcane Rising',
@@ -10,12 +9,12 @@
     <div
         class="visually-hidden"
         data-infinitescroll-target="paginationInfoContainer"
-        data-total-results="{{ cardPrintingsViewModel.totalAmount }}"
+        data-total-results="{{ cardPrintingsResultSet.totalAmount }}"
         {% if pageType == collectionPageType_CLASS %}
             data-fetch-more-url="{{
                 absolute_url(
                     path(
-                        name: 'app_collection_fetchcollectionviewrowsbyoffset',
+                        name: 'app_collection_fetchcardprintingrowsbyoffset',
                         parameters = { className: app.request.attributes.get('_route_params')['className'] }
                     )
                 )
@@ -24,7 +23,7 @@
             data-fetch-more-url="{{
                 absolute_url(
                     path(
-                        name: 'app_collection_fetchcollectionviewrowsbyoffset',
+                        name: 'app_collection_fetchcardprintingrowsbyoffset',
                         parameters = { setId: app.request.attributes.get('_route_params')['setId'] }
                     )
                 )
@@ -44,7 +43,7 @@
                 <th scope="col" style="min-width: 250px">Name</th>
                 <th scope="col" style="width: 320px;" class="d-none d-lg-table-cell">Foiling</th>
                 <th scope="col" style="min-width: 60px;" class="d-lg-none"></th>
-                {% set setId = cardPrintingsViewModel.cardPrintings|keys|first %}
+                {% set setId = cardPrintingsResultSet.cardPrintings|keys|first %}
                 {% if ((pageType == collectionPageType_CLASS) or (pageType == collectionPageType_SET and setId in editionSets)) %}
                     {#  Show if just viewing one set (manage by set) and set has multiple editions or when in class view #}
                     <th scope="col" style="width: 90px;" class="d-none d-lg-table-cell">Edition</th>
@@ -54,14 +53,14 @@
             </tr>
         </thead>
         <tbody id="card_printing_table_content">
-            {% if cardPrintingsViewModel.totalAmount == 0 %}
+            {% if cardPrintingsResultSet.totalAmount == 0 %}
                 <tr class="no-hover">
                     <td colspan='7' class="text-center text-body-secondary">No cards found</td>
                 </tr>
             {% else %}
                 <tr class="no-hover">
                     <td colspan='7' class="text-center text-body-secondary">
-                        Cards found: {{ cardPrintingsViewModel.totalAmount}}
+                        Cards found: {{ cardPrintingsResultSet.totalAmount}}
                     </td>
                 </tr>
                 {% include 'collection/collector_view_table_content.html.twig' %}

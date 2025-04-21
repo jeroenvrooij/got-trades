@@ -7,7 +7,7 @@
     'Tales of Aria',
 ] %}
 
-{% for setName, sets in cardPrintingsViewModel.cardPrintings %}
+{% for setName, sets in cardPrintingsResultSet.cardPrintings %}
     {% if (renderedSets is defined and setName not in renderedSets) or (renderedSets is not defined) %}
         <tr class="table-active text-center">
             <th colspan='7'>
@@ -22,7 +22,7 @@
 
     <tr class="visually-hidden"
         data-infinitescroll-target="offset"
-        data-next-offset="{{ cardPrintingsViewModel.nextOffset }}"
+        data-next-offset="{{ cardPrintingsResultSet.nextOffset }}"
     ></tr>
 
     {% for printingId, printings in sets %}

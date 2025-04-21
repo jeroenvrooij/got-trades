@@ -2,12 +2,12 @@
     <div
         class="visually-hidden"
         data-infinitescroll-target="paginationInfoContainer"
-        data-total-results="{{ cardPrintingsViewModel.totalAmount }}"
+        data-total-results="{{ cardPrintingsResultSet.totalAmount }}"
         {% if pageType == collectionPageType_CLASS %}
             data-fetch-more-url="{{
                 absolute_url(
                     path(
-                        name: 'app_collection_fetchcollectionviewrowsbyoffset',
+                        name: 'app_collection_fetchcardprintingrowsbyoffset',
                         parameters = { className: app.request.attributes.get('_route_params')['className'] }
                     )
                 )
@@ -16,7 +16,7 @@
             data-fetch-more-url="{{
                 absolute_url(
                     path(
-                        name: 'app_collection_fetchcollectionviewrowsbyoffset',
+                        name: 'app_collection_fetchcardprintingrowsbyoffset',
                         parameters = { setId: app.request.attributes.get('_route_params')['setId'] }
                     )
                 )
@@ -26,7 +26,7 @@
     </div>
     <table class="table table-sm card-printing align-middle">
         <tbody id="card_printing_table_content">
-            {% if cardPrintingsViewModel.totalAmount == 0 %}
+            {% if cardPrintingsResultSet.totalAmount == 0 %}
                 <tr>
                     <td colspan='7' class="text-center">No cards found</td>
                 </tr>
@@ -42,7 +42,7 @@
                             </a>
                         </div>
                         <div class="d-flex justify-content-center align-items-center">
-                            Cards found: {{ cardPrintingsViewModel.totalAmount }}
+                            Cards found: {{ cardPrintingsResultSet.totalAmount }}
                         </div>
                     </td>
                 </tr>

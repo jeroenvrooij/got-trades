@@ -4,7 +4,7 @@ namespace App\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-class CardPrintingsViewModel
+class CardPrintingsResultSet
 {
     private ArrayCollection $cardPrintings;
     private int $totalAmount;

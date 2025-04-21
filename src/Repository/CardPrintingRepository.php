@@ -60,84 +60,6 @@ class CardPrintingRepository extends ServiceEntityRepository
         return new Paginator($qb->getQuery());
     }
 
-    public function findByCardIds($cardIds)
-    {
-        $qb = $this->createQueryBuilder('cp');
-
-        $qb
-            ->select('cp, c, s')
-            ->innerJoin('cp.card', 'c')
-            ->innerJoin('cp.set', 's')
-            ->andWhere('cp.cardId IN (:cardIds)')
-            ->setParameter('cardIds', $cardIds)
-            ->andWhere(
-                // clause needed for filtering double sided prints
-                $qb->expr()->orX(
-                    // Keep all front printings
-                    $qb->expr()->in(
-                        'cp.uniqueId',
-                        $this->cardFaceAssociationRepository->createQueryBuilder('cfa')
-                            ->select('identity(cfa.frontCardPrinting)')
-                            ->getDQL()
-                    ),
-                    /*
-                    * Remove back printings, if front and back are the same card. Eg both UPR006
-                    *
-                    * Match on card id and not card unique id so that a double sided cards with two different
-                    * cards on it is not filtered. Eg Storm of Sandikai (UPR003) on front and Fai (UPR045) on back.
-                    *
-                    */
-                    $qb->expr()->not(
-                        $qb->expr()->exists(
-                            $this->cardFaceAssociationRepository->createQueryBuilder('cfa2')
-                                ->select('1')
-                                ->innerJoin('cfa2.frontCardPrinting', 'frontPrinting')
-                                ->innerJoin('cfa2.backCardPrinting', 'backPrinting')
-                                ->where('cfa2.backCardPrinting = cp.uniqueId')
-                                ->andWhere('frontPrinting.cardId = backPrinting.cardId')
-                                ->getDQL()
-                        )
-                    )
-                )
-            )
-        ;
-        // 🧩 Add custom ordering logic
-        $desiredSetOrder = [
-            'The Hunted',
-            'Rosetta',
-            'Part the Mistveil',
-            'Heavy Hitters',
-            'Bright Lights',
-            'Dusk till Dawn',
-            'Outsiders',
-            'Dynasty',
-            'History Pack 1',
-            'Uprising',
-            'Everfest',
-            'Tales of Aria',
-            'Monarch',
-            'Crucible of War',
-            'Arcane Rising',
-            'Welcome to Rathe',
-        ];
-
-        $orderCase = 'CASE s.name ';
-        foreach ($desiredSetOrder as $index => $setName) {
-            $orderCase .= sprintf("WHEN '%s' THEN %d ", addslashes($setName), $index);
-        }
-        $orderCase .= 'ELSE 999 END';
-        $qb
-            ->addSelect("($orderCase) AS HIDDEN setOrder")
-            ->addOrderBy('setOrder', 'ASC')
-            ->addOrderBy('cp.cardId', 'ASC')
-            ->addOrderBy('cp.edition', 'DESC')
-            ->addOrderBy('cp.foiling', 'DESC')
-            ->addOrderBy('cp.artVariations', 'DESC')
-        ;
-
-        return $qb->getQuery()->getResult();
-    }
-
     /**
     * @return Paginator Returns a Paginator containing CardPrinting objects
     */
@@ -192,7 +114,32 @@ class CardPrintingRepository extends ServiceEntityRepository
     }
 
     /**
+     * Find all cardPrintings with matching the cardId from the collection of $cardIds.
+     *
+     * Used for collecting paginated subsets (in player view).
+     *
+     * Applies the same ordering as the core query, so paginated results match.
+     *
+     * Not matching on class or set, because (until now) LSS does not print the same
+     * card id in another set or class. Eg: WTR191 is Scar for a Scar from WTR. WTR191 will
+     * not be in another set. Scar for a Scar is, but then it will have a different card id (UPR209).
+     */
+    public function findByCardIds(array $cardIds)
+    {
+
+        $qb = $this->startQueryBuilder();
+
+        $qb
+            ->andWhere('cp.cardId IN (:cardIds)')
+            ->setParameter('cardIds', $cardIds)
+            ;
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
      * Builds the QueryBuilder object with the core query for fetching card printings.
+     * Applies filters, depending on the current view (player/collector)
      */
     private function buildCoreQuery(
         ?bool $hideOwnedCards = false,
@@ -201,76 +148,8 @@ class CardPrintingRepository extends ServiceEntityRepository
         ?string $cardName = '',
     ): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('cp');
+        $qb = $this->startQueryBuilder();
 
-        $qb
-            ->select('cp, c, s')
-            ->innerJoin('cp.card', 'c')
-            ->innerJoin('cp.set', 's')
-            ->andWhere(
-                // clause needed for filtering double sided prints
-                $qb->expr()->orX(
-                    // Keep all front printings
-                    $qb->expr()->in(
-                        'cp.uniqueId',
-                        $this->cardFaceAssociationRepository->createQueryBuilder('cfa')
-                            ->select('identity(cfa.frontCardPrinting)')
-                            ->getDQL()
-                    ),
-                    /*
-                    * Remove back printings, if front and back are the same card. Eg both UPR006
-                    *
-                    * Match on card id and not card unique id so that a double sided cards with two different
-                    * cards on it is not filtered. Eg Storm of Sandikai (UPR003) on front and Fai (UPR045) on back.
-                    *
-                    */
-                    $qb->expr()->not(
-                        $qb->expr()->exists(
-                            $this->cardFaceAssociationRepository->createQueryBuilder('cfa2')
-                                ->select('1')
-                                ->innerJoin('cfa2.frontCardPrinting', 'frontPrinting')
-                                ->innerJoin('cfa2.backCardPrinting', 'backPrinting')
-                                ->where('cfa2.backCardPrinting = cp.uniqueId')
-                                ->andWhere('frontPrinting.cardId = backPrinting.cardId')
-                                ->getDQL()
-                        )
-                    )
-                )
-        );
-
-        // 🧩 Add custom ordering logic
-        $desiredSetOrder = [
-            'The Hunted',
-            'Rosetta',
-            'Part the Mistveil',
-            'Heavy Hitters',
-            'Bright Lights',
-            'Dusk till Dawn',
-            'Outsiders',
-            'Dynasty',
-            'History Pack 1',
-            'Uprising',
-            'Everfest',
-            'Tales of Aria',
-            'Monarch',
-            'Crucible of War',
-            'Arcane Rising',
-            'Welcome to Rathe',
-        ];
-
-        $orderCase = 'CASE s.name ';
-        foreach ($desiredSetOrder as $index => $setName) {
-            $orderCase .= sprintf("WHEN '%s' THEN %d ", addslashes($setName), $index);
-        }
-        $orderCase .= 'ELSE 999 END';
-        $qb
-            ->addSelect("($orderCase) AS HIDDEN setOrder")
-            ->addOrderBy('setOrder', 'ASC')
-            ->addOrderBy('cp.cardId', 'ASC')
-            ->addOrderBy('cp.edition', 'DESC')
-            ->addOrderBy('cp.foiling', 'DESC')
-            ->addOrderBy('cp.artVariations', 'DESC')
-            ;
         if($foiling) {
             $qb
                 ->andWhere('cp.foiling = :foiling')
@@ -390,6 +269,87 @@ class CardPrintingRepository extends ServiceEntityRepository
             $user = $this->security->getUser();
             $qb->setParameter('userId', $user->getId()->toString());
         }
+
+        return $qb;
+    }
+
+    /**
+     * Create the QueryBuilder object, applying the correct select, inner joins and ordering. Also filters
+     * out the double sized printings.
+     */
+    private function startQueryBuilder()
+    {
+        $qb = $this->createQueryBuilder('cp');
+
+        $qb
+            ->select('cp, c, s')
+            ->innerJoin('cp.card', 'c')
+            ->innerJoin('cp.set', 's')
+            ->andWhere(
+                // clause needed for filtering double sided prints
+                $qb->expr()->orX(
+                    // Keep all front printings
+                    $qb->expr()->in(
+                        'cp.uniqueId',
+                        $this->cardFaceAssociationRepository->createQueryBuilder('cfa')
+                            ->select('identity(cfa.frontCardPrinting)')
+                            ->getDQL()
+                    ),
+                    /*
+                    * Remove back printings, if front and back are the same card. Eg both UPR006
+                    *
+                    * Match on card id and not card unique id so that a double sided cards with two different
+                    * cards on it is not filtered. Eg Storm of Sandikai (UPR003) on front and Fai (UPR045) on back.
+                    *
+                    */
+                    $qb->expr()->not(
+                        $qb->expr()->exists(
+                            $this->cardFaceAssociationRepository->createQueryBuilder('cfa2')
+                                ->select('1')
+                                ->innerJoin('cfa2.frontCardPrinting', 'frontPrinting')
+                                ->innerJoin('cfa2.backCardPrinting', 'backPrinting')
+                                ->where('cfa2.backCardPrinting = cp.uniqueId')
+                                ->andWhere('frontPrinting.cardId = backPrinting.cardId')
+                                ->getDQL()
+                        )
+                    )
+                )
+        );
+
+        // 🧩 Add custom ordering logic
+        $desiredSetOrder = [
+            'The Hunted',
+            'Rosetta',
+            'Part the Mistveil',
+            'Heavy Hitters',
+            'Bright Lights',
+            'Dusk till Dawn',
+            'Outsiders',
+            'Dynasty',
+            'History Pack 1',
+            'Uprising',
+            'Everfest',
+            'Tales of Aria',
+            'Monarch',
+            'Crucible of War',
+            'Arcane Rising',
+            'Welcome to Rathe',
+        ];
+
+        $orderCase = 'CASE s.name ';
+        foreach ($desiredSetOrder as $index => $setName) {
+            $orderCase .= sprintf("WHEN '%s' THEN %d ", addslashes($setName), $index);
+        }
+        $orderCase .= 'ELSE 999 END';
+
+        $qb
+            ->addSelect("($orderCase) AS HIDDEN setOrder")
+            ->addOrderBy('setOrder', 'ASC')
+            ->addOrderBy('cp.cardId', 'ASC')
+            ->addOrderBy('cp.edition', 'DESC')
+            ->addOrderBy('cp.foiling', 'DESC')
+            ->addOrderBy('cp.artVariations', 'DESC')
+        ;
 
         return $qb;
     }
