@@ -199,7 +199,9 @@ class CollectionController extends AbstractController
         Request $request,
         ParameterBagInterface $params,
     ): Response {
-        $form = $this->createForm(CardFilterFormType::class);
+        $form = $this->createForm(CardFilterFormType::class, null, [
+            'promoView' => true,
+        ]);
         $form->handleRequest($request);
 
         $collectedCards = new ArrayCollection();
@@ -332,7 +334,9 @@ class CollectionController extends AbstractController
         ParameterBagInterface $params,
     ) {
         // Create the form and handle the GET request parameters
-        $form = $this->createForm(CardFilterFormType::class);
+        $form = $this->createForm(CardFilterFormType::class, null, [
+            'promoView' => true,
+        ]);
 
         $formData = $request->query->all();
         // Since this is a GET request, we manually set the form data from the request

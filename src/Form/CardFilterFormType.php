@@ -2,13 +2,10 @@
 
 namespace App\Form;
 
-use App\Entity\Foiling;
 use App\Service\FoilingHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -21,17 +18,9 @@ class CardFilterFormType extends AbstractType
     {
         $this->foilingHelper = $foilingHelper;
     }
-    
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $foilings = $this->foilingHelper->getAllFoilings();
-        $foilings = array_flip($foilings->toArray());
-        $foilings = array_merge([
-                FoilingHelper::NO_FILTER_DESC => FoilingHelper::NO_FILTER_KEY,
-                FoilingHelper::PLACEHOLDER_DESC => FoilingHelper::PLACEHOLDER_KEY,
-            ], 
-        $foilings);
-
         $builder
             ->add('foiling', ChoiceType::class, [
                 'attr' => [
@@ -39,19 +28,19 @@ class CardFilterFormType extends AbstractType
                 ],
                 'placeholder' => FoilingHelper::PLACEHOLDER_DESC,
                 'placeholder_attr' => [
-                    'disabled' => 'true', 
+                    'disabled' => 'true',
                     // 'hidden' => 'true',
                 ],
-                'choices' => $foilings,
+                'choices' => $this->configureFoilingChoicesBasedOnOptions($options),
                 'choice_attr' => [
                     'Filter on foiling' => ['disabled' => 'true', 'selected' => 'true', 'hidden' => 'true'],
-                   
+
                 ],
                 'required' => false,
             ])
             ->add('cardName', TextType::class, [
                 'attr' => [
-                    'placeholder' =>'Filter on card name', 
+                    'placeholder' =>'Filter on card name',
                     'class' => 'form-control'
                 ],
                 'label' => 'Filter on card name',
@@ -59,7 +48,7 @@ class CardFilterFormType extends AbstractType
             ])
             ->add('hide', CheckboxType::class, [
                 'attr' => [
-                    'class' =>'form-check-input', 
+                    'class' =>'form-check-input',
                     'role' => 'switch'
                 ],
                 'label' => 'Hide completed playsets',
@@ -67,7 +56,7 @@ class CardFilterFormType extends AbstractType
             ])
             ->add('collectorView', CheckboxType::class, [
                 'attr' => [
-                    'class' =>'form-check-input', 
+                    'class' =>'form-check-input',
                     'role' => 'switch'
                 ],
                 'label' => 'Show expanded \'collector view\'',
@@ -89,6 +78,37 @@ class CardFilterFormType extends AbstractType
             'attr' => [
                 'class' => 'mb-3'
             ],
+            'promoView' => false,
         ]);
+
+        $resolver->setAllowedTypes('promoView', 'bool');
+    }
+
+    /**
+     * Fetch all foilings from the database and apply some custom magic:
+     * - reverse sort alphabetically on key (so it's Standard -> RF -> CF)
+     * - remove Gold Cold Foil from the list if not browsing Promos
+     * - add some helper options ('No Filter', and a placeholder)
+     * - lastly, flip the keys/values so the list is useable as select options
+     */
+    private function configureFoilingChoicesBasedOnOptions(array $options): array
+    {
+        $foilings = $this->foilingHelper->getAllFoilings();
+        $foilings = $foilings->toArray();
+        krsort($foilings);
+
+        if (false === $options['promoView']) {
+            unset($foilings['G']);
+        }
+        $foilings = array_flip($foilings);
+        $foilings = array_merge(
+            [
+                FoilingHelper::NO_FILTER_DESC => FoilingHelper::NO_FILTER_KEY,
+                FoilingHelper::PLACEHOLDER_DESC => FoilingHelper::PLACEHOLDER_KEY,
+            ],
+            $foilings
+        );
+
+        return $foilings;
     }
 }
