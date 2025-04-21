@@ -2,7 +2,7 @@
 
 {% block breadcrumblist %}
 	<li class="breadcrumb-item">
-        {% if cardPrintingsTree|length == 1 %}
+        {% if pageType == collectionPageType_SET %}
 		    <a class="link-secondary link-offset-2 link-underline-opacity-40 link-underline-opacity-100-hover" href="{{ path('app_card_setoverviewpage') }}">Booster set overview</a>
         {% else %}
 		    <a class="link-secondary link-offset-2 link-underline-opacity-40 link-underline-opacity-100-hover" href="{{ path('app_card_classoverviewpage') }}">Class overview</a>
@@ -98,7 +98,7 @@
 		<div
 			data-infinitescroll-target="infiniteScrollSpinner"
 			class="text-center mt-3"
-			{% if nextOffset >= cardsPaginator|length %}
+			{% if cardPrintingsViewModel.nextOffset >= cardPrintingsViewModel.totalAmount %}
 				style="display: none"
 			{% endif %}
 		>
@@ -138,7 +138,7 @@
 			{% if collectorView %}
 				{% include 'collection/collector_view_table_content.html.twig' %}
 			{% else %}
-				{# {% include 'collection/player_view_table.html.twig' %} #}
+				{% include 'collection/player_view_table_content.html.twig' %}
 			{% endif %}
 		</template>
 	</turbo-stream>

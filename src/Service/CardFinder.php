@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Entity\CardPrinting;
 use App\Entity\Set;
+use App\Model\CardPrintingsViewModel;
+use App\Repository\CardPrintingRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,7 +28,7 @@ class CardFinder
      *
      * @param Set $set
      *
-     * @return Paginator
+     * @return CardPrintingsViewModel
      */
     public function findPaginatedCardsBySet(
         ?Set $set,
@@ -35,13 +37,37 @@ class CardFinder
         ?bool $collectorView = false,
         ?string $foiling = '',
         ?string $cardName = '',
-    ): Paginator
+    ): CardPrintingsViewModel
     {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
 
-        return $this->entityManager->getRepository(CardPrinting::class)->findPaginatedBySet($set, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+        /** @var Paginator $paginator */
+        $paginator = $this->entityManager->getRepository(CardPrinting::class)->findPaginatedBySet($set, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+
+        if ($collectorView) {
+            return new CardPrintingsViewModel(
+                $this->buildPrintingTree(iterator_to_array($paginator)),
+                count($paginator),
+                min(count($paginator), $offset + CardPrintingRepository::CARDS_PER_PAGE),
+            );
+        } else {
+            $paginatedCardIds = [];
+            foreach ($paginator as $printing) {
+                if (!in_array($printing->getCardId(), $paginatedCardIds)) {
+                    $paginatedCardIds[] = $printing->getCardId();
+                }
+            }
+
+            $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findByCardIds($paginatedCardIds);
+
+            return new CardPrintingsViewModel(
+                $this->buildPrintingTree($cardPrintings),
+                count($paginator),
+                min(count($paginator), $offset + count($cardPrintings)),
+            );
+        }
     }
 
     /**
@@ -49,7 +75,7 @@ class CardFinder
      *
      * @param string $className
      *
-     * @return Paginator
+     * @return CardPrintingsViewModel
      */
     public function findPaginatedCardsByClass(
         ?string $className,
@@ -58,13 +84,36 @@ class CardFinder
         ?bool $collectorView = false,
         ?string $foiling = '',
         ?string $cardName = '',
-    ): Paginator
+    ): CardPrintingsViewModel
     {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
 
-        return $this->entityManager->getRepository(CardPrinting::class)->findPaginatedByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+        $paginator = $this->entityManager->getRepository(CardPrinting::class)->findPaginatedByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+
+        if ($collectorView) {
+            return new CardPrintingsViewModel(
+                $this->buildPrintingTree(iterator_to_array($paginator)),
+                count($paginator),
+                min(count($paginator), $offset + CardPrintingRepository::CARDS_PER_PAGE),
+            );
+        } else {
+            $paginatedCardIds = [];
+            foreach ($paginator as $printing) {
+                if (!in_array($printing->getCardId(), $paginatedCardIds)) {
+                    $paginatedCardIds[] = $printing->getCardId();
+                }
+            }
+
+            $cardPrintings = $this->entityManager->getRepository(CardPrinting::class)->findByCardIds($paginatedCardIds);
+
+            return new CardPrintingsViewModel(
+                $this->buildPrintingTree($cardPrintings),
+                count($paginator),
+                min(count($paginator), $offset + count($cardPrintings)),
+            );
+        }
     }
 
     /**
@@ -79,13 +128,19 @@ class CardFinder
         ?bool $hideOwnedCards = false,
         ?string $foiling = '',
         ?string $cardName = '',
-    ): Paginator
+    ): CardPrintingsViewModel
     {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
 
-        return $this->entityManager->getRepository(CardPrinting::class)->findPaginatedPromos($offset, $hideOwnedCards, $foiling, $cardName);
+        $paginator = $this->entityManager->getRepository(CardPrinting::class)->findPaginatedPromos($offset, $hideOwnedCards, $foiling, $cardName);
+
+        return new CardPrintingsViewModel(
+            $this->buildPrintingTree(iterator_to_array($paginator)),
+            count($paginator),
+            min(count($paginator), $offset + CardPrintingRepository::CARDS_PER_PAGE),
+        );
     }
 
     /**
@@ -98,7 +153,7 @@ class CardFinder
      *  ]
      * ]
      */
-    public function buildPrintingTree(Paginator $cardPrintings): ArrayCollection
+    private function buildPrintingTree(array $cardPrintings): ArrayCollection
     {
         $cards = new ArrayCollection();
         foreach ($cardPrintings as $printing)

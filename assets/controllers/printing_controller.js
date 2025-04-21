@@ -43,7 +43,7 @@ export default class extends Controller {
             icon.classList.add("bi-chevron-contract");
             linkTarget.innerHTML = ''; // clear contents
             linkTarget.appendChild(icon); // keep the icon
-            linkTarget.insertAdjacentText('beforeend', ' Contract all rows'); // add new text
+            linkTarget.insertAdjacentText('beforeend', ' Contract all'); // add new text
 
             this.playerviewRowTargets.forEach(row => {
                 this.openRow(row);
@@ -53,7 +53,7 @@ export default class extends Controller {
             icon.classList.remove("bi-chevron-contract");
             linkTarget.innerHTML = ''; // clear contents
             linkTarget.appendChild(icon); // keep the icon
-            linkTarget.insertAdjacentText('beforeend', ' Expand all rows'); // add new text
+            linkTarget.insertAdjacentText('beforeend', ' Expand all'); // add new text
 
             this.playerviewRowTargets.forEach(row => {
                 this.closeRow(row);

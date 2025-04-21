@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ["infiniteScrollSpinner", "paginationInfoContainer", "filterForm", "renderedSetsContainer"]
+    static targets = ["infiniteScrollSpinner", "paginationInfoContainer", "filterForm", "renderedSetsContainer", "offset"]
 
     renderedSets = [];
 
@@ -18,7 +18,7 @@ export default class extends Controller {
         this.observer.observe(this.infiniteScrollSpinnerTarget)
     }
     paginationInfoContainerTargetConnected(element) {
-        this.resetSpinner();
+        this.resetSpinner(0);
     }
     disconnect() {
         if (this.observer) {
@@ -31,7 +31,14 @@ export default class extends Controller {
         this.readyToLoad = false;
 
         const url = new URL(this.paginationInfoContainerTarget.dataset.fetchMoreUrl)
-        const offset = parseInt(this.paginationInfoContainerTarget.dataset.nextOffset, 10)
+        let offset = 0;
+        this.offsetTargets.forEach(div => {
+            const latestOffset = parseInt(div.dataset.nextOffset, 10);
+            if (latestOffset > offset) {
+                offset = latestOffset;
+            }
+        })
+
         // Start with the existing query params from the URL
         const params = new URLSearchParams(url.search)
 
@@ -50,21 +57,18 @@ export default class extends Controller {
         params.set('renderedSet', this.renderedSets)
         url.search = params.toString()
 
-        const nextOffset = offset + 20;
-        this.paginationInfoContainerTarget.dataset.nextOffset = nextOffset;
-
         Turbo.visit(url.toString());
 
-        this.resetSpinner();
+        this.resetSpinner(offset);
     }
 
     // 👇 Reset the flag when filters change or form submits
-    resetSpinner() {
+    resetSpinner(offset) {
         this.readyToLoad = false; // Prevent early loading *until frame finishes replacing*
         const totalResults = parseInt(this.paginationInfoContainerTarget.dataset.totalResults, 10);
-        const nextOffset = parseInt(this.paginationInfoContainerTarget.dataset.nextOffset, 10);
+        // const nextOffset = parseInt(this.paginationInfoContainerTarget.dataset.nextOffset, 10);
 
-        if (nextOffset >= totalResults) {
+        if (offset >= totalResults) {
             this.infiniteScrollSpinnerTarget.style.display = 'none'; // Hide spinner
         } else {
             this.infiniteScrollSpinnerTarget.style.display = 'block';

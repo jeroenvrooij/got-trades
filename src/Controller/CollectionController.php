@@ -83,8 +83,7 @@ class CollectionController extends AbstractController
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                $cardsPaginator = $this->cardFinder->findPaginatedCardsBySet($set, 0, $hideOwnedCards, $collectorView, $foiling, $cardName);
-                $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
+                $cardPrintingsViewModel = $this->cardFinder->findPaginatedCardsBySet($set, 0, $hideOwnedCards, $collectorView, $foiling, $cardName);
 
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -92,14 +91,12 @@ class CollectionController extends AbstractController
                     'rarityHelper' => $this->rarityHelper,
                     'artVariationsHelper' => $this->artVariationsHelper,
                     'userCollectionManager' => $this->userCollectionManager,
-                    'cardPrintingsTree' => $cards,
+                    'cardPrintingsViewModel' => $cardPrintingsViewModel,
                     'userCollectedCards' => $collectedCards,
                     'userCollectedPrintings' => $collectedPrintings,
                     'collectorView' => $collectorView,
                     'pageTitle' => $set->getName(),
                     'pageType' => $params->get('collectionPageType_SET'),
-                    'cardsPaginator' => $cardsPaginator,
-                    'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
                 ]);
             }
 
@@ -108,8 +105,7 @@ class CollectionController extends AbstractController
             return $this->redirectToRoute('app_collection_managecollectionbyset', ['setId', $set->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        $cardsPaginator = $this->cardFinder->findPaginatedCardsBySet($set);
-        $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
+        $cardPrintingsViewModel = $this->cardFinder->findPaginatedCardsBySet($set);
 
         return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
@@ -117,15 +113,13 @@ class CollectionController extends AbstractController
             'rarityHelper' => $this->rarityHelper,
             'artVariationsHelper' => $this->artVariationsHelper,
             'userCollectionManager' => $this->userCollectionManager,
-            'cardPrintingsTree' => $cards,
+            'cardPrintingsViewModel' => $cardPrintingsViewModel,
             'userCollectedCards' => $collectedCards,
             'userCollectedPrintings' => $collectedPrintings,
             'form' => $form,
             'collectorView' => false,
             'pageTitle' => $set->getName(),
             'pageType' => $params->get('collectionPageType_SET'),
-            'cardsPaginator' => $cardsPaginator,
-            'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
         ]);
     }
 
@@ -161,8 +155,7 @@ class CollectionController extends AbstractController
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                $cardsPaginator = $this->cardFinder->findPaginatedCardsByClass($className, 0, $hideOwnedCards, $collectorView, $foiling, $cardName);
-                $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
+                $cardPrintingsViewModel = $this->cardFinder->findPaginatedCardsByClass($className, 0, $hideOwnedCards, $collectorView, $foiling, $cardName);
 
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -170,14 +163,12 @@ class CollectionController extends AbstractController
                     'rarityHelper' => $this->rarityHelper,
                     'artVariationsHelper' => $this->artVariationsHelper,
                     'userCollectionManager' => $this->userCollectionManager,
-                    'cardPrintingsTree' => $cards,
+                    'cardPrintingsViewModel' => $cardPrintingsViewModel,
                     'userCollectedCards' => $collectedCards,
                     'userCollectedPrintings' => $collectedPrintings,
                     'collectorView' => $collectorView,
                     'pageTitle' => ucfirst($className),
                     'pageType' => $params->get('collectionPageType_CLASS'),
-                    'cardsPaginator' => $cardsPaginator,
-                    'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
                 ]);
             }
 
@@ -186,8 +177,7 @@ class CollectionController extends AbstractController
             return $this->redirectToRoute('app_collection_managecollectionbyset', ['className', $className], Response::HTTP_SEE_OTHER);
         }
 
-        $cardsPaginator = $this->cardFinder->findPaginatedCardsByClass($className);
-        $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
+        $cardPrintingsViewModel = $this->cardFinder->findPaginatedCardsByClass($className);
 
         return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
@@ -195,15 +185,13 @@ class CollectionController extends AbstractController
             'rarityHelper' => $this->rarityHelper,
             'artVariationsHelper' => $this->artVariationsHelper,
             'userCollectionManager' => $this->userCollectionManager,
-            'cardPrintingsTree' => $cards,
+            'cardPrintingsViewModel' => $cardPrintingsViewModel,
             'userCollectedCards' => $collectedCards,
             'userCollectedPrintings' => $collectedPrintings,
             'form' => $form,
             'collectorView' => false,
             'pageTitle' => ucfirst($className),
             'pageType' => $params->get('collectionPageType_CLASS'),
-            'cardsPaginator' => $cardsPaginator,
-            'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
         ]);
     }
 
@@ -238,7 +226,8 @@ class CollectionController extends AbstractController
             if (!$this->isClassNameValid($className)) {
                 throw $this->createNotFoundException("Invalid class: $className");
             }
-            $cardsPaginator = $this->cardFinder->findPaginatedCardsByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+            $cardPrintingsViewModel = $this->cardFinder->findPaginatedCardsByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+
             $pageType = $params->get('collectionPageType_CLASS');
         }
 
@@ -248,10 +237,9 @@ class CollectionController extends AbstractController
             if (!$set) {
                 throw $this->createNotFoundException("Invalid set: $setId");
             }
-            $cardsPaginator = $this->cardFinder->findPaginatedCardsBySet($set, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+            $cardPrintingsViewModel = $this->cardFinder->findPaginatedCardsBySet($set, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
             $pageType = $params->get('collectionPageType_SET');
         }
-        $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
 
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
@@ -268,12 +256,10 @@ class CollectionController extends AbstractController
             'rarityHelper' => $this->rarityHelper,
             'artVariationsHelper' => $this->artVariationsHelper,
             'userCollectionManager' => $this->userCollectionManager,
-            'cardPrintingsTree' => $cards,
+            'cardPrintingsViewModel' => $cardPrintingsViewModel,
             'userCollectedCards' => $collectedCards,
             'userCollectedPrintings' => $collectedPrintings,
             'collectorView' => $collectorView,
-            'cardsPaginator' => $cardsPaginator,
-            'nextOffset' => min(count($cardsPaginator), $offset + CardPrintingRepository::CARDS_PER_PAGE),
             'renderedSets' => $renderedSets,
             'pageType' => $pageType,
         ]);
@@ -324,8 +310,7 @@ class CollectionController extends AbstractController
         $offset = $request->query->getInt('offset', 0);
         $renderedSets = $request->query->get('renderedSet');
 
-        $cardsPaginator = $this->cardFinder->findPaginatedPromos($offset, $hideOwnedCards, $foiling, $cardName);
-        $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
+        $cardPrintingsViewModel = $this->cardFinder->findPaginatedPromos($offset, $hideOwnedCards, $foiling, $cardName);
 
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
@@ -342,11 +327,9 @@ class CollectionController extends AbstractController
             'rarityHelper' => $this->rarityHelper,
             'artVariationsHelper' => $this->artVariationsHelper,
             'userCollectionManager' => $this->userCollectionManager,
-            'cardPrintingsTree' => $cards,
+            'cardPrintingsViewModel' => $cardPrintingsViewModel,
             'userCollectedCards' => $collectedCards,
             'userCollectedPrintings' => $collectedPrintings,
-            'cardsPaginator' => $cardsPaginator,
-            'nextOffset' => min(count($cardsPaginator), $offset + CardPrintingRepository::CARDS_PER_PAGE),
             'renderedSets' => $renderedSets,
             'pageType' => $params->get('collectionPageType_PROMO'),
         ]);
@@ -378,8 +361,7 @@ class CollectionController extends AbstractController
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                $cardsPaginator = $this->cardFinder->findPaginatedPromos(0, $hideOwnedCards, $foiling, $cardName);
-                $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
+                $cardPrintingsViewModel = $this->cardFinder->findPaginatedPromos(0, $hideOwnedCards, $foiling, $cardName);
 
                 return $this->renderBlock('collection/promo_overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -387,12 +369,10 @@ class CollectionController extends AbstractController
                     'rarityHelper' => $this->rarityHelper,
                     'artVariationsHelper' => $this->artVariationsHelper,
                     'userCollectionManager' => $this->userCollectionManager,
-                    'cardPrintingsTree' => $cards,
+                    'cardPrintingsViewModel' => $cardPrintingsViewModel,
                     'userCollectedCards' => $collectedCards,
                     'userCollectedPrintings' => $collectedPrintings,
                     'pageType' => $params->get('collectionPageType_PROMO'),
-                    'cardsPaginator' => $cardsPaginator,
-                    'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
                 ]);
             }
 
@@ -401,8 +381,7 @@ class CollectionController extends AbstractController
             return $this->redirectToRoute('app_collection_managepromocollection', [], Response::HTTP_SEE_OTHER);
         }
 
-        $cardsPaginator = $this->cardFinder->findPaginatedPromos();
-        $cards = $this->cardFinder->buildPrintingTree($cardsPaginator);
+        $cardPrintingsViewModel = $this->cardFinder->findPaginatedPromos();
 
         return $this->render('collection/promo_overview.html.twig', [
             'editionHelper' => $this->editionHelper,
@@ -410,13 +389,11 @@ class CollectionController extends AbstractController
             'rarityHelper' => $this->rarityHelper,
             'artVariationsHelper' => $this->artVariationsHelper,
             'userCollectionManager' => $this->userCollectionManager,
-            'cardPrintingsTree' => $cards,
+            'cardPrintingsViewModel' => $cardPrintingsViewModel,
             'userCollectedCards' => $collectedCards,
             'userCollectedPrintings' => $collectedPrintings,
             'form' => $form,
             'pageType' => $params->get('collectionPageType_PROMO'),
-            'cardsPaginator' => $cardsPaginator,
-            'nextOffset' => CardPrintingRepository::CARDS_PER_PAGE,
         ]);
     }
 

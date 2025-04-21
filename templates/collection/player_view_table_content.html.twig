@@ -1,0 +1,131 @@
+{% for setName, sets in cardPrintingsViewModel.cardPrintings %}
+    {% if (renderedSets is defined and setName not in renderedSets) or (renderedSets is not defined) %}
+        <tr class="table-active text-center">
+            <th colspan='7'>
+                {{ setName }}
+                <div class="visually-hidden"
+                    data-infinitescroll-target="renderedSetsContainer"
+                    data-rendered-sets="{{ setName }}"
+                ></div>
+            </th>
+        </tr>
+    {% endif %}
+
+    <tr class="visually-hidden"
+        data-infinitescroll-target="offset"
+        data-next-offset="{{ cardPrintingsViewModel.nextOffset }}"
+    ></tr>
+    {% for printingId, printings in sets %}
+        <tr>
+            <td style="width: 20px;">
+                <i class="bi bi-chevron-down text-secondary" style="font-size: 1rem; cursor: pointer;" data-action="click->printing#toggleRow" data-printing-row-param="row-{{ printingId }}"></i>
+            </td>
+            <td style="width: 40px;">
+                <div class="playset-icons-container" data-id="{{ printingId }}" data-printing-target="playsetIconsContainer" >
+                {# Get correct playset size for this card #}
+                {% set playsetSize = 3 %}
+                {% set playsetSize = userCollectionManager.getPlaysetSizeForCard(printings|first) %}
+
+                {# Get how many copies of this CARD the user has collected #}
+                {% set playsetAmount = 0 %}
+                {% if userCollectedCards.containsKey(printingId) %}
+                    {% set playsetAmount = userCollectedCards.get(printingId) %}
+                {% endif %}
+
+                    {% for i in 1..playsetSize %}
+                        <div class="card-icon
+                            {% if i == 1 and playsetAmount > 0 %}filled{% endif %}
+                            {% if i == 2 and playsetAmount > 1 %}filled{% endif %}
+                            {% if i == 3 and playsetAmount > 2 %}filled{% endif %}
+                        "></div>
+                    {% endfor %}
+                </div>
+            </td>
+            <td style="width: 80px;">
+                <span class="cardId">{{ printingId }}</span>
+            </td>
+            <td>
+                {{ printings.card.name }}
+
+                {% if 1 ==  printings.card.pitch %}
+                    <div class="pitch-container"><div class="pitch pitch-1"></div></div>
+                {% elseif 2 == printings.card.pitch %}
+                    <div class="pitch-container"><div class="pitch pitch-2"></div><div class="pitch pitch-2"></div></div>
+                {% elseif 3 == printings.card.pitch %}
+                    <div class="pitch-container"><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div><div class="pitch pitch-3"></div></div>
+                {% endif %}
+            </td>
+        </tr>
+        <tr id="row-{{ printingId }}" data-printing-target="playerviewRow" data-filter-target="playerviewRow">
+            <td colspan="4" >
+                <table class="table table-hover table-borderless table-sm card-printing align-middle">
+                    {% for printing in printings.printings %}
+                        {# Get how many copies of this PRINTING the user has collected #}
+                        {% set collectedPrintingAmount = 0 %}
+                        {% if userCollectedPrintings.containsKey(printing.uniqueId) %}
+                            {% set collectedPrintingAmount = userCollectedPrintings.get(printing.uniqueId) %}
+                        {% endif %}
+
+                        <tr>
+                            <td style="width: 20px;"></td>
+                            <td style="width: 100px;">
+                                <div class="input-group input-group-sm" data-quantity-id="amount-selector-{{ printing.uniqueId }}">
+                                    {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
+                                        <span data-popover-target="trigger" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="You need to be signed in to manage your collection.">
+                                            <button class="btn btn-outline-secondary decrementBtn btn-sm" type="button" disabled>-</button>
+                                        </span>
+                                    {% else %}
+                                        <button class="btn btn-outline-secondary decrementBtn btn-sm" type="button"
+                                            data-action="click->printing#decrementAmount"
+                                            data-printing-id-param="{{ printing.uniqueId }}"
+                                            data-printing-card-name-param="{{ printing.card.name }}"
+                                            data-printing-card-id-param="{{ printing.cardId }}"
+                                            data-printing-target="decrementButton"
+                                            {% if collectedPrintingAmount == 0 %}disabled{% endif %}>-</button>
+                                    {% endif %}
+                                    <input
+                                        class="form-control form-control-sm text-center"
+                                        type="text"
+                                        value="{{ collectedPrintingAmount }}"
+                                        data-original-value="{{ collectedPrintingAmount }}"
+                                        aria-label="0"
+                                        data-printing-target="amountInput"
+                                        disabled
+                                    >
+                                    {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
+                                        <span data-popover-target="trigger" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="You need to be signed in to manage your collection.">
+                                            <button class="btn btn-outline-secondary incrementBtn btn-sm" type="button" disabled>+</button>
+                                        </span>
+                                    {% else %}
+                                        <button class="btn btn-outline-secondary incrementBtn btn-sm" type="button"
+                                            data-action="click->printing#incrementAmount"
+                                            data-printing-id-param="{{ printing.uniqueId }}"
+                                            data-printing-card-name-param="{{ printing.card.name }}"
+                                            data-printing-card-id-param="{{ printing.cardId }}"
+                                            data-printing-target="incrementButton"
+                                            {% if collectedPrintingAmount >= 99 %}disabled{% endif %}>+</button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td style="width: 20px;">
+                                {% set rarity = rarityHelper.getRarityDescriptionById(printing.rarity) %}
+                                {% if rarity == 'Marvel' %}
+                                    <span class="rarity-marvel"></span>
+                                {% elseif rarity == 'Fabled' %}
+                                    <span class="rarity-fabled"></span>
+                                {% else %}
+                                    <span class="rarity-circle {{ rarity|lower|replace({' ': ''}) }}">{{ rarity|first }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ foilingHelper.getFoilingNameById(printing.foiling) }}
+                                {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }}
+                                {% if printing.edition != "N" %}<i> - {{ editionHelper.getEditionNameById(printing.edition) }}</i>{% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+    {% endfor %}
+{% endfor %}
