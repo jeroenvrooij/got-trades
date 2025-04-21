@@ -18,7 +18,7 @@ export default class extends Controller {
         this.observer.observe(this.infiniteScrollSpinnerTarget)
     }
     paginationInfoContainerTargetConnected(element) {
-        this.resetSpinner(0);
+        this.resetSpinner();
     }
     disconnect() {
         if (this.observer) {
@@ -31,13 +31,7 @@ export default class extends Controller {
         this.readyToLoad = false;
 
         const url = new URL(this.paginationInfoContainerTarget.dataset.fetchMoreUrl)
-        let offset = 0;
-        this.offsetTargets.forEach(div => {
-            const latestOffset = parseInt(div.dataset.nextOffset, 10);
-            if (latestOffset > offset) {
-                offset = latestOffset;
-            }
-        })
+        const offset = this.fetchLatestOffset();
 
         // Start with the existing query params from the URL
         const params = new URLSearchParams(url.search)
@@ -59,15 +53,16 @@ export default class extends Controller {
 
         Turbo.visit(url.toString());
 
-        this.resetSpinner(offset);
+        this.resetSpinner();
     }
 
     // 👇 Reset the flag when filters change or form submits
-    resetSpinner(offset) {
+    resetSpinner(offset = null) {
         this.readyToLoad = false; // Prevent early loading *until frame finishes replacing*
         const totalResults = parseInt(this.paginationInfoContainerTarget.dataset.totalResults, 10);
-        // const nextOffset = parseInt(this.paginationInfoContainerTarget.dataset.nextOffset, 10);
-
+        if (offset === null) {
+            offset = this.fetchLatestOffset();
+        }
         if (offset >= totalResults) {
             this.infiniteScrollSpinnerTarget.style.display = 'none'; // Hide spinner
         } else {
@@ -78,5 +73,18 @@ export default class extends Controller {
         setTimeout(() => {
             this.readyToLoad = true;
         }, 500); // Adjust if needed
+    }
+
+    fetchLatestOffset()
+    {
+        let offset = 0;
+        this.offsetTargets.forEach(div => {
+            const latestOffset = parseInt(div.dataset.nextOffset, 10);
+            if (latestOffset > offset) {
+                offset = latestOffset;
+            }
+        })
+
+        return offset;
     }
 }
