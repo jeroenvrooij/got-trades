@@ -1,13 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 
-function debounce(fn, delay) {
-    let timeoutId;
-    return function (...args) {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn.apply(this, args), delay);
-    };
-}
-
 export default class extends Controller {
     static targets = ["infiniteScrollSpinner", "paginationInfoContainer", "filterForm", "renderedSetsContainer", "offset"]
 
@@ -18,25 +10,19 @@ export default class extends Controller {
 
         if (!this.hasInfiniteScrollSpinnerTarget) return
 
-        this.debouncedScrollCheck = debounce(this.checkScrollPosition.bind(this), 50)
-        window.addEventListener('scroll', this.debouncedScrollCheck)
-    }
-    disconnect() {
-        window.removeEventListener('scroll', this.debouncedScrollCheck)
+        this.observer = new IntersectionObserver(entries => {
+            if (this.readyToLoad && entries[0].isIntersecting) {
+                this.loadMore()
+            }
+        })
+        this.observer.observe(this.infiniteScrollSpinnerTarget)
     }
     paginationInfoContainerTargetConnected(element) {
         this.resetSpinner();
     }
-
-    checkScrollPosition() {
-        if (!this.readyToLoad) return;
-
-        const scrollPosition = window.scrollY + window.innerHeight;
-        const pageHeight = document.documentElement.scrollHeight;
-        const threshold = 300;
-
-        if (scrollPosition + threshold >= pageHeight) {
-            this.loadMore();
+    disconnect() {
+        if (this.observer) {
+            this.observer.disconnect()
         }
     }
 
