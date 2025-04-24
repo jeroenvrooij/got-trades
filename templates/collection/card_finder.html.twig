@@ -44,7 +44,7 @@
 				<div class="overflow-hidden">
 					<div class="row justify-content-center align-items-center gy-3 px-sm-0 px-3">
 
-						<div class="col-12 col-md-4 col-lg-2 foiling-filter">
+						<div class="col-12 col-md-4 col-lg-2 foiling-filter" {% if not collectorView %} hidden {% endif %}>
 							{{ form_widget(form.foiling, { attr: {'data-filter-target': 'foilingFilter'} }) }}
 						</div>
 
