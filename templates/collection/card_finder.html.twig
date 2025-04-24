@@ -1,0 +1,114 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+	<div class="text-center">
+		<h1 class="text-secondary">Card finder</h1>
+	</div>
+	<div class="mx-auto" {{ stimulus_controller('filter printing popover infinitescroll') }}>
+		<div class="sticky-top bg-white pb-1" style="top: 57px; z-index: 1020;">
+			{{ form_start(form, { attr: {
+						'data-filter-target': 'filterForm',
+						'data-infinitescroll-target': 'filterForm',
+						'data-printing-target': 'filterForm',
+				} }) }}
+
+			<div class="d-flex justify-content-center">
+				<div class="col-12 col-md-12 col-lg-6">
+					{{ form_widget(form.cardName, {
+						attr: {'data-filter-target': 'cardName',
+						placeholder: 'Start typing to search for cards..'
+					} }) }}
+				</div>
+			</div>
+
+			<!-- Toggle button (visible on small screens only) -->
+			<button
+				class="btn btn-outline-secondary d-sm-none mt-3"
+				type="button"
+				data-bs-toggle="collapse"
+				data-bs-target="#filterCollapse"
+				aria-expanded="false"
+				aria-controls="filterCollapse"
+			>
+				<span>Filters</span>
+				<i class="bi bi-chevron-down ms-1" id="filterToggleIcon"></i>
+				<i class="bi bi-chevron-right ms-1" id="filterToggleIcon"></i>
+			</button>
+
+			<div class="collapse d-sm-block pt-3" id="filterCollapse">
+
+				<div class="my-custom-class-for-errors">
+					{{ form_errors(form) }}
+				</div>
+
+				<div class="overflow-hidden">
+					<div class="row justify-content-center align-items-center gy-3 px-sm-0 px-3">
+
+						<div class="col-6 col-md-4 col-lg-2 foiling-filter">
+							{{ form_widget(form.foiling, { attr: {'data-filter-target': 'foilingFilter'} }) }}
+						</div>
+
+						{# <div class="col-12 col-md-12 col-lg-6">
+							{{ form_widget(form.cardName, {
+								attr: {'data-filter-target': 'cardName',
+								placeholder: 'Start typing to search for cards..'
+							} }) }}
+						</div> #}
+
+						<div class="col-12 d-flex justify-content-start justify-content-md-end align-items-center">
+							<div class="form-check form-switch" hidden>
+								{{ form_widget(form.collectorView, { attr: {'data-filter-target': 'collectorViewFilter', 'hidden': true} }) }}
+								<label class="form-check-label" for="card_filter_form_collectorView">Show expanded 'collector view'</label>
+							</div>
+						</div>
+
+						{% do form.hide.setRendered %}
+						{{ form_rest(form) }}
+						{{ form_end(form) }}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		{% include 'collection/collector_view_table.html.twig' with {'promoView': true} %}
+
+		<div
+			data-infinitescroll-target="infiniteScrollSpinner"
+			class="text-center mt-3"
+			{% if cardPrintingsResultSet.nextOffset >= cardPrintingsResultSet.totalAmount %}
+				style="display: none"
+			{% endif %}
+		>
+			<div class="spinner-border text-secondary" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
+
+		<button
+			{{ stimulus_controller('back-to-top') }}
+			data-action="click->back-to-top#scrollToTop"
+			class="btn btn-secondary position-fixed"
+			style="bottom: 40px; right: 20px; display: none; z-index:99"
+			id="backToTopButton"
+		>
+			↑ Top
+		</button>
+
+    </div>
+{% endblock %}
+
+{% block printing_table %}
+	<turbo-stream action="replace" targets="#printing_table">
+		<template>
+				{% include 'collection/collector_view_table.html.twig' with {'promoView': true} %}
+		</template>
+	</turbo-stream>
+{% endblock %}
+
+{% block printing_card_rows %}
+	<turbo-stream action="append" targets="#card_printing_table_content">
+		<template>
+			{% include 'collection/collector_view_table_content.html.twig' with {'promoView': true} %}
+		</template>
+	</turbo-stream>
+{% endblock %}

@@ -30,6 +30,8 @@
             }}"
         {% elseif pageType == collectionPageType_PROMO %}
             data-fetch-more-url="{{ absolute_url(path('app_collection_fetchpromorowsbyoffset')) }}"
+        {% elseif pageType == collectionPageType_CARD_FINDER %}
+            data-fetch-more-url="{{ absolute_url(path('app_collection_fetchcardfinderrowsbyoffset')) }}"
         {% endif %}
     >
     </div>
@@ -44,7 +46,7 @@
                 <th scope="col" style="width: 320px;" class="d-none d-lg-table-cell">Foiling</th>
                 <th scope="col" style="min-width: 60px;" class="d-lg-none"></th>
                 {% set setId = cardPrintingsResultSet.cardPrintings|keys|first %}
-                {% if ((pageType == collectionPageType_CLASS) or (pageType == collectionPageType_SET and setId in editionSets)) %}
+                {% if ((pageType == collectionPageType_CLASS) or (pageType == collectionPageType_CARD_FINDER) or (pageType == collectionPageType_SET and setId in editionSets)) %}
                     {#  Show if just viewing one set (manage by set) and set has multiple editions or when in class view #}
                     <th scope="col" style="width: 90px;" class="d-none d-lg-table-cell">Edition</th>
                     <th scope="col" style="width: 20px;" class="d-lg-none"></th>
@@ -56,6 +58,10 @@
             {% if cardPrintingsResultSet.totalAmount == 0 %}
                 <tr class="no-hover">
                     <td colspan='7' class="text-center text-body-secondary">No cards found</td>
+                </tr>
+            {% elseif cardPrintingsResultSet.totalAmount == -1 %}
+                <tr class="no-hover">
+                    <td colspan='7' class="text-center text-body-secondary">Enter a card name to start</td>
                 </tr>
             {% else %}
                 <tr class="no-hover">

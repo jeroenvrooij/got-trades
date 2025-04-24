@@ -374,6 +374,113 @@ class CollectionController extends AbstractController
         ]);
     }
 
+    #[Route('/fetch-card-finder-rows-by-offset')]
+    public function fetchCardFinderRowsByOffset(
+        Request $request,
+        ParameterBagInterface $params,
+    ) {
+        // Create the form and handle the GET request parameters
+        $form = $this->createForm(CardFilterFormType::class, null, [
+            'promoView' => true,
+        ]);
+
+        $formData = $request->query->all();
+        // Since this is a GET request, we manually set the form data from the request
+        $form->submit($formData['card_filter_form'], false);  // false = don't clear missing fields
+
+        // // Retrieve the filter form data
+        $cardName = $form->get('cardName')->getData();
+        $foiling = $form->get('foiling')->getData();
+        $offset = $request->query->getInt('offset', 0);
+        $renderedSets = $request->query->get('renderedSet');
+
+        $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, $offset, $foiling);
+
+        $collectedCards = new ArrayCollection();
+        $collectedPrintings = new ArrayCollection();
+        if (null !== $this->getUser()) {
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser());
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser());
+        }
+
+        $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+        return $this->renderBlock('collection/card_finder.html.twig', 'printing_card_rows', [
+            'editionHelper' => $this->editionHelper,
+            'foilingHelper' => $this->foilingHelper,
+            'rarityHelper' => $this->rarityHelper,
+            'artVariationsHelper' => $this->artVariationsHelper,
+            'userCollectionManager' => $this->userCollectionManager,
+            'cardPrintingsResultSet' => $cardPrintingsResultSet,
+            'userCollectedCards' => $collectedCards,
+            'userCollectedPrintings' => $collectedPrintings,
+            'renderedSets' => $renderedSets,
+            'pageType' => $params->get('collectionPageType_CARD_FINDER'),
+        ]);
+    }
+
+    #[Route('/card-finder')]
+    public function cardFinder(
+        Request $request,
+        ParameterBagInterface $params,
+    ): Response {
+        $form = $this->createForm(CardFilterFormType::class, null, [
+            'promoView' => true,
+        ]);
+        $form->handleRequest($request);
+
+        $collectedCards = new ArrayCollection();
+        $collectedPrintings = new ArrayCollection();
+        if (null !== $this->getUser()) {
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser());
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser());
+        }
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $form->getData();
+            $foiling = $formData['foiling'];
+            $cardName = $formData['cardName'];
+
+            // 🔥 The magic happens here! 🔥
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+                $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, 0, $foiling);
+
+                return $this->renderBlock('collection/card_finder.html.twig', 'printing_table', [
+                    'editionHelper' => $this->editionHelper,
+                    'foilingHelper' => $this->foilingHelper,
+                    'rarityHelper' => $this->rarityHelper,
+                    'artVariationsHelper' => $this->artVariationsHelper,
+                    'userCollectionManager' => $this->userCollectionManager,
+                    'cardPrintingsResultSet' => $cardPrintingsResultSet,
+                    'userCollectedCards' => $collectedCards,
+                    'userCollectedPrintings' => $collectedPrintings,
+                    'pageType' => $params->get('collectionPageType_CARD_FINDER'),
+                ]);
+            }
+
+            // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
+            // Symfony UX Turbo is all about progressively enhancing your applications!
+            return $this->redirectToRoute('app_collection_managepromocollection', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName();
+
+        return $this->render('collection/card_finder.html.twig', [
+            'editionHelper' => $this->editionHelper,
+            'foilingHelper' => $this->foilingHelper,
+            'rarityHelper' => $this->rarityHelper,
+            'artVariationsHelper' => $this->artVariationsHelper,
+            'userCollectionManager' => $this->userCollectionManager,
+            'cardPrintingsResultSet' => $cardPrintingsResultSet,
+            'userCollectedPrintings' => $collectedPrintings,
+            'form' => $form,
+            'pageType' => $params->get('collectionPageType_CARD_FINDER'),
+        ]);
+    }
+
     #[Route('/update-user-collection', methods: ['POST'])]
     #[IsGranted('ROLE_USER', message: 'Updating collection is for logged in users')]
     public function updateUserCollection(

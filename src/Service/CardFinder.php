@@ -85,6 +85,27 @@ class CardFinder
     }
 
     /**
+     * Finds all printings belonging to a certain class
+     */
+    public function findPaginatedByCardName(
+        ?string $cardName = '',
+        ?int $offset = 0,
+        ?string $foiling = '',
+    ): CardPrintingsResultSet
+    {
+        if (FoilingHelper::NO_FILTER_KEY === $foiling) {
+            $foiling = '';
+        }
+        if ('' === $cardName || null === $cardName) {
+            return new CardPrintingsResultSet(new ArrayCollection(), -1, 0);
+        }
+
+        $paginator = $this->entityManager->getRepository(CardPrinting::class)->findPaginatedByCardName($cardName, $offset, $foiling);
+
+        return $this->buildCardPrintingsResultSet($paginator, true, $offset);
+    }
+
+    /**
      * Takes the Paginator and depending on the type of view (player/collector) builds
      * the correct result set.
      * When in player view, the cards are grouped by cardPrinting.cardId, which affects pagination. In order

@@ -7,6 +7,7 @@ parameters:
     collectionPageType_CLASS: 'CLASS_COLLECTION'
     collectionPageType_SET: 'SET_COLLECTION'
     collectionPageType_PROMO: 'PROMO_COLLECTION'
+    collectionPageType_CARD_FINDER: 'CARD_FINDER'
 
 services:
     # default configuration for services in *this* file

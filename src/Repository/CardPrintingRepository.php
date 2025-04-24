@@ -88,6 +88,25 @@ class CardPrintingRepository extends ServiceEntityRepository
     }
 
     /**
+    * @return Paginator Returns a Paginator containing CardPrinting objects
+    */
+    public function findPaginatedByCardName(
+        string $cardName,
+        ?int $offset = 0,
+        ?string $foiling = '',
+    ): Paginator
+    {
+        $qb = $this->buildCoreQuery(false, true, $foiling, $cardName);
+
+        $qb
+            ->setMaxResults(self::CARDS_PER_PAGE)
+            ->setFirstResult($offset)
+        ;
+
+        return new Paginator($qb->getQuery());
+    }
+
+    /**
     * @return Paginator Paginator containing CardPrinting objects
     */
     public function findPaginatedPromos(

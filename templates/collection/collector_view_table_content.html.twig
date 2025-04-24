@@ -79,7 +79,7 @@
                     {% if printing.foiling != 'S' %}{{ printing.foiling }}F{% endif %} {{ artVariationsHelper.getShortenedArtVariations(printing.artVariations) }}
                 </td>
                 {# when set has multiple editions, or when in 'Manage by class' view shown edition column #}
-                {% if ((pageType == collectionPageType_CLASS) or (pageType == collectionPageType_SET and setName in editionSets)) %}
+                {% if ((pageType == collectionPageType_CLASS) or (pageType == collectionPageType_CARD_FINDER) or (pageType == collectionPageType_SET and setName in editionSets)) %}
                     {# This edition column is only shown on md+ viewports #}
                     <td class="d-none d-lg-table-cell">
                         {% if printing.edition != "N" %}{{ editionHelper.getEditionNameById(printing.edition) }}{% endif %}

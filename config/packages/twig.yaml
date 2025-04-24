@@ -5,6 +5,7 @@ twig:
         collectionPageType_CLASS: '%collectionPageType_CLASS%'
         collectionPageType_SET: '%collectionPageType_SET%'
         collectionPageType_PROMO: '%collectionPageType_PROMO%'
+        collectionPageType_CARD_FINDER: '%collectionPageType_CARD_FINDER%'
 
 when@test:
     twig:
