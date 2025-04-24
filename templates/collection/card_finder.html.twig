@@ -16,7 +16,7 @@
 				<div class="col-12 col-md-12 col-lg-6">
 					{{ form_widget(form.cardName, {
 						attr: {'data-filter-target': 'cardName',
-						placeholder: 'Start typing to search for cards..'
+						placeholder: 'Card name, start typing to search..'
 					} }) }}
 				</div>
 			</div>
@@ -44,7 +44,7 @@
 				<div class="overflow-hidden">
 					<div class="row justify-content-center align-items-center gy-3 px-sm-0 px-3">
 
-						<div class="col-6 col-md-4 col-lg-2 foiling-filter">
+						<div class="col-12 col-md-4 col-lg-2 foiling-filter">
 							{{ form_widget(form.foiling, { attr: {'data-filter-target': 'foilingFilter'} }) }}
 						</div>
 
@@ -56,9 +56,9 @@
 						</div> #}
 
 						<div class="col-12 d-flex justify-content-start justify-content-md-end align-items-center">
-							<div class="form-check form-switch" hidden>
-								{{ form_widget(form.collectorView, { attr: {'data-filter-target': 'collectorViewFilter', 'hidden': true} }) }}
-								<label class="form-check-label" for="card_filter_form_collectorView">Show expanded 'collector view'</label>
+							<div class="form-check form-switch">
+								{{ form_widget(form.collectorView, { attr: {'data-filter-target': 'collectorViewFilter'} }) }}
+								{{ form_label(form.collectorView, null, {'label_attr': {'class': 'form-check-label'} }) }}
 							</div>
 						</div>
 
@@ -70,7 +70,11 @@
 			</div>
 		</div>
 
-		{% include 'collection/collector_view_table.html.twig' with {'promoView': true} %}
+		{% if collectorView %}
+			{% include 'collection/collector_view_table.html.twig' %}
+		{% else %}
+			{% include 'collection/player_view_table.html.twig' %}
+		{% endif %}
 
 		<div
 			data-infinitescroll-target="infiniteScrollSpinner"
@@ -100,7 +104,11 @@
 {% block printing_table %}
 	<turbo-stream action="replace" targets="#printing_table">
 		<template>
-				{% include 'collection/collector_view_table.html.twig' with {'promoView': true} %}
+			{% if collectorView %}
+				{% include 'collection/collector_view_table.html.twig' %}
+			{% else %}
+				{% include 'collection/player_view_table.html.twig' %}
+			{% endif %}
 		</template>
 	</turbo-stream>
 {% endblock %}
@@ -108,7 +116,11 @@
 {% block printing_card_rows %}
 	<turbo-stream action="append" targets="#card_printing_table_content">
 		<template>
-			{% include 'collection/collector_view_table_content.html.twig' with {'promoView': true} %}
+			{% if collectorView %}
+				{% include 'collection/collector_view_table_content.html.twig' %}
+			{% else %}
+				{% include 'collection/player_view_table_content.html.twig' %}
+			{% endif %}
 		</template>
 	</turbo-stream>
 {% endblock %}

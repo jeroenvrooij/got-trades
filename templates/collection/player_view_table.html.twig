@@ -21,6 +21,8 @@
                     )
                 )
             }}"
+        {% elseif pageType == collectionPageType_CARD_FINDER %}
+            data-fetch-more-url="{{ absolute_url(path('app_collection_fetchcardfinderrowsbyoffset')) }}"
         {% endif %}
     >
     </div>
@@ -29,6 +31,10 @@
             {% if cardPrintingsResultSet.totalAmount == 0 %}
                 <tr>
                     <td colspan='7' class="text-center">No cards found</td>
+                </tr>
+            {% elseif cardPrintingsResultSet.totalAmount == -1 %}
+                <tr class="no-hover">
+                    <td colspan='7' class="text-center text-body-secondary">Enter a card name to start searching</td>
                 </tr>
             {% else %}
                 <tr class="no-hover">

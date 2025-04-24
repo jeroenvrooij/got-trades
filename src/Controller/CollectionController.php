@@ -391,6 +391,7 @@ class CollectionController extends AbstractController
         // // Retrieve the filter form data
         $cardName = $form->get('cardName')->getData();
         $foiling = $form->get('foiling')->getData();
+        $collectorView = $form->get('collectorView')->getData();
         $offset = $request->query->getInt('offset', 0);
         $renderedSets = $request->query->get('renderedSet');
 
@@ -412,6 +413,7 @@ class CollectionController extends AbstractController
             'artVariationsHelper' => $this->artVariationsHelper,
             'userCollectionManager' => $this->userCollectionManager,
             'cardPrintingsResultSet' => $cardPrintingsResultSet,
+            'collectorView' => $collectorView,
             'userCollectedCards' => $collectedCards,
             'userCollectedPrintings' => $collectedPrintings,
             'renderedSets' => $renderedSets,
@@ -440,6 +442,7 @@ class CollectionController extends AbstractController
             $formData = $form->getData();
             $foiling = $formData['foiling'];
             $cardName = $formData['cardName'];
+            $collectorView = $form->get('collectorView')->getData();
 
             // 🔥 The magic happens here! 🔥
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
@@ -455,6 +458,7 @@ class CollectionController extends AbstractController
                     'artVariationsHelper' => $this->artVariationsHelper,
                     'userCollectionManager' => $this->userCollectionManager,
                     'cardPrintingsResultSet' => $cardPrintingsResultSet,
+                    'collectorView' => $collectorView,
                     'userCollectedCards' => $collectedCards,
                     'userCollectedPrintings' => $collectedPrintings,
                     'pageType' => $params->get('collectionPageType_CARD_FINDER'),
@@ -474,6 +478,7 @@ class CollectionController extends AbstractController
             'rarityHelper' => $this->rarityHelper,
             'artVariationsHelper' => $this->artVariationsHelper,
             'userCollectionManager' => $this->userCollectionManager,
+            'collectorView' => false,
             'cardPrintingsResultSet' => $cardPrintingsResultSet,
             'userCollectedPrintings' => $collectedPrintings,
             'form' => $form,
