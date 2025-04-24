@@ -16,12 +16,6 @@
                 </div>
                 <div class="offcanvas-body">
                     <ul class="navbar-nav me-auto mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link {{ currentRoute == 'app_collection_cardfinder' ? 'active' : '' }}" href="{{ path('app_collection_cardfinder') }}">
-                                Card finder
-                            </a>
-                        </li>
-
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle {{ currentRoute in ['app_card_setoverviewpage', 'app_card_classoverviewpage'] ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 My collection
@@ -34,6 +28,12 @@
 
                         <li class="nav-item">
                             <a class="nav-link {{ currentRoute == 'app_collection_managepromocollection' ? 'active' : '' }}" href="{{ path('app_collection_managepromocollection') }}">Promo collection</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ currentRoute == 'app_collection_cardfinder' ? 'active' : '' }}" href="{{ path('app_collection_cardfinder') }}">
+                                Card finder
+                            </a>
                         </li>
 
                         <li class="nav-item">
