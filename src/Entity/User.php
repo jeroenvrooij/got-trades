@@ -11,10 +11,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
+use App\Validator as AppAssert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -38,8 +40,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
-    
+
     #[ORM\Column(nullable: false, length:15)]
+    #[AppAssert\UniqueUsername]
     private ?string $username = null;
 
     #[ORM\Column]
@@ -55,7 +58,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->cardPrintings = new ArrayCollection();
     }
-    
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -68,7 +71,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setEmail(string $email): static
     {
-        $this->email = $email;
+        $this->email = strtolower($email);
 
         return $this;
     }
