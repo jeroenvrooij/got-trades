@@ -18,6 +18,7 @@ export default class extends Controller {
         this.observer.observe(this.infiniteScrollSpinnerTarget)
     }
     paginationInfoContainerTargetConnected(element) {
+        this.renderedSets = [];
         this.resetSpinner();
     }
     disconnect() {
