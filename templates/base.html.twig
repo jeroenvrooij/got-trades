@@ -35,6 +35,19 @@
                     </div>
                 {% endblock %}
 
+                {% for label, messages in app.flashes(['verify_email_success', 'verify_email_notification']) %}
+                    {% for message in messages %}
+                        {% set type = 'success' %}
+                        {% if 'verify_email_notification' == label %}
+                            {% set type = 'warning' %}
+                        {% endif %}
+                        <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
                 {% block body %}{% endblock %}
             </div>
         </main>

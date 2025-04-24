@@ -6,7 +6,7 @@
     <h1>That all you got?</h1>
 
     <p class="mx-auto mt-4" style="max-width: 960px;">
-        A legendary Flesh and Blood collection isn't built by luck in cracking packs — it's crafted with strategy. <br />
+        A legendary Flesh and Blood collection isn't built just by luck in cracking packs — it's crafted with strategy. <br />
 This fanmade tool helps you forge your perfect collection, showing you what cards you have collected, which playsets need completion, and where your arsenal still has gaps to fill.
     </p>
     {# <p>Start by searching for cards or:</p> #}
@@ -24,8 +24,14 @@ This fanmade tool helps you forge your perfect collection, showing you what card
                     <div class="feature-body mb-2">
                         <p>Once you have an account and are logged in you can start adding cards to your online collection.</p>
                     </div>
-                    <div class="feature-footer">
-                        <button type="button" class="btn btn-warning" disabled>Sign up</button>
+                    <div class="feature-footer" {{ stimulus_controller('popover') }}>
+                        {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <A type="button" role="button" class="btn btn-warning" href="{{ path('app_register') }}">Sign up</a>
+                        {% else %}
+                            <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="You're already signed in :)">
+                                <button type="button" class="btn btn-warning" disabled>Sign up</button>
+                            </span>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -151,7 +157,7 @@ This fanmade tool helps you forge your perfect collection, showing you what card
 
 
 
-       
+
         {# <div class="row align-items-center">
             <div class="col d-flex justify-content-center align-items-center gy-4">
                 <div class="card text-secondary" style="width: 18rem; height: 13rem;">
@@ -190,4 +196,4 @@ This fanmade tool helps you forge your perfect collection, showing you what card
     </div> #}
 
 </div>
-{% endblock %} 
+{% endblock %}

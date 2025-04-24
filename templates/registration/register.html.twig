@@ -1,24 +1,92 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
-
 {% block body %}
-    {% for flash_error in app.flashes('verify_email_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
+    <h1 class="font-weight-normal text-secondary text-center">Trace your path through Rathe</h1>
+    <h6 class="mb-5 font-weight-normal text-secondary text-center">Create your account and track every card in your growing collection.</h6>
+    <div class="container" style="max-width: 450px;">
+        {% for flash_error in app.flashes('verify_email_error') %}
+            <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+        {% endfor %}
 
-    <h1>Register</h1>
-
-    {{ form_errors(registrationForm) }}
-
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.username) }}
-        {{ form_row(registrationForm.agreeTerms) }}
-
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+        {{ form_start(registrationForm, { attr: {'data-turbo': 'false', 'novalidate': true} }) }}
+        {{ form_errors(registrationForm) }}
+        <div class="form-floating mb-3">
+            {{ form_widget(registrationForm.email, {
+                attr: {
+                    class: 'form-control' ~ (registrationForm.email.vars.errors|length > 0 ? ' is-invalid' : ''),
+                    'aria-describedby': 'emailHelp',
+                    'placeholder': 'jandewit@thatallyougot.cc'
+                }
+            }) }}
+            {{ form_label(registrationForm.email) }}
+            {% if registrationForm.email.vars.errors|length > 0 %}
+                <div class="invalid-feedback">
+                    {{ registrationForm.email.vars.errors.0.message }}
+                </div>
+            {% endif %}
+            <div id="emailHelp" class="form-text">Only used to sign in and to verify your account.<br /><i>Not shared with anyone else.</i></div>
+        </div>
+        <div class="form-floating mb-3">
+            {{ form_widget(registrationForm.plainPassword, {
+                attr: {
+                    class: 'form-control' ~ (registrationForm.plainPassword.vars.errors|length > 0 ? ' is-invalid' : ''),
+                    'aria-describedby': 'passwordHelp',
+                    'placeholder': 'newDromaiwhen?'
+                }
+            }) }}
+            {{ form_label(registrationForm.plainPassword) }}
+            {% if registrationForm.plainPassword.vars.errors|length > 0 %}
+                <div class="invalid-feedback">
+                    {{ registrationForm.plainPassword.vars.errors.0.message|raw }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-floating mb-3">
+            {{ form_widget(registrationForm.username, {
+                attr: {
+                    class: 'form-control' ~ (registrationForm.username.vars.errors|length > 0 ? ' is-invalid' : ''),
+                    'aria-describedby': 'usernameHelp',
+                    'placeholder': 'Jan de Wit'
+                }
+            }) }}
+            {{ form_label(registrationForm.username) }}
+            {% if registrationForm.username.vars.errors|length > 0 %}
+                <div class="invalid-feedback">
+                    {{ registrationForm.username.vars.errors.0.message }}
+                </div>
+            {% endif %}
+            <div id="usernameHelp" class="form-text">Your public screen name, so other users can recognise you. <span class="small"><i>Currently no functionality uses this.</i></span></div>
+        </div>
+        <div class="mb-3 form-check">
+            {{ form_widget(registrationForm.agreeTerms, {
+                attr: {
+                    class: 'form-check-input' ~ (registrationForm.agreeTerms.vars.errors|length > 0 ? ' is-invalid' : ''),
+                }
+            }) }}
+            {{ form_label(registrationForm.agreeTerms) }}
+            {% if registrationForm.agreeTerms.vars.errors|length > 0 %}
+                <div class="invalid-feedback">
+                    {{ registrationForm.agreeTerms.vars.errors.0.message }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="mb-3 form-check">
+            {{ form_widget(registrationForm.fatigue, {
+                attr: {
+                    class: 'form-check-input' ~ (registrationForm.fatigue.vars.errors|length > 0 ? ' is-invalid' : ''),
+                }
+            }) }}
+            {{ form_label(registrationForm.fatigue) }}
+            {% if registrationForm.fatigue.vars.errors|length > 0 %}
+                <div class="invalid-feedback">
+                    {{ registrationForm.fatigue.vars.errors.0.message }}
+                </div>
+            {% endif %}
+        </div>
+        {{ form_rest(registrationForm) }}
+        <div class="text-center">
+            <button type="submit" class="btn btn-lg btn-warning mt-3">Sign me up!</button>
+        </div>
+        {{ form_end(registrationForm) }}
+    </div>
 {% endblock %}
