@@ -260,6 +260,72 @@ class CollectionController extends AbstractController
         ]);
     }
 
+    #[Route('/card-finder')]
+    public function cardFinder(
+        Request $request,
+        ParameterBagInterface $params,
+    ): Response {
+        $form = $this->createForm(CardFilterFormType::class, null, [
+            'promoView' => true,
+        ]);
+        $form->handleRequest($request);
+
+        $collectedCards = new ArrayCollection();
+        $collectedPrintings = new ArrayCollection();
+        if (null !== $this->getUser()) {
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser());
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser());
+        }
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $form->getData();
+            $foiling = $formData['foiling'];
+            $cardName = $formData['cardName'];
+            $rarity = $formData['rarity'];
+            $collectorView = $form->get('collectorView')->getData();
+
+            // 🔥 The magic happens here! 🔥
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+                $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, 0, $foiling, $rarity);
+
+                return $this->renderBlock('collection/card_finder.html.twig', 'printing_table', [
+                    'editionHelper' => $this->editionHelper,
+                    'foilingHelper' => $this->foilingHelper,
+                    'rarityHelper' => $this->rarityHelper,
+                    'artVariationsHelper' => $this->artVariationsHelper,
+                    'userCollectionManager' => $this->userCollectionManager,
+                    'cardPrintingsResultSet' => $cardPrintingsResultSet,
+                    'collectorView' => $collectorView,
+                    'userCollectedCards' => $collectedCards,
+                    'userCollectedPrintings' => $collectedPrintings,
+                    'pageType' => $params->get('collectionPageType_CARD_FINDER'),
+                ]);
+            }
+
+            // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
+            // Symfony UX Turbo is all about progressively enhancing your applications!
+            return $this->redirectToRoute('app_collection_managepromocollection', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName();
+
+        return $this->render('collection/card_finder.html.twig', [
+            'editionHelper' => $this->editionHelper,
+            'foilingHelper' => $this->foilingHelper,
+            'rarityHelper' => $this->rarityHelper,
+            'artVariationsHelper' => $this->artVariationsHelper,
+            'userCollectionManager' => $this->userCollectionManager,
+            'collectorView' => false,
+            'cardPrintingsResultSet' => $cardPrintingsResultSet,
+            'userCollectedPrintings' => $collectedPrintings,
+            'form' => $form,
+            'pageType' => $params->get('collectionPageType_CARD_FINDER'),
+        ]);
+    }
+
     #[Route('/fetch-card-printing-rows-by-offset')]
     public function fetchCardPrintingRowsByOffset(
         Request $request,
@@ -268,8 +334,10 @@ class CollectionController extends AbstractController
     ) {
         $className = $request->query->get('className');
         $setId = $request->query->get('setId');
-        if (null === $className && null === $setId) {
-            throw $this->createNotFoundException("Provide either a class name or a set id.");
+        $cardFinder = $request->query->get('cardFinder');
+
+        if (null === $className && null === $setId && null === $cardFinder) {
+            throw $this->createNotFoundException("Provide either a class name, set id or card name.");
         }
 
         // Create the form and handle the GET request parameters
@@ -305,6 +373,11 @@ class CollectionController extends AbstractController
 
             $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsBySet($set, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName, $rarity);
             $pageType = $params->get('collectionPageType_SET');
+        }
+
+        if (null !== $cardFinder) {
+            $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, $offset, $foiling, $rarity);
+            $pageType = $params->get('collectionPageType_CARD_FINDER');
         }
 
         $collectedCards = new ArrayCollection();
@@ -374,120 +447,6 @@ class CollectionController extends AbstractController
             'userCollectedPrintings' => $collectedPrintings,
             'renderedSets' => $renderedSets,
             'pageType' => $params->get('collectionPageType_PROMO'),
-        ]);
-    }
-
-    #[Route('/fetch-card-finder-rows-by-offset')]
-    public function fetchCardFinderRowsByOffset(
-        Request $request,
-        ParameterBagInterface $params,
-    ) {
-        // Create the form and handle the GET request parameters
-        $form = $this->createForm(CardFilterFormType::class, null, [
-            'promoView' => true,
-        ]);
-
-        $formData = $request->query->all();
-        // Since this is a GET request, we manually set the form data from the request
-        $form->submit($formData['card_filter_form'], false);  // false = don't clear missing fields
-
-        // // Retrieve the filter form data
-        $cardName = $form->get('cardName')->getData();
-        $foiling = $form->get('foiling')->getData();
-        $rarity = $form->get('rarity')->getData();
-        $collectorView = $form->get('collectorView')->getData();
-        $offset = $request->query->getInt('offset', 0);
-        $renderedSets = $request->query->get('renderedSet');
-
-        $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, $offset, $foiling, $rarity);
-
-        $collectedCards = new ArrayCollection();
-        $collectedPrintings = new ArrayCollection();
-        if (null !== $this->getUser()) {
-            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser());
-            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser());
-        }
-
-        $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-
-        return $this->renderBlock('collection/card_finder.html.twig', 'printing_card_rows', [
-            'editionHelper' => $this->editionHelper,
-            'foilingHelper' => $this->foilingHelper,
-            'rarityHelper' => $this->rarityHelper,
-            'artVariationsHelper' => $this->artVariationsHelper,
-            'userCollectionManager' => $this->userCollectionManager,
-            'cardPrintingsResultSet' => $cardPrintingsResultSet,
-            'collectorView' => $collectorView,
-            'userCollectedCards' => $collectedCards,
-            'userCollectedPrintings' => $collectedPrintings,
-            'renderedSets' => $renderedSets,
-            'pageType' => $params->get('collectionPageType_CARD_FINDER'),
-        ]);
-    }
-
-    #[Route('/card-finder')]
-    public function cardFinder(
-        Request $request,
-        ParameterBagInterface $params,
-    ): Response {
-        $form = $this->createForm(CardFilterFormType::class, null, [
-            'promoView' => true,
-        ]);
-        $form->handleRequest($request);
-
-        $collectedCards = new ArrayCollection();
-        $collectedPrintings = new ArrayCollection();
-        if (null !== $this->getUser()) {
-            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser());
-            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser());
-        }
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $formData = $form->getData();
-            $foiling = $formData['foiling'];
-            $cardName = $formData['cardName'];
-            $rarity = $formData['rarity'];
-            $collectorView = $form->get('collectorView')->getData();
-
-            // 🔥 The magic happens here! 🔥
-            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
-                // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-
-                $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, 0, $foiling, $rarity);
-
-                return $this->renderBlock('collection/card_finder.html.twig', 'printing_table', [
-                    'editionHelper' => $this->editionHelper,
-                    'foilingHelper' => $this->foilingHelper,
-                    'rarityHelper' => $this->rarityHelper,
-                    'artVariationsHelper' => $this->artVariationsHelper,
-                    'userCollectionManager' => $this->userCollectionManager,
-                    'cardPrintingsResultSet' => $cardPrintingsResultSet,
-                    'collectorView' => $collectorView,
-                    'userCollectedCards' => $collectedCards,
-                    'userCollectedPrintings' => $collectedPrintings,
-                    'pageType' => $params->get('collectionPageType_CARD_FINDER'),
-                ]);
-            }
-
-            // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
-            // Symfony UX Turbo is all about progressively enhancing your applications!
-            return $this->redirectToRoute('app_collection_managepromocollection', [], Response::HTTP_SEE_OTHER);
-        }
-
-        $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName();
-
-        return $this->render('collection/card_finder.html.twig', [
-            'editionHelper' => $this->editionHelper,
-            'foilingHelper' => $this->foilingHelper,
-            'rarityHelper' => $this->rarityHelper,
-            'artVariationsHelper' => $this->artVariationsHelper,
-            'userCollectionManager' => $this->userCollectionManager,
-            'collectorView' => false,
-            'cardPrintingsResultSet' => $cardPrintingsResultSet,
-            'userCollectedPrintings' => $collectedPrintings,
-            'form' => $form,
-            'pageType' => $params->get('collectionPageType_CARD_FINDER'),
         ]);
     }
 

@@ -31,7 +31,14 @@
         {% elseif pageType == collectionPageType_PROMO %}
             data-fetch-more-url="{{ absolute_url(path('app_collection_fetchpromorowsbyoffset')) }}"
         {% elseif pageType == collectionPageType_CARD_FINDER %}
-            data-fetch-more-url="{{ absolute_url(path('app_collection_fetchcardfinderrowsbyoffset')) }}"
+            data-fetch-more-url="{{
+                absolute_url(
+                    path(
+                        name: 'app_collection_fetchcardprintingrowsbyoffset',
+                        parameters = { cardFinder: true }
+                    )
+                )
+            }}"
         {% endif %}
     >
     </div>
