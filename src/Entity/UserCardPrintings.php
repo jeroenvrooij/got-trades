@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\UserCardPrintingsRepository;
-use Doctrine\DBAL\FetchMode;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserCardPrintingsRepository::class)]
@@ -12,7 +11,7 @@ class UserCardPrintings
     #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'cardPrintings')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
-    private ?user $user = null;
+    private ?User $user = null;
 
     // This can't be a relation as Doctrine would then make a FK, which would cascase delete records when
     // card db is recreated
@@ -23,12 +22,12 @@ class UserCardPrintings
     #[ORM\Column]
     private ?int $collectionAmount = null;
 
-    public function getUser(): ?user
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(?user $user): static
+    public function setUser(?User $user): static
     {
         $this->user = $user;
 
