@@ -3,9 +3,9 @@
 namespace App\Service;
 
 use App\Entity\Card;
-use App\Entity\Set;
 use App\Entity\User;
 use App\Entity\UserCardPrintings;
+use App\Model\CardPrintingsResultSet;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -32,13 +32,11 @@ class UserCollectionManager
      */
     public function getCollectedPrintingsBy(
         User $user,
-        ?Set $set = null,
-        ?string $className = null,
-        ?bool $promosOnly = false,
+        CardPrintingsResultSet $cardPrintingsResultSet
     ): ArrayCollection
     {
         if ($this->userCollectedPrintings->isEmpty()) {
-            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForUser($user, $set, $className, $promosOnly);
+            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForPrintingsByUser($user, $cardPrintingsResultSet);
             foreach ($userCollectionModels as $userCollectionModel) {
                 $this->userCollectedPrintings->set($userCollectionModel->getCardPrintingUniqueId(), $userCollectionModel->getCollectionAmount());
             }
@@ -52,13 +50,11 @@ class UserCollectionManager
      */
     public function getCollectedCardsBy(
         User $user,
-        ?Set $set = null,
-        ?string $className = null,
-        ?bool $promosOnly = false,
+        CardPrintingsResultSet $cardPrintingsResultSet
     ): ArrayCollection
     {
         if ($this->userCollectedCards->isEmpty()) {
-            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForUser($user, $set, $className, $promosOnly);
+            $userCollectionModels = $this->entityManager->getRepository(UserCardPrintings::class)->getCollectionDataForPrintingsByUser($user, $cardPrintingsResultSet);
             foreach ($userCollectionModels as $userCollectionModel) {
                 $alreadyOwnedAmount = 0;
                 if (null !== $this->userCollectedCards->get($userCollectionModel->getCardId())) {

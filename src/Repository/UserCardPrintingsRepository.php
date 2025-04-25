@@ -2,12 +2,10 @@
 
 namespace App\Repository;
 
-use App\Entity\Card;
-use App\Entity\CardClass;
 use App\Entity\CardPrinting;
-use App\Entity\Set;
 use App\Entity\User;
 use App\Entity\UserCardPrintings;
+use App\Model\CardPrintingsResultSet;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
@@ -25,11 +23,9 @@ class UserCardPrintingsRepository extends ServiceEntityRepository
     /**
     * @return UserCardPrintings[] Returns an array of UserCardPrintings objects
     */
-    public function getCollectionDataForUser(
-        User $user, 
-        ?Set $set = null, 
-        ?string $className = null,
-        ?bool $promosOnly = false,
+    public function getCollectionDataForPrintingsByUser(
+        User $user,
+        CardPrintingsResultSet $cardPrintingsResultSet
     ): array
     {
         $qb = $this->createQueryBuilder('ucp')
@@ -38,30 +34,17 @@ class UserCardPrintingsRepository extends ServiceEntityRepository
             ->andWhere('ucp.user = :user')
             ->setParameter('user', $user)
             ;
-            
-        if (null !== $set){
-            $qb
-                ->andWhere('cp.set = :set')
-                ->setParameter('set', $set)
-            ;
-        }
-            
-        if (null !== $className){
-            $qb
-                ->innerJoin(Card::class, 'c', Join::WITH, 'cp.card = c.uniqueId')
-                ->innerJoin(CardClass::class, 'cc', Join::WITH, 'c.uniqueId = cc.card')
-            
-                ->andWhere('cc.className = :className')
-                ->setParameter('className', ucfirst($className))
-            ;
+
+
+        $cardIds = $cardPrintingsResultSet->getUniqueCardIds();
+        if (empty($cardIds)) {
+            return [];
         }
 
-        if ($promosOnly) {
-            $qb
-                ->andWhere('cp.rarity = :promo')
-                ->setParameter('promo', 'P')
-            ;
-        }
+        $qb
+            ->andWhere('cp.uniqueId IN (:cardIds)')
+            ->setParameter('cardIds', $cardIds)
+        ;
 
         return $qb
             ->getQuery()

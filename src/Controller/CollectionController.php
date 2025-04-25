@@ -65,10 +65,7 @@ class CollectionController extends AbstractController
 
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
-        if (null !== $this->getUser()) {
-            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $set);
-            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $set);
-        }
+
 
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
@@ -84,6 +81,11 @@ class CollectionController extends AbstractController
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
                 $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsBySet($set, 0, $hideOwnedCards, $collectorView, $foiling, $cardName, $rarity);
+
+                if (null !== $this->getUser()) {
+                    $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $cardPrintingsResultSet);
+                    $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $cardPrintingsResultSet);
+                }
 
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -106,6 +108,11 @@ class CollectionController extends AbstractController
         }
 
         $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsBySet($set);
+
+        if (null !== $this->getUser()) {
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $cardPrintingsResultSet);
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $cardPrintingsResultSet);
+        }
 
         return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
@@ -138,10 +145,6 @@ class CollectionController extends AbstractController
 
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
-        if (null !== $this->getUser()) {
-            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, $className);
-            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, $className);
-        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
@@ -157,6 +160,11 @@ class CollectionController extends AbstractController
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
                 $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsByClass($className, 0, $hideOwnedCards, $collectorView, $foiling, $cardName, $rarity);
+
+                if (null !== $this->getUser()) {
+                    $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $cardPrintingsResultSet);
+                    $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $cardPrintingsResultSet);
+                }
 
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -179,6 +187,11 @@ class CollectionController extends AbstractController
         }
 
         $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsByClass($className);
+
+        if (null !== $this->getUser()) {
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $cardPrintingsResultSet);
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $cardPrintingsResultSet);
+        }
 
         return $this->render('collection/overview.html.twig', [
             'editionHelper' => $this->editionHelper,
@@ -208,10 +221,6 @@ class CollectionController extends AbstractController
 
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
-        if (null !== $this->getUser()) {
-            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, null, true);
-            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, null, true);
-        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
@@ -225,6 +234,11 @@ class CollectionController extends AbstractController
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
                 $cardPrintingsResultSet = $this->cardFinder->findPaginatedPromos(0, $hideOwnedCards, $foiling, $cardName);
+
+                if (null !== $this->getUser()) {
+                    $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $cardPrintingsResultSet);
+                    $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $cardPrintingsResultSet);
+                }
 
                 return $this->renderBlock('collection/promo_overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -245,6 +259,11 @@ class CollectionController extends AbstractController
         }
 
         $cardPrintingsResultSet = $this->cardFinder->findPaginatedPromos();
+
+        if (null !== $this->getUser()) {
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $cardPrintingsResultSet);
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $cardPrintingsResultSet);
+        }
 
         return $this->render('collection/promo_overview.html.twig', [
             'editionHelper' => $this->editionHelper,
@@ -272,10 +291,6 @@ class CollectionController extends AbstractController
 
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
-        if (null !== $this->getUser()) {
-            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser());
-            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser());
-        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $formData = $form->getData();
@@ -290,6 +305,11 @@ class CollectionController extends AbstractController
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
                 $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, 0, $foiling, $rarity);
+
+                if (null !== $this->getUser()) {
+                    $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $cardPrintingsResultSet);
+                    $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $cardPrintingsResultSet);
+                }
 
                 return $this->renderBlock('collection/card_finder.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -311,6 +331,11 @@ class CollectionController extends AbstractController
         }
 
         $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName();
+
+        if (null !== $this->getUser()) {
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $cardPrintingsResultSet);
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $cardPrintingsResultSet);
+        }
 
         return $this->render('collection/card_finder.html.twig', [
             'editionHelper' => $this->editionHelper,
@@ -383,8 +408,8 @@ class CollectionController extends AbstractController
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
         if (null !== $this->getUser()) {
-            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, null, true);
-            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, null, true);
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $cardPrintingsResultSet);
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $cardPrintingsResultSet);
         }
 
         $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -430,8 +455,8 @@ class CollectionController extends AbstractController
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
         if (null !== $this->getUser()) {
-            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), null, null, true);
-            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), null, null, true);
+            $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $cardPrintingsResultSet);
+            $collectedPrintings = $this->userCollectionManager->getCollectedPrintingsBy($this->getUser(), $cardPrintingsResultSet);
         }
 
         $request->setRequestFormat(TurboBundle::STREAM_FORMAT);

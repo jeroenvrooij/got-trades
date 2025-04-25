@@ -34,4 +34,19 @@ class CardPrintingsResultSet
     {
         return $this->nextOffset;
     }
+
+    public function getUniqueCardIds()
+    {
+        $cardIds = [];
+        foreach ($this->cardPrintings as $set) {
+            foreach ($set as $cardPrintings) {
+                // $cardIds[] = $cardPrintings['card']->getUniqueId();
+                foreach ($cardPrintings['printings'] as $printing) {
+                    $cardIds[] = $printing->getUniqueId();
+                }
+            }
+        }
+
+        return array_unique($cardIds);
+    }
 }
