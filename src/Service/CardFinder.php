@@ -33,13 +33,18 @@ class CardFinder
         ?bool $collectorView = false,
         ?string $foiling = '',
         ?string $cardName = '',
+        ?string $rarity = '',
     ): CardPrintingsResultSet
     {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
 
-        $paginator = $this->entityManager->getRepository(CardPrinting::class)->findPaginatedBySet($set, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+        if (RarityHelper::NO_FILTER_KEY === $rarity) {
+            $rarity = '';
+        }
+
+        $paginator = $this->entityManager->getRepository(CardPrinting::class)->findPaginatedBySet($set, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName, $rarity);
 
         return $this->buildCardPrintingsResultSet($paginator, $collectorView, $offset);
     }
@@ -54,13 +59,18 @@ class CardFinder
         ?bool $collectorView = false,
         ?string $foiling = '',
         ?string $cardName = '',
+        ?string $rarity = '',
     ): CardPrintingsResultSet
     {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
 
-        $paginator = $this->entityManager->getRepository(CardPrinting::class)->findPaginatedByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+        if (RarityHelper::NO_FILTER_KEY === $rarity) {
+            $rarity = '';
+        }
+
+        $paginator = $this->entityManager->getRepository(CardPrinting::class)->findPaginatedByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName, $rarity);
 
         return $this->buildCardPrintingsResultSet($paginator, $collectorView, $offset);
     }
@@ -91,16 +101,20 @@ class CardFinder
         ?string $cardName = '',
         ?int $offset = 0,
         ?string $foiling = '',
+        ?string $rarity = '',
     ): CardPrintingsResultSet
     {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
             $foiling = '';
         }
+        if (RarityHelper::NO_FILTER_KEY === $rarity) {
+            $rarity = '';
+        }
         if ('' === $cardName || null === $cardName) {
             return new CardPrintingsResultSet(new ArrayCollection(), -1, 0);
         }
 
-        $paginator = $this->entityManager->getRepository(CardPrinting::class)->findPaginatedByCardName($cardName, $offset, $foiling);
+        $paginator = $this->entityManager->getRepository(CardPrinting::class)->findPaginatedByCardName($cardName, $offset, $foiling, $rarity);
 
         return $this->buildCardPrintingsResultSet($paginator, true, $offset);
     }

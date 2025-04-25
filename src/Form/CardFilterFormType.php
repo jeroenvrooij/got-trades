@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Service\FoilingHelper;
+use App\Service\RarityHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -12,12 +13,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CardFilterFormType extends AbstractType
 {
-    private FoilingHelper $foilingHelper;
-
-    public function __construct(FoilingHelper $foilingHelper)
-    {
-        $this->foilingHelper = $foilingHelper;
-    }
+    public function __construct(
+        private FoilingHelper $foilingHelper,
+        private RarityHelper $rarityHelper,
+    ) {}
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -33,7 +32,23 @@ class CardFilterFormType extends AbstractType
                 ],
                 'choices' => $this->configureFoilingChoicesBasedOnOptions($options),
                 'choice_attr' => [
-                    'Filter on foiling' => ['disabled' => 'true', 'selected' => 'true', 'hidden' => 'true'],
+                    FoilingHelper::PLACEHOLDER_DESC => ['disabled' => 'true', 'selected' => 'true', 'hidden' => 'true'],
+
+                ],
+                'required' => false,
+            ])
+            ->add('rarity', ChoiceType::class, [
+                'attr' => [
+                    'class' =>'form-select'
+                ],
+                'placeholder' => RarityHelper::PLACEHOLDER_DESC,
+                'placeholder_attr' => [
+                    'disabled' => 'true',
+                    // 'hidden' => 'true',
+                ],
+                'choices' => $this->configureRarityChoices(),
+                'choice_attr' => [
+                    RarityHelper::PLACEHOLDER_DESC => ['disabled' => 'true', 'selected' => 'true', 'hidden' => 'true'],
 
                 ],
                 'required' => false,
@@ -110,5 +125,25 @@ class CardFilterFormType extends AbstractType
         );
 
         return $foilings;
+    }
+
+    /**
+     * Manually configre the rarity choices, as the order is so specific.
+     */
+    private function configureRarityChoices(): array
+    {
+        return [
+            RarityHelper::NO_FILTER_DESC => RarityHelper::NO_FILTER_KEY,
+            RarityHelper::PLACEHOLDER_DESC => RarityHelper::PLACEHOLDER_KEY,
+            "Fabled" => "F",
+            "Legendary" => "L",
+            "Marvel" => "V",
+            "Majestic" => "M",
+            "Super Rare" => "S",
+            "Rare" => "R",
+            "Common" => "C",
+            "Token" => "T",
+            "Promo" => "P",
+        ];
     }
 }

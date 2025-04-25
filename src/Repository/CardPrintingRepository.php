@@ -46,9 +46,10 @@ class CardPrintingRepository extends ServiceEntityRepository
         ?bool $collectorView = false,
         ?string $foiling = '',
         ?string $cardName = '',
+        ?string $rarity = '',
     ): Paginator
     {
-        $qb = $this->buildCoreQuery($hideOwnedCards, $collectorView, $foiling, $cardName);
+        $qb = $this->buildCoreQuery($hideOwnedCards, $collectorView, $foiling, $cardName, $rarity);
 
         $qb
             ->andWhere('s.id = :setId')
@@ -70,9 +71,10 @@ class CardPrintingRepository extends ServiceEntityRepository
         ?bool $collectorView = false,
         ?string $foiling = '',
         ?string $cardName = '',
+        ?string $rarity = '',
     ): Paginator
     {
-        $qb = $this->buildCoreQuery($hideOwnedCards, $collectorView, $foiling, $cardName);
+        $qb = $this->buildCoreQuery($hideOwnedCards, $collectorView, $foiling, $cardName, $rarity);
 
         $qb
             ->innerJoin('c.cardClasses', 'classes')
@@ -94,9 +96,10 @@ class CardPrintingRepository extends ServiceEntityRepository
         string $cardName,
         ?int $offset = 0,
         ?string $foiling = '',
+        ?string $rarity = '',
     ): Paginator
     {
-        $qb = $this->buildCoreQuery(false, true, $foiling, $cardName);
+        $qb = $this->buildCoreQuery(false, true, $foiling, $cardName, $rarity);
 
         $qb
             ->setMaxResults(self::CARDS_PER_PAGE)
@@ -165,6 +168,7 @@ class CardPrintingRepository extends ServiceEntityRepository
         ?bool $collectorView = false,
         ?string $foiling = '',
         ?string $cardName = '',
+        ?string $rarity = '',
     ): QueryBuilder
     {
         $qb = $this->startQueryBuilder();
@@ -175,6 +179,14 @@ class CardPrintingRepository extends ServiceEntityRepository
                 ->setParameter('foiling', $foiling)
                 ;
         }
+
+        if ($rarity) {
+            $qb
+                ->andWhere('cp.rarity = :rarity')
+                ->setParameter('rarity', $rarity)
+            ;
+        }
+
         if($cardName) {
             $qb
                 ->andWhere('LOWER(c.name) LIKE :cardName')

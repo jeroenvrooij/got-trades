@@ -76,13 +76,14 @@ class CollectionController extends AbstractController
             $collectorView = $formData['collectorView'];
             $cardName = $formData['cardName'];
             $foiling = $formData['foiling'];
+            $rarity = $formData['rarity'];
 
             // 🔥 The magic happens here! 🔥
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsBySet($set, 0, $hideOwnedCards, $collectorView, $foiling, $cardName);
+                $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsBySet($set, 0, $hideOwnedCards, $collectorView, $foiling, $cardName, $rarity);
 
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -148,13 +149,14 @@ class CollectionController extends AbstractController
             $hideOwnedCards = $formData['hide'];
             $cardName = $formData['cardName'];
             $collectorView = $formData['collectorView'];
+            $rarity = $formData['rarity'];
 
             // 🔥 The magic happens here! 🔥
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsByClass($className, 0, $hideOwnedCards, $collectorView, $foiling, $cardName);
+                $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsByClass($className, 0, $hideOwnedCards, $collectorView, $foiling, $cardName, $rarity);
 
                 return $this->renderBlock('collection/overview.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
@@ -280,6 +282,7 @@ class CollectionController extends AbstractController
         // // Retrieve the filter form data
         $cardName = $form->get('cardName')->getData();
         $foiling = $form->get('foiling')->getData();
+        $rarity = $form->get('rarity')->getData();
         $hideOwnedCards = $form->get('hide')->getData();
         $collectorView = $form->get('collectorView')->getData();
         $offset = $request->query->getInt('offset', 0);
@@ -290,7 +293,7 @@ class CollectionController extends AbstractController
                 throw $this->createNotFoundException("Invalid class: $className");
             }
 
-            $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+            $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsByClass($className, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName, $rarity);
             $pageType = $params->get('collectionPageType_CLASS');
         }
 
@@ -300,7 +303,7 @@ class CollectionController extends AbstractController
                 throw $this->createNotFoundException("Invalid set: $setId");
             }
 
-            $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsBySet($set, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName);
+            $cardPrintingsResultSet = $this->cardFinder->findPaginatedCardsBySet($set, $offset, $hideOwnedCards, $collectorView, $foiling, $cardName, $rarity);
             $pageType = $params->get('collectionPageType_SET');
         }
 
@@ -391,11 +394,12 @@ class CollectionController extends AbstractController
         // // Retrieve the filter form data
         $cardName = $form->get('cardName')->getData();
         $foiling = $form->get('foiling')->getData();
+        $rarity = $form->get('rarity')->getData();
         $collectorView = $form->get('collectorView')->getData();
         $offset = $request->query->getInt('offset', 0);
         $renderedSets = $request->query->get('renderedSet');
 
-        $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, $offset, $foiling);
+        $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, $offset, $foiling, $rarity);
 
         $collectedCards = new ArrayCollection();
         $collectedPrintings = new ArrayCollection();
@@ -442,6 +446,7 @@ class CollectionController extends AbstractController
             $formData = $form->getData();
             $foiling = $formData['foiling'];
             $cardName = $formData['cardName'];
+            $rarity = $formData['rarity'];
             $collectorView = $form->get('collectorView')->getData();
 
             // 🔥 The magic happens here! 🔥
@@ -449,7 +454,7 @@ class CollectionController extends AbstractController
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, 0, $foiling);
+                $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, 0, $foiling, $rarity);
 
                 return $this->renderBlock('collection/card_finder.html.twig', 'printing_table', [
                     'editionHelper' => $this->editionHelper,
