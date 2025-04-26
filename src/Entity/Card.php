@@ -20,18 +20,21 @@ class Card
 
     #[ORM\Column(length: 10, nullable: false)]
     private string $pitch;
-    
+
     #[ORM\OneToMany(targetEntity: CardPrinting::class, mappedBy: 'card')]
     private Collection $printings;
-    
+
     #[ORM\Column(type: 'simple_array')]
     private array $types;
-    
+
     #[ORM\Column(type: 'simple_array', name: 'card_keywords')]
     private array $keywords;
-    
+
     #[ORM\OneToMany(mappedBy: "card", targetEntity: CardClass::class, cascade: ["remove"])]
     private Collection $cardClasses;
+
+    #[ORM\Column(nullable: false)]
+    private int $playsetSize;
 
     public function __construct()
     {
@@ -61,21 +64,14 @@ class Card
         return $this->printings;
     }
 
-    // public function getPrintingsFromSet(string $setId): Collection
-    // {
-    //     $criteria = Criteria::create()
-    //         ->andWhere(Criteria::expr()->eq('setId', $setId));
-    //     return $this->getPrintings()->matching($criteria);
-    // }
-
-    public function getTypes(): array 
-    { 
+    public function getTypes(): array
+    {
         // trim the curly brackets because Postgres
         return array_map(fn($type) => trim($type, '{}'), $this->types);
     }
 
-    public function getKeywords(): array 
-    { 
+    public function getKeywords(): array
+    {
         // trim the curly brackets because Postgres
         return array_map(fn($keyword) => trim($keyword, '{}'), $this->keywords);
     }
@@ -88,4 +84,8 @@ class Card
         return $this->cardClasses;
     }
 
+    public function getPlaysetSize(): int
+    {
+        return $this->playsetSize;
+    }
 }

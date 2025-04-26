@@ -34,7 +34,7 @@
             <tr>
                 <td>
                     <div class="playset-icons-container" data-id="{{ printing.uniqueId }}" data-printing-target="playsetIconsContainer" >
-                    {% set playsetSize = userCollectionManager.getPlaysetSizeForCard(printing.card) %}
+                    {% set playsetSize = printing.card.playsetSize %}
                         {% for i in 1..playsetSize %}
                             <div class="card-icon
                                 {% if i == 1 and amount > 0 %}filled{% endif %}

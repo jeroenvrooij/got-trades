@@ -23,8 +23,7 @@
             <td style="width: 40px;">
                 <div class="playset-icons-container" data-id="{{ printingId }}" data-printing-target="playsetIconsContainer" >
                 {# Get correct playset size for this card #}
-                {% set playsetSize = 3 %}
-                {% set playsetSize = userCollectionManager.getPlaysetSizeForCard(printings|first) %}
+                {% set playsetSize = printings|first.playsetSize %}
 
                 {# Get how many copies of this CARD the user has collected #}
                 {% set playsetAmount = 0 %}

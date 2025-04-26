@@ -2,8 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Card;
 use App\Entity\CardPrinting;
 use App\Entity\Set;
+use App\Entity\UserCardPrintings;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
@@ -148,13 +150,12 @@ class CardPrintingRepository extends ServiceEntityRepository
      */
     public function findByCardIds(array $cardIds)
     {
-
         $qb = $this->startQueryBuilder();
 
         $qb
             ->andWhere('cp.cardId IN (:cardIds)')
             ->setParameter('cardIds', $cardIds)
-            ;
+        ;
 
         return $qb->getQuery()->getResult();
     }
@@ -195,110 +196,38 @@ class CardPrintingRepository extends ServiceEntityRepository
         }
 
         if ($hideOwnedCards) {
+            /** @var App\Entity\User $user */
+            $user = $this->security->getUser();
+            $qb->setParameter('userId', $user->getId()->toString());
+
             if ($collectorView) {
+                $qb
+                    ->leftJoin(UserCardPrintings::class, 'ucp', Join::WITH, 'ucp.cardPrinting = cp.uniqueId AND ucp.user = :userId')
+                    ->andWhere(
+                        $qb->expr()->orX(
+                            'ucp.cardPrinting IS NULL', // User has no copies yet
+                            'ucp.collectionAmount < c.playsetSize' // Not enough copies collected
+                        )
+                    )
+                ;
+            } else {
+                // Player view: group across all printings for the same card (cardId)
                 $qb->andWhere(
                     // When hiding completed playsets the card printing should not exists in this subsets of completed playsets
                     $qb->expr()->not(
                         $qb->expr()->exists(
                             $this->userCardPrintingsRepository->createQueryBuilder('ucp')
                                 ->select('1')
-                                ->where('ucp.cardPrinting = cp')
-                                ->andWhere('ucp.user = :userId')
-                                ->andWhere('
-                                    (
-                                        (
-                                            -- for some type of cards a playset is completed is you have one copy
-                                            array_to_string(c.types, \',\') LIKE \'%Hero%\' OR
-                                            (array_to_string(c.types, \',\') LIKE \'%Equipment%\' AND array_to_string(c.keywords, \',\') NOT LIKE \'%Transform%\') OR
-                                            array_to_string(c.types, \',\') LIKE \'%Token%\' OR
-                                            array_to_string(c.types, \',\') LIKE \'%Weapon%\'
-                                        )
-                                        AND ucp.collectionAmount >= 1
-                                    )
-                                    OR
-                                    (
-                                        (
-                                            -- Equipment cards that can transform are a playset of three that go in the deck
-                                            array_to_string(c.types, \',\') LIKE \'%Equipment%\' AND
-                                            array_to_string(c.keywords, \',\') LIKE \'%Transform%\'
-                                        )
-                                        AND ucp.collectionAmount >= 3
-                                    )
-                                    OR
-                                    (
-                                        (
-                                            -- default playset size is three
-                                            array_to_string(c.types, \',\') NOT LIKE \'%Hero%\' AND
-                                            array_to_string(c.types, \',\') NOT LIKE \'%Equipment%\' AND
-                                            array_to_string(c.types, \',\') NOT LIKE \'%Token%\' AND
-                                            array_to_string(c.types, \',\') NOT LIKE \'%Weapon%\'
-                                        )
-                                        AND ucp.collectionAmount >= 3
-                                    )
-                                    OR
-                                    (
-                                        -- playsets of cards with the legendary keywords also just require one copy
-                                        array_to_string(c.keywords, \',\') LIKE \'%Legendary%\' AND
-                                        ucp.collectionAmount >= 1
-                                    )
-                                ')
-                                ->getDQL()
-                        )
-                    )
-                );
-            } else {
-                $qb->andWhere(
-                    // When hiding completed playsets the card printing should not exists in this subsets of completed playsets
-                    $qb->expr()->not(
-                        $qb->expr()->exists(
-                            $this->userCardPrintingsRepository->createQueryBuilder('ucp')
-                                ->select('SUM(ucp.collectionAmount) AS totalCollectionAmount')
                                 ->innerJoin(CardPrinting::class, 'ucp_cp', Join::WITH, 'ucp.cardPrinting = ucp_cp.uniqueId')
-                                ->innerJoin('ucp_cp.card', 'ucp_c')
-                                ->groupBy('ucp_c.uniqueId')
-                                ->where('ucp_c = c')
-                                ->andWhere('ucp.user = :userId')
-                                // only cards from within the same set should be filtered out
-                                ->andWhere('ucp_cp.cardId = cp.cardId')
-                                ->having('
-                                    SUM(ucp.collectionAmount) >=
-                                    CASE
-                                    WHEN
-                                        -- Equipment cards that can transform are a playset of three that go in the deck
-                                        array_to_string(ucp_c.types, \',\') LIKE \'%Equipment%\' AND
-                                        array_to_string(ucp_c.keywords, \',\') LIKE \'%Transform%\'
-                                    THEN 3
-                                    WHEN
-                                        -- for some type of cards a playset is completed is you have one copy
-                                        array_to_string(ucp_c.types, \',\') LIKE \'%Hero%\' OR
-                                        array_to_string(ucp_c.types, \',\') LIKE \'%Equipment%\' OR
-                                        array_to_string(ucp_c.types, \',\') LIKE \'%Token%\' OR
-                                        array_to_string(ucp_c.types, \',\') LIKE \'%Weapon%\'
-                                    THEN 1
-                                    WHEN
-                                        -- playsets of cards with the legendary keywords also just require one copy
-                                        array_to_string(ucp_c.keywords, \',\') LIKE \'%Legendary%\'
-                                    THEN 1
-                                    WHEN
-                                        -- default playset size is three
-                                        array_to_string(ucp_c.types, \',\') NOT LIKE \'%Hero%\' AND
-                                        array_to_string(ucp_c.types, \',\') NOT LIKE \'%Equipment%\' AND
-                                        array_to_string(ucp_c.types, \',\') NOT LIKE \'%Token%\' AND
-                                        array_to_string(ucp_c.types, \',\') NOT LIKE \'%Weapon%\'AND
-                                        array_to_string(ucp_c.keywords, \',\') NOT LIKE \'%Legendary%\'
-                                    THEN 3
-                                    ELSE 3
-                                    END
-                                ')
+                                ->where('ucp.user = :userId')
+                                ->andWhere('ucp_cp.card = c')
+                                ->groupBy('ucp_cp.card')
+                                ->having('SUM(ucp.collectionAmount) >= c.playsetSize')
                                 ->getDQL()
                         )
                     )
                 );
             }
-
-            /** @var App\Entity\User $user */
-            $user = $this->security->getUser();
-            $qb->setParameter('userId', $user->getId()->toString());
         }
 
         return $qb;

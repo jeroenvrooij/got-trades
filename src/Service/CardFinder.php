@@ -155,7 +155,6 @@ class CardFinder
         }
     }
 
-
     /**
      * Takes an Paginator containing card printings and build an ArrayCollection tree structured like:
      *

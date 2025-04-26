@@ -70,29 +70,4 @@ class UserCollectionManager
 
         return $this->userCollectedCards;
     }
-
-    public function getPlaysetSizeForCard(Card $card): int
-    {
-        $keywords = $card->getKeywords();
-
-        // cards of these certain types have a smaller playset
-        $smallTypes = ['Demi-Hero', 'Hero', 'Equipment', 'Token', 'Weapon'];
-        foreach ($card->getTypes() as $type) {
-            // Mech has transform equipment cards, like Evo Atom Breaker or Construct Nitro Mechanoid
-            if ('Equipment' === $type && in_array('Transform', $keywords)) {
-                return 3;
-            }
-            if (in_array($type, $smallTypes)) {
-                return 1;
-            }
-        }
-
-        // cards with the 'Legendary' keyword can only be 'one of'
-        if (in_array('Legendary', $keywords)) {
-            return 1;
-        }
-
-        // default playset size == 3
-        return 3;
-    }
 }
