@@ -17,11 +17,13 @@
     <div class="d-block d-md-none">
       <ul class="list-group">
         {% for class in classes %}
-          <li class="list-group-item">
-            <a href="{{ path('app_collection_managecollectionbyclass', {className: class.slug}) }}" class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">{{ class.name }}</a>
-          </li>
+          <a href="{{ path('app_collection_managecollectionbyclass', {className: class.slug}) }}" class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">
+            <li class="list-group-item">
+              {{ class.name }}
+            </li>
+          </a>
         {% endfor %}
       </ul>
     </div>
   </div>
-{% endblock %} 
+{% endblock %}

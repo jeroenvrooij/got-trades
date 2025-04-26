@@ -19,11 +19,13 @@
     <div class="d-block d-md-none">
       <ul class="list-group">
         {% for set in sets %}
-          <li class="list-group-item py-3">
-            <a href="{{ path('app_collection_managecollectionbyset', {setId: set.id}) }}" class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover"><img src="{{ asset('images/set_logos/' ~ set.logo) }}" style="max-height: 25px;"></a>
-          </li>
+          <a href="{{ path('app_collection_managecollectionbyset', {setId: set.id}) }}" class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">
+            <li class="list-group-item py-3">
+              <img src="{{ asset('images/set_logos/' ~ set.logo) }}" style="max-height: 25px;">
+            </li>
+          </a>
         {% endfor %}
       </ul>
     </div>
   </div>
-{% endblock %} 
+{% endblock %}
