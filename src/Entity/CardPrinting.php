@@ -39,12 +39,15 @@ class CardPrinting
 
     #[ORM\Column(length: 15, nullable: false)]
     private string $artVariations;
-    
+
+    #[ORM\Column(length: 1000, nullable: false)]
+    private string $imageUrl;
+
     public function getUniqueId(): string
     {
         return $this->uniqueId;
     }
-    
+
     public function setUniqueId($uniqueId): self
     {
         $this->uniqueId = $uniqueId;
@@ -91,5 +94,10 @@ class CardPrinting
     public function getArtVariations(): string
     {
         return $this->artVariations;
+    }
+
+    public function getImageUrl(): string
+    {
+        return $this->imageUrl;
     }
 }

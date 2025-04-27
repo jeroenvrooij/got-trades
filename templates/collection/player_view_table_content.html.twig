@@ -21,7 +21,11 @@
                 <i class="bi bi-chevron-down text-secondary" style="font-size: 1rem; cursor: pointer;" data-action="click->printing#toggleRow" data-printing-row-param="row-{{ printingId }}"></i>
             </td>
             <td style="width: 40px;">
-                <div class="playset-icons-container" data-id="{{ printingId }}" data-printing-target="playsetIconsContainer" >
+                <div
+                    class="playset-icons-container"
+                    data-id="{{ printingId }}"
+                    data-printing-target="playsetIconsContainer"
+                >
                 {# Get correct playset size for this card #}
                 {% set playsetSize = printings|first.playsetSize %}
 
@@ -117,9 +121,26 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {{ foilingHelper.getFoilingNameById(printing.foiling) }}
-                                {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }}
-                                {% if printing.edition != "N" %}<i> - {{ editionHelper.getEditionNameById(printing.edition) }}</i>{% endif %}
+                                {% set imageUrl = printing.imageUrl %}
+                                {% if imageUrl ends with '.png' %}
+                                    {% set imageUrl = imageUrl|replace({'.png': '.webp'}) %}
+                                {% endif %}
+                                <span
+                                    class="card-image-popover-trigger"
+                                    {% if imageUrl is not empty %}
+                                        {% set filePath = asset(imageUrl) %}
+                                        {% set filePath = filePath|first == '/' ? filePath|slice(1) : filePath %}
+                                        {% if file_exists(filePath) or app.environment == 'dev'%}
+                                            data-bs-toggle="popover"
+                                            data-bs-content="<img src='{{ asset(imageUrl) }}' class='img-fluid'>"
+                                        {% endif %}
+                                    {% endif %}
+                                    style="cursor: default;"
+                                >
+                                    {{ foilingHelper.getFoilingNameById(printing.foiling) }}
+                                    {{ artVariationsHelper.getHumanReadableArtVariations(printing.artVariations) }}
+                                    {% if printing.edition != "N" %}<i> - {{ editionHelper.getEditionNameById(printing.edition) }}</i>{% endif %}
+                                </span>
                             </td>
                         </tr>
                     {% endfor %}

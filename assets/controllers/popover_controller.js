@@ -38,24 +38,38 @@ export default class extends Controller {
     })
 
     // Initialize popovers
-    const popoverTriggers = this.element.querySelectorAll('[data-bs-toggle="popover"]')
-    popoverTriggers.forEach(el => {
-      if (!el._popoverInitialized) {
-        try {
-          const popover = new bootstrap.Popover(el)
-          el._popoverInitialized = true
-          // Add a click event listener to toggle the popover visibility
-          el.addEventListener('click', (event) => {
-            if (popover._isShown()) {
-              popover.hide()
-            } else {
-              popover.show()
+  const popoverTriggers = this.element.querySelectorAll('[data-bs-toggle="popover"]')
+  popoverTriggers.forEach(el => {
+    if (!el._popoverInitialized) {
+      try {
+        // 👇 DIFFERENT options depending on whether it's a card-image-popover
+        if (el.classList.contains('card-image-popover-trigger')) {
+          const popover = new bootstrap.Popover(el, {
+            html: true,
+            trigger: 'hover focus',
+            placement: 'top',
+            container: 'body',
+            boundary: 'viewport',
+            fallbackPlacements: ['top', 'bottom', 'right', 'left'],
+            customClass: 'card-image-popover',
+          })
+
+          el.addEventListener('shown.bs.popover', () => {
+            const instance = bootstrap.Popover.getInstance(el)
+            if (instance && instance.update) {
+              instance.update()
             }
           })
-        } catch (error) {
-          console.error("Error initializing popover: ", error)
+        } else {
+          // 👇 Other popovers stay simple (default)
+          new bootstrap.Popover(el)
         }
+
+        el._popoverInitialized = true
+      } catch (error) {
+        console.error("Error initializing popover: ", error)
       }
-    })
+    }
+  })
   }
 }

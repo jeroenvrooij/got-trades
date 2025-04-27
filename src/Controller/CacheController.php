@@ -32,29 +32,44 @@ class CacheController extends AbstractController
 
         $application = new Application($kernel);
         $application->setAutoExit(false);
-    
-        $input = new ArrayInput([
-            'command' => 'cache:clear',
-            '--env' => 'prod',
-            '--no-interaction' => true,
-        ]);
-    
-        $output = new BufferedOutput();
-    
+
+        $fullOutput = '';
+
         try {
-            $application->run($input, $output);
-            $message = nl2br($output->fetch());
-    
+            // 1. Clear cache
+            $clearInput = new ArrayInput([
+                'command' => 'cache:clear',
+                '--env' => 'prod',
+                '--no-interaction' => true,
+            ]);
+            $clearOutput = new BufferedOutput();
+            $application->run($clearInput, $clearOutput);
+
+            $fullOutput .= "✅ Cache cleared!\n\n" . $clearOutput->fetch() . "\n\n";
+
+            // 2. Warmup cache
+            $warmupInput = new ArrayInput([
+                'command' => 'cache:warmup',
+                '--env' => 'prod',
+                '--no-interaction' => true,
+            ]);
+            $warmupOutput = new BufferedOutput();
+            $application->run($warmupInput, $warmupOutput);
+
+            $fullOutput .= "✅ Cache warmed up!\n\n" . $warmupOutput->fetch();
+
             return new Response(
-                '<html><head><meta name="robots" content="noindex, nofollow"></head><body><h2>✅ Cache cleared!</h2><pre>' . $message . '</pre></body></html>'
+                '<html><head><meta name="robots" content="noindex, nofollow"></head><body><h2>✅ All done!</h2><pre>' . nl2br(htmlspecialchars($fullOutput)) . '</pre></body></html>'
             );
         } catch (\Exception $e) {
             return new Response(
-                '<html><head><meta name="robots" content="noindex, nofollow"></head><body><h2>❌ Error: ' . $e->getMessage() . '</h2></body></html>',
+                '<html><head><meta name="robots" content="noindex, nofollow"></head><body><h2>❌ Error: ' . htmlspecialchars($e->getMessage()) . '</h2></body></html>',
                 500
             );
         }
     }
+
+
     // #[Route('/admin/clear-prod-cache')]
     // public function clearCache(): Response
     // {

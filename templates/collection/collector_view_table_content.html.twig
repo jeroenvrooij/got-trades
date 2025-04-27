@@ -58,8 +58,25 @@
                     {% endif %}
                 </td>
                 <td>
-                    {{ printings.card.name }}
-
+                    {% set imageUrl = printing.imageUrl %}
+                    {% if imageUrl ends with '.png' %}
+                        {% set imageUrl = imageUrl|replace({'.png': '.webp'}) %}
+                    {% endif %}
+                    <span
+                        class="card-image-popover-trigger"
+                        {% if imageUrl is not empty %}
+                            {% set filePath = asset(imageUrl) %}
+                            {% set filePath = filePath|first == '/' ? filePath|slice(1) : filePath %}
+                            {% if file_exists(filePath) or app.environment == 'dev'%}
+                                data-bs-toggle="popover"
+                                {# data-bs-content="<img src='{{ asset('images/card_images/images/thumbnails/large/HNT002-MV_BACK.webp') }}' class='img-fluid'>" #}
+                                data-bs-content="<img src='{{ asset(imageUrl) }}' class='img-fluid'>"
+                            {% endif %}
+                        {% endif %}
+                        style="cursor: default;"
+                    >
+                        {{ printings.card.name }}
+                    </span>
                     {% if 1 ==  printings.card.pitch %}
                         <div class="pitch-container"><div class="pitch pitch-1"></div></div>
                     {% elseif 2 == printings.card.pitch %}
