@@ -1,22 +1,23 @@
 from PIL import Image
 import os
 
+# Updated base folder and thumbnails folder
 base_folder = 'assets/images/card_images/images'
-thumbnails_root = os.path.join(base_folder, 'thumbnails')
+thumbnails_root = 'assets/images/card_images/thumbnails'  # moved one level up
 target_height = 400  # adjust as needed
 
 # Create thumbnails root folder if missing
 os.makedirs(thumbnails_root, exist_ok=True)
 
 for root, dirs, files in os.walk(base_folder):
-    # Skip processing the thumbnails folder itself to avoid infinite loop
+    # Skip processing the thumbnails folder itself (safety)
     if thumbnails_root in root:
         continue
 
-    # Compute relative path of current folder to base_folder
+    # Compute relative path from base_folder
     rel_path = os.path.relpath(root, base_folder)
 
-    # Determine where thumbnails for this folder go
+    # Create matching subfolder under thumbnails_root
     thumbnail_folder = os.path.join(thumbnails_root, rel_path)
     os.makedirs(thumbnail_folder, exist_ok=True)
 
