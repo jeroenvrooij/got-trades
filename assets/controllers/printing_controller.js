@@ -16,65 +16,61 @@ export default class extends Controller {
         if (!window.requests) {
             window.requests = [];
         }
-        if (!window.openRows) {
-            window.openRows = [];
-        }
-        this.playerviewRowTargets.forEach(parentRow => {
-            const rowId = parentRow.dataset.printingRowParam;
-            const row = document.getElementById(rowId);
 
-            const icon = parentRow.querySelector("i");
-            this.closeRow(row, icon, parentRow);
+        this.playerviewRowTargets.forEach(parentRow => {
+            this.initializeRow(parentRow);
         })
     }
 
+    get openRows() {
+        if (!window.openRows) {
+            window.openRows = new Set();
+        }
+
+        return window.openRows;
+    }
+
+    set openRows(value) {
+        window.openRows = value;
+    }
+
     playerviewRowTargetConnected(parentRow) {
+        this.initializeRow(parentRow);
+    }
+
+    initializeRow(parentRow) {
         const rowId = parentRow.dataset.printingRowParam;
         const row = document.getElementById(rowId);
+        const icon = parentRow.querySelector("i");
 
-        const icon = parentRow.querySelector("i"); // find the <i> inside the clicked <tr>
-        if (window.openRows) {
-            if(!window.openRows.includes(row.id)) {
-                this.closeRow(row, icon, parentRow, true);
-            }
-        } else {
-            this.closeRow(row, icon, parentRow, true);
+        if (!window.openRows || !window.openRows.has(row.id)) {
+            this.closeRow(row, icon, parentRow);
         }
     }
 
     toggleAllRows() {
         const linkTarget = this.toggleAllRowsElementTarget;
         const icon = linkTarget.querySelector("i");
+        const expanding = icon.classList.contains("bi-chevron-expand");
 
-        if (icon.classList.contains("bi-chevron-expand")) {
-            icon.classList.remove("bi-chevron-expand");
-            icon.classList.add("bi-chevron-contract");
-            linkTarget.innerHTML = ''; // clear contents
-            linkTarget.appendChild(icon); // keep the icon
-            linkTarget.insertAdjacentText('beforeend', ' Contract all'); // add new text
+        icon.classList.toggle("bi-chevron-expand", !expanding);
+        icon.classList.toggle("bi-chevron-contract", expanding);
 
-            this.playerviewRowTargets.forEach(parentRow => {
-                const rowId = parentRow.dataset.printingRowParam;
-                const row = document.getElementById(rowId);
+        linkTarget.innerHTML = '';
+        linkTarget.appendChild(icon);
+        linkTarget.insertAdjacentText('beforeend', expanding ? ' Contract all' : ' Expand all');
 
-                const icon = parentRow.querySelector("i"); // find the <i> inside the clicked <tr>
-                this.openRow(row, icon, parentRow);
-            })
-        } else {
-            icon.classList.add("bi-chevron-expand");
-            icon.classList.remove("bi-chevron-contract");
-            linkTarget.innerHTML = ''; // clear contents
-            linkTarget.appendChild(icon); // keep the icon
-            linkTarget.insertAdjacentText('beforeend', ' Expand all'); // add new text
+        this.playerviewRowTargets.forEach(parentRow => {
+            const rowId = parentRow.dataset.printingRowParam;
+            const row = document.getElementById(rowId);
+            const rowIcon = parentRow.querySelector("i");
 
-            this.playerviewRowTargets.forEach(parentRow => {
-                const rowId = parentRow.dataset.printingRowParam;
-                const row = document.getElementById(rowId);
-
-                const icon = parentRow.querySelector("i"); // find the <i> inside the clicked <tr>
-                this.closeRow(row, icon, parentRow);
-            })
-        }
+            if (expanding) {
+                this.openRow(row, rowIcon, parentRow);
+            } else {
+                this.closeRow(row, rowIcon, parentRow);
+            }
+        });
     }
 
     openRow(row, icon, parentRow) {
@@ -84,21 +80,17 @@ export default class extends Controller {
         parentRow.style.fontStyle = "italic";
 
         // if the row was opened, store it in window.openRows so we can keep it open (after form is submitted)
-        if (window.openRows) {
-            window.openRows.push(row.id);
-        }
+        this.openRows.add(row.id);
     }
 
-    closeRow(row, icon, parentRow, keepOpen = false) {
+    closeRow(row, icon, parentRow) {
         row.hidden = true;
         icon.classList.remove("bi-chevron-down");
         icon.classList.add("bi-chevron-right");
         parentRow.style.fontStyle = "normal";
 
         // if the row was closed, remove it from window.openRows
-        if (window.openRows && !keepOpen) {
-            window.openRows.splice(window.openRows.indexOf(row.id), 1);
-        }
+        this.openRows.delete(row.id);
     }
 
     toggleRow(event) {
