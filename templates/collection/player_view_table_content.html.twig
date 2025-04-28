@@ -16,9 +16,9 @@
         data-next-offset="{{ cardPrintingsResultSet.nextOffset }}"
     ></tr>
     {% for printingId, printings in sets %}
-        <tr>
+        <tr data-action="click->printing#toggleRow" data-printing-row-param="row-{{ printingId }}"  data-printing-target="playerviewRow">
             <td style="width: 20px;">
-                <i class="bi bi-chevron-down text-secondary" style="font-size: 1rem; cursor: pointer;" data-action="click->printing#toggleRow" data-printing-row-param="row-{{ printingId }}"></i>
+                <i class="bi bi-chevron-down text-secondary" style="font-size: 1rem; cursor: pointer;"></i>
             </td>
             <td style="width: 40px;">
                 <div
@@ -59,7 +59,7 @@
                 {% endif %}
             </td>
         </tr>
-        <tr id="row-{{ printingId }}" data-printing-target="playerviewRow" data-filter-target="playerviewRow">
+        <tr id="row-{{ printingId }}">
             <td colspan="4" >
                 <table class="table table-hover table-borderless table-sm card-printing align-middle">
                     {% for printing in printings.printings %}

@@ -19,18 +19,26 @@ export default class extends Controller {
         if (!window.openRows) {
             window.openRows = [];
         }
-        this.playerviewRowTargets.forEach(row => {
-            this.closeRow(row);
+        this.playerviewRowTargets.forEach(parentRow => {
+            const rowId = parentRow.dataset.printingRowParam;
+            const row = document.getElementById(rowId);
+
+            const icon = parentRow.querySelector("i");
+            this.closeRow(row, icon, parentRow);
         })
     }
 
-    playerviewRowTargetConnected(row) {
+    playerviewRowTargetConnected(parentRow) {
+        const rowId = parentRow.dataset.printingRowParam;
+        const row = document.getElementById(rowId);
+
+        const icon = parentRow.querySelector("i"); // find the <i> inside the clicked <tr>
         if (window.openRows) {
             if(!window.openRows.includes(row.id)) {
-                this.closeRow(row, true);
+                this.closeRow(row, icon, parentRow, true);
             }
         } else {
-            this.closeRow(row, true);
+            this.closeRow(row, icon, parentRow, true);
         }
     }
 
@@ -45,8 +53,12 @@ export default class extends Controller {
             linkTarget.appendChild(icon); // keep the icon
             linkTarget.insertAdjacentText('beforeend', ' Contract all'); // add new text
 
-            this.playerviewRowTargets.forEach(row => {
-                this.openRow(row);
+            this.playerviewRowTargets.forEach(parentRow => {
+                const rowId = parentRow.dataset.printingRowParam;
+                const row = document.getElementById(rowId);
+
+                const icon = parentRow.querySelector("i"); // find the <i> inside the clicked <tr>
+                this.openRow(row, icon, parentRow);
             })
         } else {
             icon.classList.add("bi-chevron-expand");
@@ -55,20 +67,20 @@ export default class extends Controller {
             linkTarget.appendChild(icon); // keep the icon
             linkTarget.insertAdjacentText('beforeend', ' Expand all'); // add new text
 
-            this.playerviewRowTargets.forEach(row => {
-                this.closeRow(row);
+            this.playerviewRowTargets.forEach(parentRow => {
+                const rowId = parentRow.dataset.printingRowParam;
+                const row = document.getElementById(rowId);
+
+                const icon = parentRow.querySelector("i"); // find the <i> inside the clicked <tr>
+                this.closeRow(row, icon, parentRow);
             })
         }
-
     }
 
-    openRow(row) {
+    openRow(row, icon, parentRow) {
         row.hidden = false;
-        const icon = this.element.querySelector('[data-printing-row-param="' + row.id + '"]');
         icon.classList.remove("bi-chevron-right");
         icon.classList.add("bi-chevron-down");
-
-        const parentRow = icon.closest("tr");
         parentRow.style.fontStyle = "italic";
 
         // if the row was opened, store it in window.openRows so we can keep it open (after form is submitted)
@@ -77,13 +89,10 @@ export default class extends Controller {
         }
     }
 
-    closeRow(row, keepOpen = false) {
+    closeRow(row, icon, parentRow, keepOpen = false) {
         row.hidden = true;
-        const icon = this.element.querySelector('[data-printing-row-param="' + row.id + '"]');
         icon.classList.remove("bi-chevron-down");
         icon.classList.add("bi-chevron-right");
-
-        const parentRow = icon.closest("tr");
         parentRow.style.fontStyle = "normal";
 
         // if the row was closed, remove it from window.openRows
@@ -93,12 +102,16 @@ export default class extends Controller {
     }
 
     toggleRow(event) {
-        const row =  document.getElementById(event.params.row);
+        const parentRow = event.currentTarget;
+        const rowId = parentRow.dataset.printingRowParam;
+        const row = document.getElementById(rowId);
+
+        const icon = parentRow.querySelector("i"); // find the <i> inside the clicked <tr>
 
         if (row.hidden) {
-            this.openRow(row);
+            this.openRow(row, icon, parentRow);
         } else {
-            this.closeRow(row);
+            this.closeRow(row, icon, parentRow);
         }
     }
 
