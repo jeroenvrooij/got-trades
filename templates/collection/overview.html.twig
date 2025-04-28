@@ -60,7 +60,7 @@
 
 						<div class="col-12 col-md-6 col-lg-4">
 							<div class="form-check form-switch">
-								{% set loggedIn = is_granted('IS_AUTHENTICATED_FULLY') %}
+								{% set loggedIn = is_granted('IS_AUTHENTICATED') %}
 								{{ form_widget(form.hide, { attr: {'disabled': not loggedIn} }) }}
 								{{ form_label(form.hide, null, {'label_attr': {'class': 'form-check-label'} }) }}
 

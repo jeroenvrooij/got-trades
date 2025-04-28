@@ -41,7 +41,7 @@
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        {% if is_granted('IS_AUTHENTICATED') %}
                             <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Signed in as: {{ app.user.username }}

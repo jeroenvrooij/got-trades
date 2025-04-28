@@ -25,7 +25,7 @@ This fanmade tool helps you forge your perfect collection, showing you what card
                         <p>Once you have an account and are logged in you can start adding cards to your online collection.</p>
                     </div>
                     <div class="feature-footer" {{ stimulus_controller('popover') }}>
-                        {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
+                        {% if not is_granted('IS_AUTHENTICATED') %}
                             <A type="button" role="button" class="btn btn-warning" href="{{ path('app_register') }}">Sign up</a>
                         {% else %}
                             <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="You're already signed in :)">
