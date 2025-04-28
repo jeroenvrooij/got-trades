@@ -2,6 +2,7 @@
     <div
         class="visually-hidden"
         data-infinitescroll-target="paginationInfoContainer"
+        data-filter-target="paginationInfoContainer"
         data-total-results="{{ cardPrintingsResultSet.totalAmount }}"
         {% if pageType == collectionPageType_CLASS %}
             data-fetch-more-url="{{
@@ -46,14 +47,6 @@
             {% else %}
                 <tr class="no-hover">
                     <td colspan="7" class="position-relative text-body-secondary">
-                        <div class="position-absolute start-0 top-0">
-                            <a class="text-secondary link-underline link-underline-opacity-0"
-                            data-action="click->printing#toggleAllRows"
-                            data-printing-target="toggleAllRowsElement"
-                            style="cursor: pointer;">
-                                <i class="bi bi-chevron-expand" style="font-size: 1.3rem;"></i> Expand all
-                            </a>
-                        </div>
                         <div class="d-flex justify-content-center align-items-center">
                             Cards found: {{ cardPrintingsResultSet.totalAmount }}
                         </div>

@@ -5,10 +5,11 @@
     'Monarch',
     'Tales of Aria',
 ] %}
-<div id="printing_table" class="table-responsive">
+<div id="printing_table" class="table-responsive mt-3">
     <div
         class="visually-hidden"
         data-infinitescroll-target="paginationInfoContainer"
+        data-filter-target="paginationInfoContainer"
         data-total-results="{{ cardPrintingsResultSet.totalAmount }}"
         {% if pageType == collectionPageType_CLASS %}
             data-fetch-more-url="{{

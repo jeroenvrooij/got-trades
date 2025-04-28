@@ -39,12 +39,18 @@ export default class extends Controller {
     }
 
     initializeRow(parentRow) {
-        const rowId = parentRow.dataset.printingRowParam;
-        const row = document.getElementById(rowId);
-        const icon = parentRow.querySelector("i");
+        const toggleAllTarget = this.toggleAllRowsElementTarget;
+        const toggleAllIcon = toggleAllTarget.querySelector("i");
+        const expanding = toggleAllIcon.classList.contains("bi-chevron-expand");
 
-        if (!window.openRows || !window.openRows.has(row.id)) {
-            this.closeRow(row, icon, parentRow);
+        if (expanding) {
+            const rowId = parentRow.dataset.printingRowParam;
+            const row = document.getElementById(rowId);
+            const icon = parentRow.querySelector("i");
+
+            if (!window.openRows || !window.openRows.has(row.id)) {
+                this.closeRow(row, icon, parentRow);
+            }
         }
     }
 
@@ -58,7 +64,7 @@ export default class extends Controller {
 
         linkTarget.innerHTML = '';
         linkTarget.appendChild(icon);
-        linkTarget.insertAdjacentText('beforeend', expanding ? ' Contract all' : ' Expand all');
+        linkTarget.insertAdjacentText('beforeend', expanding ? ' Contract all rows' : ' Expand all rows');
 
         this.playerviewRowTargets.forEach(parentRow => {
             const rowId = parentRow.dataset.printingRowParam;
@@ -285,6 +291,10 @@ export default class extends Controller {
         const foilingFilter = document.querySelector('select[name="card_filter_form[foiling]"]'); // Adjust selector
         if (foilingFilter) {
             foilingFilter.disabled = window.requests.length > 0;
+        }
+        const rarityFilter = document.querySelector('select[name="card_filter_form[rarity]"]'); // Adjust selector
+        if (rarityFilter) {
+            rarityFilter.disabled = window.requests.length > 0;
         }
         const playsetSwitch = document.querySelector('input[name="card_filter_form[hide]"]'); // Adjust selector
         if (playsetSwitch) {

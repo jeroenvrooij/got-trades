@@ -16,7 +16,7 @@
 		<h1 class="text-secondary">{{ pageTitle }}</h1>
 	</div>
 	<div {{ stimulus_controller('filter printing popover infinitescroll') }} class="mx-auto" style="max-width: 1140px;">
-		<div class="sticky-top bg-white pb-1" style="top: 57px; z-index: 1020;">
+		<div class="sticky-top bg-white" style="top: 57px; z-index: 1020;">
 			<!-- Toggle button (visible on small screens only) -->
 			<button
 				class="btn btn-outline-secondary d-sm-none mt-3"
@@ -35,7 +35,8 @@
 				{{ form_start(form, { attr: {
 					'data-filter-target': 'filterForm',
 					'data-infinitescroll-target': 'filterForm',
-					'data-printing-target': 'filterForm'
+					'data-printing-target': 'filterForm',
+					'class': 'mb-0'
 				} }) }}
 
 				<div class="my-custom-class-for-errors">
@@ -91,6 +92,17 @@
 					</div>
 				</div>
 			</div>
+
+			<div class="col-12 col-md-6 col-lg-4 px-0 mt-3 mt-md-0" data-filter-target="toggleAllRowsElement">
+				<a class="text-secondary link-underline link-underline-opacity-0"
+					data-action="click->printing#toggleAllRows"
+					data-printing-target="toggleAllRowsElement"
+					style="cursor: pointer;"
+				>
+					<i class="bi bi-chevron-expand" style="font-size: 1.3rem;"></i> Expand all rows
+				</a>
+			</div>
+
 		</div>
 		{% if collectorView %}
 			{% include 'collection/collector_view_table.html.twig' %}
