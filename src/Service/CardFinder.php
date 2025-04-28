@@ -102,6 +102,7 @@ class CardFinder
         ?int $offset = 0,
         ?string $foiling = '',
         ?string $rarity = '',
+        ?bool $collectorView = false,
     ): CardPrintingsResultSet
     {
         if (FoilingHelper::NO_FILTER_KEY === $foiling) {
@@ -114,7 +115,7 @@ class CardFinder
             return new CardPrintingsResultSet(new ArrayCollection(), -1, 0);
         }
 
-        $paginator = $this->entityManager->getRepository(CardPrinting::class)->findPaginatedByCardName($cardName, $offset, $foiling, $rarity);
+        $paginator = $this->entityManager->getRepository(CardPrinting::class)->findPaginatedByCardName($cardName, $offset, $foiling, $rarity, $collectorView);
 
         return $this->buildCardPrintingsResultSet($paginator, true, $offset);
     }

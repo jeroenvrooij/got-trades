@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-    static targets = ["filterForm", "foilingFilter", "collectorViewFilter", 'rarityFilter', 'toggleAllRowsElement', 'paginationInfoContainer'];
+    static targets = ["filterForm", "foilingFilter", "collectorViewFilter", 'toggleAllRowsElement', 'paginationInfoContainer'];
 
     connect() {
         // Debounced form submission function
@@ -16,6 +16,7 @@ export default class extends Controller {
             }
         });
     }
+
     paginationInfoContainerTargetConnected(infoContainer) {
         let foilingFilterDiv = this.foilingFilterTarget.closest(".foiling-filter");
         if (this.collectorViewFilterTarget.checked || this.collectorViewFilterTarget.hidden == true) {
@@ -23,15 +24,6 @@ export default class extends Controller {
         } else {
             this.foilingFilterTarget.selectedIndex = 0;
             foilingFilterDiv.hidden = true;
-        }
-        if (this.hasRarityFilterTarget) {
-            let rarityFilterDiv = this.rarityFilterTarget.closest(".rarity-filter");
-            if (this.collectorViewFilterTarget.checked || this.collectorViewFilterTarget.hidden == true) {
-                rarityFilterDiv.hidden = false;
-            } else {
-                this.rarityFilterTarget.selectedIndex = 0;
-                rarityFilterDiv.hidden = true;
-            }
         }
         if (this.hasToggleAllRowsElementTarget) {
             let totalResults = infoContainer.dataset.totalResults;

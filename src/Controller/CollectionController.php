@@ -298,7 +298,7 @@ class CollectionController extends AbstractController
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, 0, $foiling, $rarity);
+                $cardPrintingsResultSet = $this->cardFinder->findPaginatedByCardName($cardName, 0, $foiling, $rarity, $collectorView);
 
                 if (null !== $this->getUser()) {
                     $collectedCards = $this->userCollectionManager->getCollectedCardsBy($this->getUser(), $cardPrintingsResultSet);

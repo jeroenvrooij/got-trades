@@ -99,9 +99,10 @@ class CardPrintingRepository extends ServiceEntityRepository
         ?int $offset = 0,
         ?string $foiling = '',
         ?string $rarity = '',
+        ?bool $collectorView = false,
     ): Paginator
     {
-        $qb = $this->buildCoreQuery(false, true, $foiling, $cardName, $rarity);
+        $qb = $this->buildCoreQuery(false, $collectorView, $foiling, $cardName, $rarity);
 
         $qb
             ->setMaxResults(self::CARDS_PER_PAGE)
@@ -174,7 +175,7 @@ class CardPrintingRepository extends ServiceEntityRepository
     {
         $qb = $this->startQueryBuilder();
 
-        if($foiling) {
+        if($foiling && $collectorView) {
             $qb
                 ->andWhere('cp.foiling = :foiling')
                 ->setParameter('foiling', $foiling)
