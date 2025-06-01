@@ -521,6 +521,8 @@ class CollectionController extends AbstractController
             'shapeshifter',
             'warrior',
             'wizard',
+            'pirate',
+            'necromancer',
         ];
 
         return in_array($className, $allowedClasses, true);

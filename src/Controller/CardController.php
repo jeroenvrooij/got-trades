@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class CardController extends AbstractController
 {
@@ -14,6 +13,7 @@ class CardController extends AbstractController
     ): Response {
         try {
             $sets = [
+                ['id' => 'SEA', 'name' => 'High Seas', 'logo' => 'high_seas_logo_noglow.original.png'],
                 ['id' => 'HNT', 'name' => 'The Hunted', 'logo' => 'the_hunted_logo.original.png'],
                 ['id' => 'ROS', 'name' => 'Rosetta', 'logo' => 'logo_rosetta_full.original.png'],
                 ['id' => 'MST', 'name' => 'Part the Mistveil', 'logo' => 'logo_mst.original.png'],
@@ -56,6 +56,8 @@ class CardController extends AbstractController
                 ['name' => 'Mechanologist', 'slug' => 'mechanologist', 'image' => 'mechanologist.png'],
                 ['name' => 'Runeblade', 'slug' => 'runeblade', 'image' => 'runeblade.png'],
                 ['name' => 'Ranger', 'slug' => 'ranger', 'image' => 'ranger.png'],
+                ['name' => 'Necromancer', 'slug' => 'necromancer', 'image' => 'ranger.png'],
+                ['name' => 'Pirate', 'slug' => 'pirate', 'image' => 'ranger.png'],
                 ['name' => 'Bard', 'slug' => 'bard', 'image' => 'bard.png'],
                 ['name' => 'Merchant', 'slug' => 'merchant', 'image' => 'merchant.png'],
                 ['name' => 'Shapeshifter', 'slug' => 'shapeshifter', 'image' => 'shapeshifter.png'],

@@ -279,6 +279,7 @@ class CardPrintingRepository extends ServiceEntityRepository
 
         // 🧩 Add custom ordering logic
         $desiredSetOrder = [
+            'High Seas',
             'The Hunted',
             'Rosetta',
             'Part the Mistveil',

@@ -128,7 +128,7 @@ button[aria-expanded="true"] i.bi-chevron-down {
     line-height: 1; /* Ensures proper line height */
     padding-top: 4px;
 }
-.rarity-circle.common, .rarity-circle.token {
+.rarity-circle.common, .rarity-circle.token, .rarity-circle.basic {
     background-color: #919191;
 }
 .rarity-circle.rare {
@@ -220,6 +220,11 @@ button[aria-expanded="true"] i.bi-chevron-down {
     padding: 5px;
     font-size: 1.5rem;
     box-sizing: border-box;
+}
+.setImage._sea {
+    background-image: url('../images/set_art/sea_keyart_sig.original.jpg');
+    background-size: 100%;
+    background-position: 50% 35%;
 }
 .setImage._hnt {
     background-image: url('../images/set_art/art_hnt_keyart.original.jpg');
@@ -366,6 +371,16 @@ button[aria-expanded="true"] i.bi-chevron-down {
 .classImage.shapeshifter
 {
     background-image: url('../images/class_art/Shiyana.original.jpg');
+    background-position: 50% 20% !important;
+}
+.classImage.necromancer
+{
+    background-image: url('../images/class_art/sea_heroart_gravybones.original.jpg');
+    background-position: 50% 20% !important;
+}
+.classImage.pirate
+{
+    background-image: url('../images/class_art/sea_heroart_puffin.original.jpg');
     background-position: 50% 20% !important;
 }
 
