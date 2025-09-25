@@ -126,7 +126,8 @@ button[aria-expanded="true"] i.bi-chevron-down {
     text-transform: uppercase;
     font-family: Arial, sans-serif;
     line-height: 1; /* Ensures proper line height */
-    padding-top: 4px;
+    padding-top: 3px;
+    padding-left: 1px;
 }
 .rarity-circle.common, .rarity-circle.token, .rarity-circle.basic {
     background-color: #919191;
