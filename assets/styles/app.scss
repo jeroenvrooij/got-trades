@@ -221,6 +221,16 @@ button[aria-expanded="true"] i.bi-chevron-down {
     font-size: 1.5rem;
     box-sizing: border-box;
 }
+.setImage._sup {
+    background-image: url('../images/set_art/sup_key_art.min-400x350.format-webp.webp');
+    background-size: 150%;
+    background-position: 50% 0%;
+}
+.setImage._mpg {
+    background-image: url('../images/set_art/mpg_banner.webp');
+    background-size: 300%;
+    background-position: 50% 0%;
+}
 .setImage._sea {
     background-image: url('../images/set_art/sea_keyart_sig.original.jpg');
     background-size: 100%;
