@@ -22,7 +22,7 @@
 ###> symfony/asset-mapper ###
 /public/assets/
 /assets/vendor/
-/assets/images/card_images/
+/assets/images/card_images/images
 ###< symfony/asset-mapper ###
 
 .DS_Store
