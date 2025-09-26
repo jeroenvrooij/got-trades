@@ -14,7 +14,7 @@ class CardController extends AbstractController
         try {
             $sets = [
                 ['id' => 'SUP', 'name' => 'Super Slam', 'logo' => 'super_slam_logo.original.png'],
-                ['id' => 'MPG', 'name' => 'Mastery Pack Guardian', 'logo' => ''],
+                ['id' => 'MPG', 'name' => 'Mastery Pack Guardian', 'logo' => 'mastery_pack_guardian_logo_1.original.png'],
                 ['id' => 'SEA', 'name' => 'High Seas', 'logo' => 'high_seas_logo_noglow.original.png'],
                 ['id' => 'HNT', 'name' => 'The Hunted', 'logo' => 'the_hunted_logo.original.png'],
                 ['id' => 'ROS', 'name' => 'Rosetta', 'logo' => 'logo_rosetta_full.original.png'],
