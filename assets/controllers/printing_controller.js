@@ -6,6 +6,7 @@ export default class extends Controller {
 
     // Store array of timeout, each card will have their own
     timeouts = {};
+    expandAll = false; // <-- always start collapsed
 
     connect() {
         this.amountInputTargets.forEach(input => {
@@ -22,35 +23,20 @@ export default class extends Controller {
         })
     }
 
-    get openRows() {
-        if (!window.openRows) {
-            window.openRows = new Set();
-        }
-
-        return window.openRows;
-    }
-
-    set openRows(value) {
-        window.openRows = value;
-    }
-
     playerviewRowTargetConnected(parentRow) {
+        // upon loading more via infinite scroll be sure to initialize the row so it gets the right collapsed/expanded state
         this.initializeRow(parentRow);
     }
 
     initializeRow(parentRow) {
-        const toggleAllTarget = this.toggleAllRowsElementTarget;
-        const toggleAllIcon = toggleAllTarget.querySelector("i");
-        const expanding = toggleAllIcon.classList.contains("bi-chevron-expand");
+        const rowId = parentRow.dataset.printingRowParam;
+        const row = document.getElementById(rowId);
+        const icon = parentRow.querySelector("i");
 
-        if (expanding) {
-            const rowId = parentRow.dataset.printingRowParam;
-            const row = document.getElementById(rowId);
-            const icon = parentRow.querySelector("i");
-
-            if (!window.openRows || !window.openRows.has(row.id)) {
-                this.closeRow(row, icon, parentRow);
-            }
+        if (this.expandAll) {
+            this.openRow(row, icon, parentRow);
+        } else {
+            this.closeRow(row, icon, parentRow);
         }
     }
 
@@ -59,28 +45,32 @@ export default class extends Controller {
         const icon = linkTarget.querySelector("i");
         const expanding = icon.classList.contains("bi-chevron-expand");
 
+        // update expandAll mode
+        this.expandAll = expanding;
+
+        // toggle icon
         icon.classList.toggle("bi-chevron-expand", !expanding);
         icon.classList.toggle("bi-chevron-contract", expanding);
 
-        linkTarget.innerHTML = '';
+        linkTarget.innerHTML = "";
         linkTarget.appendChild(icon);
-        linkTarget.insertAdjacentText('beforeend', expanding ? ' Contract all rows' : ' Expand all rows');
+        linkTarget.insertAdjacentText(
+            "beforeend",
+            expanding ? " Collapse all rows" : " Expand all rows"
+        );
 
+        // apply state to all rows
         this.playerviewRowTargets.forEach(parentRow => {
             const rowId = parentRow.dataset.printingRowParam;
             const row = document.getElementById(rowId);
             const rowIcon = parentRow.querySelector("i");
 
-            if (expanding) {
+            if (this.expandAll) {
                 this.openRow(row, rowIcon, parentRow);
             } else {
                 this.closeRow(row, rowIcon, parentRow);
             }
         });
-
-        if (!expanding) {
-            this.openRows.clear();
-        }
     }
 
     openRow(row, icon, parentRow) {
@@ -88,9 +78,6 @@ export default class extends Controller {
         icon.classList.remove("bi-chevron-right");
         icon.classList.add("bi-chevron-down");
         parentRow.style.fontStyle = "italic";
-
-        // if the row was opened, store it in window.openRows so we can keep it open (after form is submitted)
-        this.openRows.add(row.id);
     }
 
     closeRow(row, icon, parentRow) {
@@ -98,17 +85,13 @@ export default class extends Controller {
         icon.classList.remove("bi-chevron-down");
         icon.classList.add("bi-chevron-right");
         parentRow.style.fontStyle = "normal";
-
-        // if the row was closed, remove it from window.openRows
-        this.openRows.delete(row.id);
     }
 
     toggleRow(event) {
         const parentRow = event.currentTarget;
         const rowId = parentRow.dataset.printingRowParam;
         const row = document.getElementById(rowId);
-
-        const icon = parentRow.querySelector("i"); // find the <i> inside the clicked <tr>
+        const icon = parentRow.querySelector("i");
 
         if (row.hidden) {
             this.openRow(row, icon, parentRow);
