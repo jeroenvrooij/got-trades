@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'rarities')]
 class Rarity
 {
+    public const PROMO = 'P';
+
     #[ORM\Id]
     #[ORM\Column(length: 255, nullable: false)]
     private string $id;

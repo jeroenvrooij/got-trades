@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
-use App\Entity\Card;
 use App\Entity\CardPrinting;
+use App\Entity\Rarity;
 use App\Entity\Set;
 use App\Entity\UserCardPrintings;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -83,7 +83,7 @@ class CardPrintingRepository extends ServiceEntityRepository
             ->andWhere('classes.className = :className')
             ->setParameter('className', ucfirst($className))
             ->andWhere('cp.rarity != :promo')
-            ->setParameter('promo', 'P')
+            ->setParameter('promo', Rarity::PROMO)
             ->setMaxResults(self::CARDS_PER_PAGE)
             ->setFirstResult($offset)
         ;
@@ -126,7 +126,7 @@ class CardPrintingRepository extends ServiceEntityRepository
 
         $qb
             ->andWhere('cp.rarity = :promo')
-            ->setParameter('promo', 'P')
+            ->setParameter('promo', Rarity::PROMO)
             ->setMaxResults(self::CARDS_PER_PAGE)
             ->setFirstResult($offset)
         ;
@@ -222,6 +222,8 @@ class CardPrintingRepository extends ServiceEntityRepository
                                 ->innerJoin(CardPrinting::class, 'ucp_cp', Join::WITH, 'ucp.cardPrinting = ucp_cp.uniqueId')
                                 ->where('ucp.user = :userId')
                                 ->andWhere('ucp_cp.card = c')
+                                ->andWhere('ucp_cp.rarity != :promo')
+                                ->setParameter('promo', Rarity::PROMO)
                                 ->groupBy('ucp_cp.card')
                                 ->having('SUM(ucp.collectionAmount) >= c.playsetSize')
                                 ->getDQL()
