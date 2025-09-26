@@ -77,6 +77,10 @@ export default class extends Controller {
                 this.closeRow(row, rowIcon, parentRow);
             }
         });
+
+        if (!expanding) {
+            this.openRows.clear();
+        }
     }
 
     openRow(row, icon, parentRow) {
